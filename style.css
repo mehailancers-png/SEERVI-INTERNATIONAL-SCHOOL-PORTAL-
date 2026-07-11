@@ -384,13 +384,13 @@ select:focus-visible {
 
 .icon {
   width: 20px;
-  height: 20px;
   flex-shrink: 0;
-  border-radius: 4px;
-  background-color: currentColor;
-  opacity: 0.75;
-  -webkit-mask-size: contain;
-  mask-size: contain;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 17px;
+  line-height: 1;
+  font-style: normal;
 }
 
 .sidebar-footer {
