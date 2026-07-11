@@ -1,0 +1,420 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Seervi International School | SIS ERP Portal</title>
+<meta name="description" content="Official ERP Portal of Seervi International School, Jaitaran, Beawar, Rajasthan. Access results, documents, previous year question papers, appointments and student/parent/staff dashboards.">
+<meta name="keywords" content="Seervi International School, SIS ERP, Jaitaran, Beawar, Rajasthan, School Portal, Student Login, Parent Portal, Staff Portal">
+<meta name="author" content="Seervi International School">
+
+<!-- Open Graph -->
+<meta property="og:title" content="Seervi International School | SIS ERP Portal">
+<meta property="og:description" content="Official ERP Portal of Seervi International School, Jaitaran, Beawar, Rajasthan.">
+<meta property="og:type" content="website">
+<meta property="og:image" content="assets/images/og-banner-placeholder.jpg">
+<meta property="og:locale" content="en_IN">
+
+<!-- Future PWA Ready -->
+<meta name="theme-color" content="#0B3D91">
+<link rel="manifest" href="manifest.json">
+
+<!-- Fonts -->
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+
+<!-- Stylesheet -->
+<link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+<!-- =========================================================
+     SKIP LINK (ACCESSIBILITY)
+========================================================= -->
+<a href="#main-content" class="skip-link">Skip to main content</a>
+
+<!-- =========================================================
+     SIDEBAR OVERLAY
+========================================================= -->
+<div class="sidebar-overlay" id="sidebarOverlay"></div>
+
+<!-- =========================================================
+     SIDEBAR NAVIGATION
+========================================================= -->
+<aside class="sidebar" id="sidebar" aria-hidden="true">
+  <div class="sidebar-header">
+    <div class="sidebar-logo">
+      <div class="logo-placeholder small">SIS</div>
+      <span class="sidebar-school-name">Seervi International School</span>
+    </div>
+    <button class="sidebar-close" id="sidebarClose" aria-label="Close menu">
+      <span></span><span></span>
+    </button>
+  </div>
+
+  <nav class="sidebar-nav" aria-label="Main Navigation">
+    <ul>
+      <li><a href="index.html" class="sidebar-link active" data-nav="home"><i class="icon icon-home"></i>Home</a></li>
+      <li><a href="results.html" class="sidebar-link" data-nav="results"><i class="icon icon-results"></i>Results</a></li>
+      <li><a href="documents.html" class="sidebar-link" data-nav="documents"><i class="icon icon-documents"></i>Documents</a></li>
+      <li><a href="pyq.html" class="sidebar-link" data-nav="pyq"><i class="icon icon-pyq"></i>PYQs</a></li>
+      <li><a href="appointment.html" class="sidebar-link" data-nav="appointment"><i class="icon icon-appointment"></i>Appointment</a></li>
+    </ul>
+
+    <div class="sidebar-divider"></div>
+    <p class="sidebar-section-label">Quick Services</p>
+
+    <ul>
+      <li><a href="student-login.html" class="sidebar-link" data-nav="student"><i class="icon icon-student"></i>Student Portal</a></li>
+      <li><a href="parent-portal.html" class="sidebar-link" data-nav="parent"><i class="icon icon-parent"></i>Parent Portal</a></li>
+      <li><a href="staff-login.html" class="sidebar-link" data-nav="staff"><i class="icon icon-staff"></i>Staff Portal</a></li>
+    </ul>
+  </nav>
+
+  <div class="sidebar-footer">
+    <p>&copy; 2026 Seervi International School</p>
+    <p>Jaitaran, Beawar, Rajasthan</p>
+  </div>
+</aside>
+
+<!-- =========================================================
+     HEADER
+========================================================= -->
+<header class="site-header" id="siteHeader">
+  <div class="header-container">
+    <div class="header-brand">
+      <div class="logo-placeholder">SIS</div>
+      <div class="header-school-name">
+        <span class="school-name-main">Seervi International School</span>
+        <span class="school-name-sub">Jaitaran, Beawar, Rajasthan</span>
+      </div>
+    </div>
+
+    <button class="hamburger-btn" id="hamburgerBtn" aria-label="Open menu" aria-expanded="false" aria-controls="sidebar">
+      <span class="hamburger-line"></span>
+      <span class="hamburger-line"></span>
+      <span class="hamburger-line"></span>
+    </button>
+  </div>
+</header>
+
+<!-- =========================================================
+     MAIN CONTENT
+========================================================= -->
+<main id="main-content">
+
+  <!-- ============ HERO SECTION ============ -->
+  <section class="hero" id="hero">
+    <div class="hero-banner-placeholder" aria-hidden="true">
+      <span>Hero Banner Placeholder — 1920 x 900</span>
+    </div>
+    <div class="hero-overlay"></div>
+
+    <div class="hero-content fade-in-up">
+      <p class="hero-eyebrow">Excellence in Education Since Establishment</p>
+      <h1 class="hero-title">Shaping Character. Building Futures.</h1>
+      <p class="hero-subtitle">
+        Welcome to the official ERP Portal of Seervi International School — a single,
+        secure gateway for results, documents, records and communication between
+        the school, students and parents.
+      </p>
+      <div class="hero-cta">
+        <a href="student-login.html" class="btn btn-primary ripple">Student Login</a>
+        <a href="appointment.html" class="btn btn-outline ripple">Book Appointment</a>
+      </div>
+    </div>
+
+    <a href="#about" class="scroll-indicator" aria-label="Scroll to About section">
+      <span class="scroll-indicator-line"></span>
+    </a>
+  </section>
+
+  <!-- ============ ABOUT SCHOOL ============ -->
+  <section class="about section" id="about">
+    <div class="container">
+      <div class="section-heading reveal">
+        <p class="eyebrow">About Us</p>
+        <h2>About Seervi International School</h2>
+        <div class="heading-divider"></div>
+      </div>
+
+      <div class="about-grid">
+        <div class="about-image-placeholder reveal">
+          <span>School Building Photo Placeholder</span>
+        </div>
+        <div class="about-text reveal">
+          <p>
+            Seervi International School, located in Jaitaran, Beawar, Rajasthan, is committed
+            to providing a disciplined, value-driven and academically rigorous environment
+            for every student. Our institution blends modern teaching methodology with
+            strong moral grounding to prepare students for both examinations and life.
+          </p>
+          <p>
+            With qualified faculty, structured curriculum delivery, and a focus on
+            all-round development, the school has become a trusted name for quality
+            education in the region.
+          </p>
+          <ul class="about-points">
+            <li><span class="point-icon">✓</span>Experienced and dedicated teaching staff</li>
+            <li><span class="point-icon">✓</span>Modern classrooms and learning infrastructure</li>
+            <li><span class="point-icon">✓</span>Focus on discipline, values and holistic growth</li>
+            <li><span class="point-icon">✓</span>Transparent digital ERP for students and parents</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ ACHIEVEMENTS ============ -->
+  <section class="achievements section section-alt" id="achievements">
+    <div class="container">
+      <div class="section-heading reveal">
+        <p class="eyebrow">Recognition</p>
+        <h2>Our Achievements</h2>
+        <div class="heading-divider"></div>
+      </div>
+
+      <div class="achievements-grid">
+        <div class="achievement-item reveal">
+          <div class="achievement-number">1000+</div>
+          <div class="achievement-label">Students Enrolled</div>
+        </div>
+        <div class="achievement-item reveal">
+          <div class="achievement-number">50+</div>
+          <div class="achievement-label">Qualified Faculty Members</div>
+        </div>
+        <div class="achievement-item reveal">
+          <div class="achievement-number">95%</div>
+          <div class="achievement-label">Board Result Success Rate</div>
+        </div>
+        <div class="achievement-item reveal">
+          <div class="achievement-number">15+</div>
+          <div class="achievement-label">Years of Academic Service</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ POSTER GALLERY ============ -->
+  <section class="gallery section" id="gallery">
+    <div class="container">
+      <div class="section-heading reveal">
+        <p class="eyebrow">Moments</p>
+        <h2>Poster Gallery</h2>
+        <div class="heading-divider"></div>
+      </div>
+
+      <div class="gallery-grid">
+        <div class="gallery-placeholder reveal"><span>Poster 1</span></div>
+        <div class="gallery-placeholder reveal"><span>Poster 2</span></div>
+        <div class="gallery-placeholder reveal"><span>Poster 3</span></div>
+        <div class="gallery-placeholder reveal"><span>Poster 4</span></div>
+        <div class="gallery-placeholder reveal"><span>Poster 5</span></div>
+        <div class="gallery-placeholder reveal"><span>Poster 6</span></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ SCHOOL HIGHLIGHTS ============ -->
+  <section class="highlights section section-alt" id="highlights">
+    <div class="container">
+      <div class="section-heading reveal">
+        <p class="eyebrow">Why Choose Us</p>
+        <h2>School Highlights</h2>
+        <div class="heading-divider"></div>
+      </div>
+
+      <div class="highlights-grid">
+        <div class="highlight-item reveal">
+          <div class="highlight-icon">📘</div>
+          <h3>Academic Excellence</h3>
+          <p>Structured curriculum and continuous evaluation to ensure strong learning outcomes.</p>
+        </div>
+        <div class="highlight-item reveal">
+          <div class="highlight-icon">🏫</div>
+          <h3>Modern Infrastructure</h3>
+          <p>Well-equipped classrooms, laboratories and learning spaces built for growth.</p>
+        </div>
+        <div class="highlight-item reveal">
+          <div class="highlight-icon">🤝</div>
+          <h3>Discipline &amp; Values</h3>
+          <p>An environment rooted in respect, responsibility and strong moral character.</p>
+        </div>
+        <div class="highlight-item reveal">
+          <div class="highlight-icon">💻</div>
+          <h3>Digital ERP Access</h3>
+          <p>Transparent, real-time access to results, documents and school communication.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ PRINCIPAL MESSAGE ============ -->
+  <section class="principal section" id="principal">
+    <div class="container">
+      <div class="principal-card reveal">
+        <div class="principal-photo-placeholder">
+          <span>Principal Photo</span>
+        </div>
+        <div class="principal-message">
+          <p class="eyebrow">Principal's Message</p>
+          <blockquote>
+            "Our mission is to nurture confident, disciplined and capable individuals
+            who are ready to contribute meaningfully to society. Education here goes
+            beyond textbooks — it builds character."
+          </blockquote>
+          <p class="principal-name">— Principal, Seervi International School</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ FACILITIES ============ -->
+  <section class="facilities section section-alt" id="facilities">
+    <div class="container">
+      <div class="section-heading reveal">
+        <p class="eyebrow">Infrastructure</p>
+        <h2>Facilities</h2>
+        <div class="heading-divider"></div>
+      </div>
+
+      <div class="facilities-grid">
+        <div class="facility-item reveal">
+          <div class="facility-image-placeholder"><span>Library</span></div>
+          <h3>Library</h3>
+        </div>
+        <div class="facility-item reveal">
+          <div class="facility-image-placeholder"><span>Science Lab</span></div>
+          <h3>Science Laboratory</h3>
+        </div>
+        <div class="facility-item reveal">
+          <div class="facility-image-placeholder"><span>Computer Lab</span></div>
+          <h3>Computer Lab</h3>
+        </div>
+        <div class="facility-item reveal">
+          <div class="facility-image-placeholder"><span>Playground</span></div>
+          <h3>Sports Ground</h3>
+        </div>
+        <div class="facility-item reveal">
+          <div class="facility-image-placeholder"><span>Transport</span></div>
+          <h3>Transport Facility</h3>
+        </div>
+        <div class="facility-item reveal">
+          <div class="facility-image-placeholder"><span>Classroom</span></div>
+          <h3>Smart Classrooms</h3>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ ADMISSION CTA ============ -->
+  <section class="admission-cta section" id="admission">
+    <div class="container">
+      <div class="admission-card reveal">
+        <h2>Admissions Open for Academic Session</h2>
+        <p>Secure your child's future with quality education at Seervi International School.</p>
+        <a href="appointment.html" class="btn btn-accent ripple">Enquire Now</a>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ CONTACT ============ -->
+  <section class="contact section section-alt" id="contact">
+    <div class="container">
+      <div class="section-heading reveal">
+        <p class="eyebrow">Get in Touch</p>
+        <h2>Contact Us</h2>
+        <div class="heading-divider"></div>
+      </div>
+
+      <div class="contact-grid">
+        <div class="contact-info reveal">
+          <div class="contact-info-item">
+            <span class="contact-icon">📍</span>
+            <div>
+              <h4>Address</h4>
+              <p>Seervi International School, Jaitaran, Beawar, Rajasthan</p>
+            </div>
+          </div>
+          <div class="contact-info-item">
+            <span class="contact-icon">📞</span>
+            <div>
+              <h4>Phone</h4>
+              <p>+91 00000 00000</p>
+            </div>
+          </div>
+          <div class="contact-info-item">
+            <span class="contact-icon">✉️</span>
+            <div>
+              <h4>Email</h4>
+              <p>info@seervischool.edu.in</p>
+            </div>
+          </div>
+        </div>
+
+        <div class="map-placeholder reveal">
+          <span>Google Map Placeholder</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+</main>
+
+<!-- =========================================================
+     FOOTER
+========================================================= -->
+<footer class="site-footer">
+  <div class="container footer-grid">
+    <div class="footer-col">
+      <div class="footer-brand">
+        <div class="logo-placeholder small">SIS</div>
+        <span>Seervi International School</span>
+      </div>
+      <p>An official ERP Portal committed to transparency and academic excellence.</p>
+    </div>
+
+    <div class="footer-col">
+      <h4>Quick Links</h4>
+      <ul>
+        <li><a href="results.html">Results</a></li>
+        <li><a href="documents.html">Documents</a></li>
+        <li><a href="pyq.html">PYQs</a></li>
+        <li><a href="appointment.html">Appointment</a></li>
+      </ul>
+    </div>
+
+    <div class="footer-col">
+      <h4>Portals</h4>
+      <ul>
+        <li><a href="student-login.html">Student Login</a></li>
+        <li><a href="parent-portal.html">Parent Portal</a></li>
+        <li><a href="staff-login.html">Staff Portal</a></li>
+      </ul>
+    </div>
+
+    <div class="footer-col">
+      <h4>Contact</h4>
+      <ul>
+        <li>Jaitaran, Beawar, Rajasthan</li>
+        <li>+91 00000 00000</li>
+        <li>info@seervischool.edu.in</li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="footer-bottom">
+    <p>&copy; 2026 Seervi International School. All Rights Reserved.</p>
+  </div>
+</footer>
+
+<!-- =========================================================
+     BACK TO TOP
+========================================================= -->
+<button class="back-to-top" id="backToTop" aria-label="Back to top">↑</button>
+
+<!-- Script -->
+<script src="js/script.js"></script>
+</body>
+</html>
