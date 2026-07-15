@@ -1814,3 +1814,36 @@ select:focus-visible {
   cursor: not-allowed;
   transform: none;
 }
+
+
+.info-note-box {
+  display: flex;
+  gap: 12px;
+  padding: 16px 18px;
+  border-radius: var(--radius-sm);
+  font-size: 13px;
+  line-height: 1.6;
+  margin-bottom: 24px;
+}
+
+.info-note-box.warning {
+  background-color: rgba(212, 175, 55, 0.12);
+  border: 1px solid rgba(212, 175, 55, 0.35);
+  color: #6b5510;
+}
+
+.info-note-box.info {
+  background-color: rgba(11, 61, 145, 0.08);
+  border: 1px solid rgba(11, 61, 145, 0.2);
+  color: var(--color-primary-dark);
+}
+
+.info-note-icon {
+  font-size: 18px;
+  flex-shrink: 0;
+}
+
+
+[hidden] {
+  display: none !important;
+}
