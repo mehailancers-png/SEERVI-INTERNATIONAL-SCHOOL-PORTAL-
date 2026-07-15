@@ -1,0 +1,234 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Documents | SIS ERP Portal — Seervi International School</title>
+<meta name="description" content="Upload and track the verification status of your documents at Seervi International School, Jaitaran, Beawar, Rajasthan.">
+<meta name="author" content="Seervi International School">
+
+<meta property="og:title" content="Documents | SIS ERP Portal">
+<meta property="og:description" content="Upload and track document verification status at Seervi International School.">
+<meta property="og:type" content="website">
+
+<meta name="theme-color" content="#0B3D91">
+<link rel="manifest" href="manifest.json">
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+
+<link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+<a href="#main-content" class="skip-link">Skip to main content</a>
+
+<div class="sidebar-overlay" id="sidebarOverlay"></div>
+
+<aside class="sidebar" id="sidebar" aria-hidden="true">
+  <div class="sidebar-header">
+    <div class="sidebar-logo">
+      <div class="logo-placeholder small">SIS</div>
+      <span class="sidebar-school-name">Seervi International School</span>
+    </div>
+    <button class="sidebar-close" id="sidebarClose" aria-label="Close menu">
+      <span></span><span></span>
+    </button>
+  </div>
+
+  <nav class="sidebar-nav" aria-label="Main Navigation">
+    <ul>
+      <li><a href="index.html" class="sidebar-link" data-nav="home"><span class="icon" aria-hidden="true">🏠</span>Home</a></li>
+      <li><a href="results.html" class="sidebar-link" data-nav="results"><span class="icon" aria-hidden="true">📊</span>Results</a></li>
+      <li><a href="documents.html" class="sidebar-link active" data-nav="documents"><span class="icon" aria-hidden="true">📄</span>Documents</a></li>
+      <li><a href="pyq.html" class="sidebar-link" data-nav="pyq"><span class="icon" aria-hidden="true">📝</span>PYQs</a></li>
+      <li><a href="appointment.html" class="sidebar-link" data-nav="appointment"><span class="icon" aria-hidden="true">📅</span>Appointment</a></li>
+    </ul>
+
+    <div class="sidebar-divider"></div>
+    <p class="sidebar-section-label">Quick Services</p>
+
+    <ul>
+      <li><a href="student-login.html" class="sidebar-link" data-nav="student"><span class="icon" aria-hidden="true">🎓</span>Student Portal</a></li>
+      <li><a href="parent-portal.html" class="sidebar-link" data-nav="parent"><span class="icon" aria-hidden="true">👪</span>Parent Portal</a></li>
+      <li><a href="staff-login.html" class="sidebar-link" data-nav="staff"><span class="icon" aria-hidden="true">🧑‍🏫</span>Staff Portal</a></li>
+    </ul>
+  </nav>
+
+  <div class="sidebar-footer">
+    <p>&copy; 2026 Seervi International School</p>
+    <p>Jaitaran, Beawar, Rajasthan</p>
+  </div>
+</aside>
+
+<header class="site-header" id="siteHeader">
+  <div class="header-container">
+    <div class="header-brand">
+      <div class="logo-placeholder">SIS</div>
+      <div class="header-school-name">
+        <span class="school-name-main">Seervi International School</span>
+        <span class="school-name-sub">Jaitaran, Beawar, Rajasthan</span>
+      </div>
+    </div>
+
+    <button class="hamburger-btn" id="hamburgerBtn" aria-label="Open menu" aria-expanded="false" aria-controls="sidebar">
+      <span class="hamburger-line"></span>
+      <span class="hamburger-line"></span>
+      <span class="hamburger-line"></span>
+    </button>
+  </div>
+</header>
+
+<main id="main-content">
+
+  <section class="page-banner">
+    <div class="page-banner-overlay"></div>
+    <div class="container page-banner-content fade-in-up">
+      <p class="hero-eyebrow">Document Center</p>
+      <h1>Upload &amp; Track Documents</h1>
+      <p class="page-banner-sub">Submit your documents securely and track their verification status in real time.</p>
+    </div>
+  </section>
+
+  <!-- ============ UPLOAD SECTION ============ -->
+  <section class="section documents-upload-section" id="documents-upload">
+    <div class="container">
+      <div class="upload-card reveal">
+        <h2 class="upload-card-title">Upload a New Document</h2>
+        <p class="upload-card-sub">Any file type is accepted — PDF, images, Word documents, and more.</p>
+
+        <form id="documentUploadForm" data-validate novalidate>
+          <div class="upload-dropzone" id="uploadDropzone" tabindex="0" role="button" aria-label="Upload document, click or drag a file here">
+            <div class="upload-dropzone-icon">📤</div>
+            <p class="upload-dropzone-text"><strong>Click to upload</strong> or drag and drop</p>
+            <p class="upload-dropzone-hint">Any file type — Max 10 MB (frontend demo)</p>
+            <input type="file" id="documentFileInput" name="documentFile" hidden required>
+          </div>
+
+          <div class="upload-selected-file" id="uploadSelectedFile" hidden>
+            <span class="upload-file-icon">📎</span>
+            <span class="upload-file-name" id="uploadFileName">—</span>
+            <button type="button" class="upload-file-remove" id="uploadFileRemove" aria-label="Remove selected file">✕</button>
+          </div>
+
+          <div class="form-group">
+            <label for="documentType">Document Type</label>
+            <select id="documentType" name="documentType" required>
+              <option value="" disabled selected>Select Document Type</option>
+              <option>Birth Certificate</option>
+              <option>Transfer Certificate</option>
+              <option>Aadhaar Card</option>
+              <option>Previous Marksheet</option>
+              <option>Passport Size Photo</option>
+              <option>Other</option>
+            </select>
+            <span class="field-error-message">Please select a document type.</span>
+          </div>
+
+          <button type="submit" class="btn btn-primary ripple">Upload Document</button>
+        </form>
+      </div>
+
+      <!-- ============ DOCUMENT STATUS LIST ============ -->
+      <div class="documents-list-wrapper reveal">
+        <h2 class="documents-list-title">Your Documents</h2>
+        <div class="documents-list" id="documentsList">
+          <!-- Uploaded documents appear here, always starting as "Pending"
+               until a teacher reviews them on the Staff Dashboard. -->
+          <p class="documents-empty-state" id="documentsEmptyState">
+            You haven't uploaded any documents yet. Use the form above to submit one —
+            it will appear here as <strong>Pending</strong> until a teacher reviews it.
+          </p>
+        </div>
+      </div>
+
+      <!-- ============ VERIFICATION TIMELINE ============ -->
+      <div class="documents-timeline-wrapper reveal">
+        <h2 class="documents-list-title">Verification Timeline</h2>
+        <ul class="timeline">
+          <li class="timeline-item complete">
+            <span class="timeline-dot"></span>
+            <div class="timeline-content">
+              <h4>Document Submitted</h4>
+              <p>Your document is received by the school office.</p>
+            </div>
+          </li>
+          <li class="timeline-item complete">
+            <span class="timeline-dot"></span>
+            <div class="timeline-content">
+              <h4>Under Review</h4>
+              <p>Administration staff cross-check the submitted document.</p>
+            </div>
+          </li>
+          <li class="timeline-item active">
+            <span class="timeline-dot"></span>
+            <div class="timeline-content">
+              <h4>Verification In Progress</h4>
+              <p>A teacher reviews the document against official records.</p>
+            </div>
+          </li>
+          <li class="timeline-item">
+            <span class="timeline-dot"></span>
+            <div class="timeline-content">
+              <h4>Verified / Rejected</h4>
+              <p>The teacher's decision is updated here and on your dashboard.</p>
+            </div>
+          </li>
+        </ul>
+      </div>
+    </div>
+  </section>
+
+</main>
+
+<footer class="site-footer">
+  <div class="container footer-grid">
+    <div class="footer-col">
+      <div class="footer-brand">
+        <div class="logo-placeholder small">SIS</div>
+        <span>Seervi International School</span>
+      </div>
+      <p>An official ERP Portal committed to transparency and academic excellence.</p>
+    </div>
+
+    <div class="footer-col">
+      <h4>Quick Links</h4>
+      <ul>
+        <li><a href="results.html">Results</a></li>
+        <li><a href="documents.html">Documents</a></li>
+        <li><a href="pyq.html">PYQs</a></li>
+        <li><a href="appointment.html">Appointment</a></li>
+      </ul>
+    </div>
+
+    <div class="footer-col">
+      <h4>Portals</h4>
+      <ul>
+        <li><a href="student-login.html">Student Login</a></li>
+        <li><a href="parent-portal.html">Parent Portal</a></li>
+        <li><a href="staff-login.html">Staff Portal</a></li>
+      </ul>
+    </div>
+
+    <div class="footer-col">
+      <h4>Contact</h4>
+      <ul>
+        <li>Jaitaran, Beawar, Rajasthan</li>
+        <li>+91 00000 00000</li>
+        <li>info@seervischool.edu.in</li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="footer-bottom">
+    <p>&copy; 2026 Seervi International School. All Rights Reserved.</p>
+  </div>
+</footer>
+
+<button class="back-to-top" id="backToTop" aria-label="Back to top">↑</button>
+
+<script src="js/script.js"></script>
+<script src="js/documents.js"></script>
+</body>
+</html>
