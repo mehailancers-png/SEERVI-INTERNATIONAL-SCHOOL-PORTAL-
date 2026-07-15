@@ -1410,6 +1410,16 @@ select:focus-visible {
   gap: 14px;
 }
 
+.documents-empty-state {
+  background-color: var(--color-bg);
+  border: 1px dashed var(--color-border);
+  border-radius: var(--radius-md);
+  padding: 24px;
+  text-align: center;
+  font-size: 14px;
+  color: var(--color-text-muted);
+}
+
 .document-item {
   display: flex;
   align-items: center;
