@@ -17,7 +17,7 @@
      extra front-door lock for convenience.
    ========================================================= */
 
-import { logIn, getUserProfile } from "./auth.js";
+import { logIn, getUserProfile, signInWithGoogle, logOut } from "./auth.js";
 import { auth } from "./firebase-config.js";
 import { onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.13.0/firebase-auth.js";
 
@@ -112,6 +112,51 @@ document.addEventListener('DOMContentLoaded', function () {
     } catch (err) {
       showAlert(friendlyFirebaseError(err), 'error');
       setButtonLoading(btn, false, 'Verifying...', 'Staff Log In');
+    }
+  });
+
+  /* -----------------------------------------------------
+     GOOGLE SIGN-IN (staff)
+     Still requires the Access Code AND an existing account
+     already promoted to role "staff" in Firestore. Google
+     sign-in can never create a staff profile on its own —
+     if no staff profile exists yet, the user is signed back
+     out and told to follow the normal promotion process.
+  ----------------------------------------------------- */
+  var staffGoogleBtn = document.getElementById('staffGoogleSignInBtn');
+
+  staffGoogleBtn.addEventListener('click', async function () {
+    hideAlert();
+
+    var accessCode = document.getElementById('staffAccessCode').value.trim();
+    if (accessCode !== STAFF_ACCESS_CODE) {
+      showAlert('Please enter your Staff Access Code above before continuing with Google.', 'error');
+      return;
+    }
+
+    staffGoogleBtn.disabled = true;
+
+    try {
+      var user = await signInWithGoogle();
+      var profile = await getUserProfile(user.uid);
+
+      if (!profile || profile.role !== 'staff') {
+        await logOut();
+        showAlert(
+          'This Google account is not registered as staff yet. Sign up as a student/parent first, ' +
+          'then contact the school office to have your account promoted to staff.',
+          'error'
+        );
+        staffGoogleBtn.disabled = false;
+        return;
+      }
+
+      showAlert('Welcome back! Redirecting to your dashboard...', 'success');
+      window.location.href = 'staff-dashboard.html';
+
+    } catch (err) {
+      showAlert(friendlyFirebaseError(err), 'error');
+      staffGoogleBtn.disabled = false;
     }
   });
 
