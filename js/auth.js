@@ -55,7 +55,7 @@ import {
 /* -----------------------------------------------------
    SIGN UP — Student or Parent only (never staff)
 ----------------------------------------------------- */
-export async function signUpStudentOrParent({ name, email, password, role, studentId, className }) {
+export async function signUpStudentOrParent({ name, email, password, role, studentId, className, childStudentId }) {
   if (role !== "student" && role !== "parent") {
     throw new Error("Public sign up only allows student or parent accounts.");
   }
@@ -67,8 +67,9 @@ export async function signUpStudentOrParent({ name, email, password, role, stude
     name: name,
     email: email,
     role: role,
-    studentId: studentId || null,
-    class: className || null,
+    studentId: role === "student" ? (studentId || null) : null,
+    class: role === "student" ? (className || null) : null,
+    childStudentId: role === "parent" ? (childStudentId || null) : null,
     createdAt: serverTimestamp()
   });
 
