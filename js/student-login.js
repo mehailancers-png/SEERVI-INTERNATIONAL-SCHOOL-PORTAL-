@@ -106,6 +106,7 @@ document.addEventListener('DOMContentLoaded', function () {
     if (code === 'auth/invalid-email') return 'Please enter a valid email address.';
     if (code === 'auth/weak-password') return 'Password is too weak — use at least 6 characters.';
     if (code === 'auth/user-not-found' || code === 'auth/wrong-password' || code === 'auth/invalid-credential') return 'Incorrect email or password.';
+    if (code === 'auth/operation-not-allowed') return 'Email/Password sign-in is not enabled yet. Please contact the school office.';
     if (code === 'auth/too-many-requests') return 'Too many attempts. Please wait a moment and try again.';
     if (code === 'auth/network-request-failed') return 'Network error. Check your internet connection.';
     return (err && err.message) ? err.message : 'Something went wrong. Please try again.';
