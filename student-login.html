@@ -1,0 +1,247 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Student &amp; Parent Login | SIS ERP Portal — Seervi International School</title>
+<meta name="description" content="Student and Parent login to the Seervi International School ERP Portal.">
+<meta name="author" content="Seervi International School">
+<meta name="theme-color" content="#0B3D91">
+<link rel="manifest" href="manifest.json">
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+
+<link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+<a href="#main-content" class="skip-link">Skip to main content</a>
+
+<div class="sidebar-overlay" id="sidebarOverlay"></div>
+
+<aside class="sidebar" id="sidebar" aria-hidden="true">
+  <div class="sidebar-header">
+    <div class="sidebar-logo">
+      <div class="logo-placeholder small">SIS</div>
+      <span class="sidebar-school-name">Seervi International School</span>
+    </div>
+    <button class="sidebar-close" id="sidebarClose" aria-label="Close menu">
+      <span></span><span></span>
+    </button>
+  </div>
+
+  <nav class="sidebar-nav" aria-label="Main Navigation">
+    <ul>
+      <li><a href="index.html" class="sidebar-link" data-nav="home"><span class="icon" aria-hidden="true">🏠</span>Home</a></li>
+      <li><a href="results.html" class="sidebar-link" data-nav="results"><span class="icon" aria-hidden="true">📊</span>Results</a></li>
+      <li><a href="documents.html" class="sidebar-link" data-nav="documents"><span class="icon" aria-hidden="true">📄</span>Documents</a></li>
+      <li><a href="pyq.html" class="sidebar-link" data-nav="pyq"><span class="icon" aria-hidden="true">📝</span>PYQs</a></li>
+      <li><a href="appointment.html" class="sidebar-link" data-nav="appointment"><span class="icon" aria-hidden="true">📅</span>Appointment</a></li>
+    </ul>
+
+    <div class="sidebar-divider"></div>
+    <p class="sidebar-section-label">Quick Services</p>
+
+    <ul>
+      <li><a href="student-login.html" class="sidebar-link active" data-nav="student"><span class="icon" aria-hidden="true">🎓</span>Student Portal</a></li>
+      <li><a href="parent-portal.html" class="sidebar-link" data-nav="parent"><span class="icon" aria-hidden="true">👪</span>Parent Portal</a></li>
+      <li><a href="staff-login.html" class="sidebar-link" data-nav="staff"><span class="icon" aria-hidden="true">🧑‍🏫</span>Staff Portal</a></li>
+    </ul>
+  </nav>
+
+  <div class="sidebar-footer">
+    <p>&copy; 2026 Seervi International School</p>
+    <p>Jaitaran, Beawar, Rajasthan</p>
+  </div>
+</aside>
+
+<header class="site-header" id="siteHeader">
+  <div class="header-container">
+    <div class="header-brand">
+      <div class="logo-placeholder">SIS</div>
+      <div class="header-school-name">
+        <span class="school-name-main">Seervi International School</span>
+        <span class="school-name-sub">Jaitaran, Beawar, Rajasthan</span>
+      </div>
+    </div>
+
+    <button class="hamburger-btn" id="hamburgerBtn" aria-label="Open menu" aria-expanded="false" aria-controls="sidebar">
+      <span class="hamburger-line"></span>
+      <span class="hamburger-line"></span>
+      <span class="hamburger-line"></span>
+    </button>
+  </div>
+</header>
+
+<main id="main-content">
+
+  <section class="page-banner">
+    <div class="page-banner-overlay"></div>
+    <div class="container page-banner-content fade-in-up">
+      <p class="hero-eyebrow">Quick Service</p>
+      <h1>Student &amp; Parent Login</h1>
+      <p class="page-banner-sub">Access your results, documents, PYQs, and appointments.</p>
+    </div>
+  </section>
+
+  <section class="section auth-section" id="auth-section">
+    <div class="container">
+      <div class="auth-card reveal">
+
+        <div class="search-tabs auth-mode-tabs" role="tablist" aria-label="Login or Sign Up">
+          <button class="search-tab active" type="button" data-mode="login" role="tab" aria-selected="true">Log In</button>
+          <button class="search-tab" type="button" data-mode="signup" role="tab" aria-selected="false">Sign Up</button>
+        </div>
+
+        <!-- ============ ALERT / STATUS MESSAGE ============ -->
+        <div class="auth-alert" id="authAlert" hidden></div>
+
+        <!-- ============ LOGIN FORM ============ -->
+        <form id="loginForm" class="auth-form" data-panel="login">
+          <div class="form-group">
+            <label for="loginEmail">Email</label>
+            <input type="email" id="loginEmail" name="loginEmail" placeholder="you@example.com" required>
+            <span class="field-error-message">Please enter a valid email.</span>
+          </div>
+
+          <div class="form-group">
+            <label for="loginPassword">Password</label>
+            <input type="password" id="loginPassword" name="loginPassword" placeholder="Enter your password" required minlength="6">
+            <span class="field-error-message">Password must be at least 6 characters.</span>
+          </div>
+
+          <button type="submit" class="btn btn-primary ripple auth-submit-btn" id="loginSubmitBtn">
+            <span class="btn-label">Log In</span>
+          </button>
+        </form>
+
+        <!-- ============ SIGN UP FORM ============ -->
+        <form id="signupForm" class="auth-form" data-panel="signup" hidden>
+          <div class="auth-role-toggle">
+            <label class="auth-role-option">
+              <input type="radio" name="signupRole" value="student" checked>
+              <span>I am a Student</span>
+            </label>
+            <label class="auth-role-option">
+              <input type="radio" name="signupRole" value="parent">
+              <span>I am a Parent</span>
+            </label>
+          </div>
+
+          <div class="form-group">
+            <label for="signupName">Full Name</label>
+            <input type="text" id="signupName" name="signupName" placeholder="Enter full name" required>
+            <span class="field-error-message">Please enter your name.</span>
+          </div>
+
+          <div class="form-group">
+            <label for="signupEmail">Email</label>
+            <input type="email" id="signupEmail" name="signupEmail" placeholder="you@example.com" required>
+            <span class="field-error-message">Please enter a valid email.</span>
+          </div>
+
+          <div class="form-group" data-role-field="student">
+            <label for="signupStudentId">SIS Student ID</label>
+            <input type="text" id="signupStudentId" name="signupStudentId" placeholder="e.g. SIS-2026-0417">
+            <span class="field-error-message">Please enter your SIS Student ID.</span>
+          </div>
+
+          <div class="form-group" data-role-field="student">
+            <label for="signupClass">Class</label>
+            <select id="signupClass" name="signupClass">
+              <option value="" disabled selected>Select Class</option>
+              <option>Class 6</option>
+              <option>Class 7</option>
+              <option>Class 8</option>
+              <option>Class 9</option>
+              <option>Class 10</option>
+              <option>Class 11</option>
+              <option>Class 12</option>
+            </select>
+            <span class="field-error-message">Please select your class.</span>
+          </div>
+
+          <div class="form-group" data-role-field="parent" hidden>
+            <label for="signupChildId">Child's SIS Student ID</label>
+            <input type="text" id="signupChildId" name="signupChildId" placeholder="e.g. SIS-2026-0417">
+            <span class="field-error-message">Please enter your child's SIS Student ID.</span>
+          </div>
+
+          <div class="form-group">
+            <label for="signupPassword">Password</label>
+            <input type="password" id="signupPassword" name="signupPassword" placeholder="Create a password" required minlength="6">
+            <span class="field-error-message">Password must be at least 6 characters.</span>
+          </div>
+
+          <div class="form-group">
+            <label for="signupConfirmPassword">Confirm Password</label>
+            <input type="password" id="signupConfirmPassword" name="signupConfirmPassword" placeholder="Re-enter password" required minlength="6">
+            <span class="field-error-message">Passwords do not match.</span>
+          </div>
+
+          <button type="submit" class="btn btn-primary ripple auth-submit-btn" id="signupSubmitBtn">
+            <span class="btn-label">Create Account</span>
+          </button>
+        </form>
+
+        <p class="auth-staff-note">
+          Are you a teacher or admin? <a href="staff-login.html">Staff Login →</a>
+        </p>
+      </div>
+    </div>
+  </section>
+
+</main>
+
+<footer class="site-footer">
+  <div class="container footer-grid">
+    <div class="footer-col">
+      <div class="footer-brand">
+        <div class="logo-placeholder small">SIS</div>
+        <span>Seervi International School</span>
+      </div>
+      <p>An official ERP Portal committed to transparency and academic excellence.</p>
+    </div>
+
+    <div class="footer-col">
+      <h4>Quick Links</h4>
+      <ul>
+        <li><a href="results.html">Results</a></li>
+        <li><a href="documents.html">Documents</a></li>
+        <li><a href="pyq.html">PYQs</a></li>
+        <li><a href="appointment.html">Appointment</a></li>
+      </ul>
+    </div>
+
+    <div class="footer-col">
+      <h4>Portals</h4>
+      <ul>
+        <li><a href="student-login.html">Student Login</a></li>
+        <li><a href="parent-portal.html">Parent Portal</a></li>
+        <li><a href="staff-login.html">Staff Portal</a></li>
+      </ul>
+    </div>
+
+    <div class="footer-col">
+      <h4>Contact</h4>
+      <ul>
+        <li>Jaitaran, Beawar, Rajasthan</li>
+        <li>+91 00000 00000</li>
+        <li>info@seervischool.edu.in</li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="footer-bottom">
+    <p>&copy; 2026 Seervi International School. All Rights Reserved.</p>
+  </div>
+</footer>
+
+<button class="back-to-top" id="backToTop" aria-label="Back to top">↑</button>
+
+<script src="js/script.js"></script>
+<script type="module" src="js/student-login.js"></script>
+</body>
+</html>
