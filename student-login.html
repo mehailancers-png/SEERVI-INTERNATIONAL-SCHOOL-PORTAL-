@@ -186,6 +186,61 @@
           </button>
         </form>
 
+        <!-- ============ GOOGLE SIGN-IN ============ -->
+        <div class="auth-divider"><span>or</span></div>
+
+        <button type="button" class="btn-google ripple" id="googleSignInBtn">
+          <img src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg" alt="" class="btn-google-icon" width="18" height="18">
+          <span>Continue with Google</span>
+        </button>
+
+        <!-- ============ COMPLETE PROFILE (first-time Google sign-in only) ============ -->
+        <form id="completeProfileForm" class="auth-form" hidden>
+          <div class="info-note-box info">
+            <span class="info-note-icon">👋</span>
+            <span>Welcome! Since this is your first time signing in with Google, please tell us a bit more to finish setting up your account.</span>
+          </div>
+
+          <div class="auth-role-toggle">
+            <label class="auth-role-option">
+              <input type="radio" name="completeRole" value="student" checked>
+              <span>I am a Student</span>
+            </label>
+            <label class="auth-role-option">
+              <input type="radio" name="completeRole" value="parent">
+              <span>I am a Parent</span>
+            </label>
+          </div>
+
+          <div class="form-group" data-complete-field="student">
+            <label for="completeStudentId">SIS Student ID</label>
+            <input type="text" id="completeStudentId" name="completeStudentId" placeholder="e.g. SIS-2026-0417">
+          </div>
+
+          <div class="form-group" data-complete-field="student">
+            <label for="completeClass">Class</label>
+            <select id="completeClass" name="completeClass">
+              <option value="" disabled selected>Select Class</option>
+              <option>Class 6</option>
+              <option>Class 7</option>
+              <option>Class 8</option>
+              <option>Class 9</option>
+              <option>Class 10</option>
+              <option>Class 11</option>
+              <option>Class 12</option>
+            </select>
+          </div>
+
+          <div class="form-group" data-complete-field="parent" hidden>
+            <label for="completeChildId">Child's SIS Student ID</label>
+            <input type="text" id="completeChildId" name="completeChildId" placeholder="e.g. SIS-2026-0417">
+          </div>
+
+          <button type="submit" class="btn btn-primary ripple auth-submit-btn" id="completeProfileSubmitBtn">
+            <span class="btn-label">Finish Setup</span>
+          </button>
+        </form>
+
         <p class="auth-staff-note">
           Are you a teacher or admin? <a href="staff-login.html">Staff Login →</a>
         </p>
@@ -245,3 +300,4 @@
 <script type="module" src="js/student-login.js"></script>
 </body>
 </html>
+
