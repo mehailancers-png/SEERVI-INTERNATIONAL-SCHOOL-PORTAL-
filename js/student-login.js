@@ -4,7 +4,7 @@
    Handles the combined Student/Parent Login + Sign Up page.
    ========================================================= */
 
-import { signUpStudentOrParent, logIn, getUserProfile } from "./auth.js";
+import { signUpStudentOrParent, logIn, getUserProfile, signInWithGoogle, completeGoogleProfile } from "./auth.js";
 import { auth } from "./firebase-config.js";
 import { onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.13.0/firebase-auth.js";
 
@@ -220,4 +220,110 @@ document.addEventListener('DOMContentLoaded', function () {
     }
   });
 
+  /* -----------------------------------------------------
+     GOOGLE SIGN-IN
+  ----------------------------------------------------- */
+  var googleBtn = document.getElementById('googleSignInBtn');
+  var completeProfileForm = document.getElementById('completeProfileForm');
+  var pendingGoogleUser = null; // holds the user object while they fill the complete-profile form
+
+  googleBtn.addEventListener('click', async function () {
+    hideAlert();
+    googleBtn.disabled = true;
+
+    try {
+      var user = await signInWithGoogle();
+      var profile = await getUserProfile(user.uid);
+
+      if (profile) {
+        // Returning user — just route them like a normal login.
+        if (profile.role === 'staff') {
+          showAlert('This is a student/parent login. Staff should use the Staff Login page.', 'error');
+          googleBtn.disabled = false;
+          return;
+        }
+        showAlert('Login successful! Redirecting...', 'success');
+        window.location.href = profile.role === 'student' ? 'student-dashboard.html' : 'parent-portal.html';
+        return;
+      }
+
+      // First time signing in with Google — show the complete-profile form.
+      pendingGoogleUser = user;
+      loginForm.hidden = true;
+      signupForm.hidden = true;
+      googleBtn.hidden = true;
+      document.querySelector('.auth-divider').hidden = true;
+      completeProfileForm.hidden = false;
+
+    } catch (err) {
+      showAlert(friendlyFirebaseError(err), 'error');
+      googleBtn.disabled = false;
+    }
+  });
+
+  /* -----------------------------------------------------
+     COMPLETE PROFILE FORM (first-time Google sign-in)
+  ----------------------------------------------------- */
+  var completeRoleRadios = document.querySelectorAll('input[name="completeRole"]');
+  var completeStudentFields = document.querySelectorAll('[data-complete-field="student"]');
+  var completeParentFields = document.querySelectorAll('[data-complete-field="parent"]');
+
+  completeRoleRadios.forEach(function (radio) {
+    radio.addEventListener('change', function () {
+      if (!radio.checked) return;
+      if (radio.value === 'student') {
+        completeStudentFields.forEach(function (f) { f.hidden = false; });
+        completeParentFields.forEach(function (f) { f.hidden = true; });
+      } else {
+        completeStudentFields.forEach(function (f) { f.hidden = true; });
+        completeParentFields.forEach(function (f) { f.hidden = false; });
+      }
+    });
+  });
+
+  completeProfileForm.addEventListener('submit', async function (e) {
+    e.preventDefault();
+    hideAlert();
+
+    if (!pendingGoogleUser) return;
+
+    var role = document.querySelector('input[name="completeRole"]:checked').value;
+    var studentId = document.getElementById('completeStudentId').value.trim();
+    var className = document.getElementById('completeClass').value;
+    var childStudentId = document.getElementById('completeChildId').value.trim();
+    var btn = document.getElementById('completeProfileSubmitBtn');
+
+    if (role === 'student' && (!studentId || !className)) {
+      showAlert('Please enter your SIS Student ID and select your class.', 'error');
+      return;
+    }
+
+    if (role === 'parent' && !childStudentId) {
+      showAlert("Please enter your child's SIS Student ID.", 'error');
+      return;
+    }
+
+    setButtonLoading(btn, true, 'Saving...', 'Finish Setup');
+
+    try {
+      await completeGoogleProfile({
+        uid: pendingGoogleUser.uid,
+        name: pendingGoogleUser.displayName || 'Student',
+        email: pendingGoogleUser.email,
+        role: role,
+        studentId: studentId,
+        className: className,
+        childStudentId: childStudentId
+      });
+
+      showAlert('Account set up successfully! Redirecting...', 'success');
+      window.location.href = role === 'student' ? 'student-dashboard.html' : 'parent-portal.html';
+
+    } catch (err) {
+      showAlert(friendlyFirebaseError(err), 'error');
+      setButtonLoading(btn, false, 'Saving...', 'Finish Setup');
+    }
+  });
+
 });
+
