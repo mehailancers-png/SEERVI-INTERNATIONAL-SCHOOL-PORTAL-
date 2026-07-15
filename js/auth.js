@@ -42,6 +42,8 @@ import { auth, db } from "./firebase-config.js";
 import {
   createUserWithEmailAndPassword,
   signInWithEmailAndPassword,
+  signInWithPopup,
+  GoogleAuthProvider,
   signOut,
   onAuthStateChanged
 } from "https://www.gstatic.com/firebasejs/10.13.0/firebase-auth.js";
@@ -52,16 +54,18 @@ import {
   serverTimestamp
 } from "https://www.gstatic.com/firebasejs/10.13.0/firebase-firestore.js";
 
+var googleProvider = new GoogleAuthProvider();
+
 /* -----------------------------------------------------
-   SIGN UP — Student or Parent only (never staff)
+   SHARED PROFILE CREATION
+   Used by both email/password sign up AND a first-time
+   Google sign-in. Same lockdown applies either way: role
+   can only ever be "student" or "parent" here.
 ----------------------------------------------------- */
-export async function signUpStudentOrParent({ name, email, password, role, studentId, className, childStudentId }) {
+async function createUserProfile({ uid, name, email, role, studentId, className, childStudentId }) {
   if (role !== "student" && role !== "parent") {
     throw new Error("Public sign up only allows student or parent accounts.");
   }
-
-  var credential = await createUserWithEmailAndPassword(auth, email, password);
-  var uid = credential.user.uid;
 
   await setDoc(doc(db, "users", uid), {
     name: name,
@@ -72,8 +76,49 @@ export async function signUpStudentOrParent({ name, email, password, role, stude
     childStudentId: role === "parent" ? (childStudentId || null) : null,
     createdAt: serverTimestamp()
   });
+}
 
-  return uid;
+/* -----------------------------------------------------
+   SIGN UP — Student or Parent only (never staff)
+----------------------------------------------------- */
+export async function signUpStudentOrParent({ name, email, password, role, studentId, className, childStudentId }) {
+  var credential = await createUserWithEmailAndPassword(auth, email, password);
+  await createUserProfile({
+    uid: credential.user.uid,
+    name: name,
+    email: email,
+    role: role,
+    studentId: studentId,
+    className: className,
+    childStudentId: childStudentId
+  });
+  return credential.user.uid;
+}
+
+/* -----------------------------------------------------
+   GOOGLE SIGN-IN
+   Opens the Google popup and signs the user in. Does NOT
+   create a Firestore profile — the caller must check
+   getUserProfile() afterwards; if it's null, this is the
+   user's first time and the page must collect role +
+   student/parent details, then call
+   completeGoogleProfile() below.
+----------------------------------------------------- */
+export async function signInWithGoogle() {
+  var credential = await signInWithPopup(auth, googleProvider);
+  return credential.user;
+}
+
+export async function completeGoogleProfile({ uid, name, email, role, studentId, className, childStudentId }) {
+  await createUserProfile({
+    uid: uid,
+    name: name,
+    email: email,
+    role: role,
+    studentId: studentId,
+    className: className,
+    childStudentId: childStudentId
+  });
 }
 
 /* -----------------------------------------------------
