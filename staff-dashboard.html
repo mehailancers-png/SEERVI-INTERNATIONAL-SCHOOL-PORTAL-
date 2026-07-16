@@ -1,0 +1,268 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Staff Dashboard | SIS ERP Portal — Seervi International School</title>
+<meta name="robots" content="noindex, nofollow">
+<meta name="theme-color" content="#0B3D91">
+<link rel="manifest" href="manifest.json">
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+
+<link rel="stylesheet" href="css/style.css">
+</head>
+<body class="dashboard-body">
+
+<a href="#main-content" class="skip-link">Skip to main content</a>
+
+<header class="site-header dashboard-header-bar" id="siteHeader">
+  <div class="header-container">
+    <div class="header-brand">
+      <div class="logo-placeholder">SIS</div>
+      <div class="header-school-name">
+        <span class="school-name-main">Seervi International School</span>
+        <span class="school-name-sub">Staff Dashboard</span>
+      </div>
+    </div>
+    <a href="index.html" class="btn btn-ghost btn-sm">← Back to Website</a>
+  </div>
+</header>
+
+<div class="auth-guard" id="authGuard">
+  <div class="auth-guard-spinner"></div>
+  <p>Checking your login...</p>
+</div>
+
+<main id="main-content" hidden>
+  <div class="dashboard-layout">
+
+    <nav class="dashboard-nav" aria-label="Dashboard Navigation">
+      <div class="dashboard-nav-profile">
+        <div class="avatar-upload-wrapper">
+          <div class="dashboard-avatar" id="navAvatar">T</div>
+          <button type="button" class="avatar-upload-btn" id="avatarUploadBtn" aria-label="Change profile picture">📷</button>
+          <input type="file" id="avatarFileInput" accept="image/*" hidden>
+        </div>
+        <div>
+          <div class="dashboard-nav-name" id="navName">Loading...</div>
+          <div class="dashboard-nav-role">Staff</div>
+        </div>
+      </div>
+
+      <button class="dashboard-nav-link active" data-panel="students">🧑‍🎓 Students</button>
+      <button class="dashboard-nav-link" data-panel="documents">📄 Verify Documents</button>
+      <button class="dashboard-nav-link" data-panel="upload-results">📊 Upload Results</button>
+      <button class="dashboard-nav-link" data-panel="pyq-upload">📤 Upload PYQs</button>
+      <button class="dashboard-nav-link" data-panel="appointments">📅 Appointments</button>
+      <button class="dashboard-nav-link" data-panel="profile">👤 Profile</button>
+
+      <button class="dashboard-nav-link logout" id="logoutBtn">🚪 Log Out</button>
+    </nav>
+
+    <div class="dashboard-main">
+
+      <!-- ============ STUDENTS PANEL ============ -->
+      <section class="dashboard-panel active" data-panel="students">
+        <div class="dashboard-header">
+          <div>
+            <h1>Students</h1>
+            <p>Every student account registered on the portal.</p>
+          </div>
+        </div>
+
+        <div class="stat-grid">
+          <div class="stat-card">
+            <div class="stat-card-value" id="statStudentCount">—</div>
+            <div class="stat-card-label">Registered Students</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-card-value" id="statPendingDocs">—</div>
+            <div class="stat-card-label">Pending Documents</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-card-value" id="statPendingAppts">—</div>
+            <div class="stat-card-label">Pending Appointments</div>
+          </div>
+        </div>
+
+        <div class="dashboard-card">
+          <h3 class="dashboard-card-title">
+            All Students
+            <input type="text" id="studentSearchInput" placeholder="Search by name or ID..." style="max-width:220px; padding:8px 12px; border:2px solid var(--color-border); border-radius:6px; font-family:var(--font-main); font-size:13px;">
+          </h3>
+          <div class="data-table-wrapper">
+            <table class="data-table">
+              <thead>
+                <tr><th>Name</th><th>SIS Student ID</th><th>Class</th><th>Email</th><th>Documents</th></tr>
+              </thead>
+              <tbody id="studentsTableBody">
+                <tr><td colspan="5">Loading students...</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </section>
+
+      <!-- ============ DOCUMENTS PANEL ============ -->
+      <section class="dashboard-panel" data-panel="documents">
+        <div class="dashboard-header">
+          <div>
+            <h1 id="documentsPanelTitle">Verify Documents</h1>
+            <p id="documentsPanelSub">Review submissions and mark them Verified or Rejected.</p>
+          </div>
+          <button class="btn btn-ghost btn-sm" id="clearStudentFilterBtn" hidden>Show All Students</button>
+        </div>
+
+        <div class="dashboard-card">
+          <div class="documents-list" id="staffDocumentsList">
+            <p class="documents-empty-state">Loading documents...</p>
+          </div>
+        </div>
+      </section>
+
+      <!-- ============ UPLOAD RESULTS PANEL ============ -->
+      <section class="dashboard-panel" data-panel="upload-results">
+        <div class="dashboard-header">
+          <div>
+            <h1>Upload Results</h1>
+            <p>Select a student and enter their subject-wise marks.</p>
+          </div>
+        </div>
+
+        <div class="dashboard-card">
+          <form id="resultUploadForm">
+            <div class="form-group" style="margin-bottom:22px;">
+              <label for="resultStudentSelect">Select Student</label>
+              <select id="resultStudentSelect" required>
+                <option value="" disabled selected>Choose a student...</option>
+              </select>
+            </div>
+
+            <div class="data-table-wrapper" style="margin-bottom:22px;">
+              <table class="data-table" id="resultMarksTable">
+                <thead>
+                  <tr><th>Subject</th><th>Marks Obtained</th><th>Max Marks</th></tr>
+                </thead>
+                <tbody id="resultMarksTableBody">
+                  <!-- Rows injected by staff-dashboard.js -->
+                </tbody>
+              </table>
+            </div>
+
+            <button type="submit" class="btn btn-primary ripple" id="resultUploadSubmitBtn">
+              <span class="btn-label">Save Result</span>
+            </button>
+          </form>
+        </div>
+      </section>
+
+      <!-- ============ PYQ UPLOAD PANEL ============ -->
+      <section class="dashboard-panel" data-panel="pyq-upload">
+        <div class="dashboard-header">
+          <div>
+            <h1>Upload PYQs / Study Material</h1>
+            <p>Add a question paper or study material PDF for students to access.</p>
+          </div>
+        </div>
+
+        <div class="dashboard-card">
+          <form id="pyqUploadForm">
+            <div class="upload-dropzone" id="pyqDropzone" tabindex="0" role="button" style="margin-bottom:22px;">
+              <div class="upload-dropzone-icon">📤</div>
+              <p class="upload-dropzone-text"><strong>Click to upload</strong> or drag and drop</p>
+              <p class="upload-dropzone-hint">PDF or any file type — Max 20 MB</p>
+              <input type="file" id="pyqFileInput" hidden required>
+            </div>
+
+            <div class="upload-selected-file" id="pyqSelectedFile" hidden style="margin-bottom:22px;">
+              <span class="upload-file-icon">📎</span>
+              <span class="upload-file-name" id="pyqFileName">—</span>
+              <button type="button" class="upload-file-remove" id="pyqFileRemove">✕</button>
+            </div>
+
+            <div class="upload-progress-wrapper" id="pyqProgressWrapper" hidden>
+              <div class="upload-progress-bar"><div class="upload-progress-fill" id="pyqProgressFill"></div></div>
+              <span class="upload-progress-label" id="pyqProgressLabel">Uploading... 0%</span>
+            </div>
+
+            <div class="search-form" style="margin-bottom:22px;">
+              <div class="form-group">
+                <label for="pyqUploadTitle">Paper Title</label>
+                <input type="text" id="pyqUploadTitle" placeholder="e.g. Mathematics Half-Yearly 2025" required>
+              </div>
+              <div class="form-group">
+                <label for="pyqUploadClass">Class</label>
+                <select id="pyqUploadClass" required>
+                  <option value="" disabled selected>Select Class</option>
+                  <option>Class 6</option><option>Class 7</option><option>Class 8</option>
+                  <option>Class 9</option><option>Class 10</option><option>Class 11</option><option>Class 12</option>
+                </select>
+              </div>
+              <div class="form-group" style="grid-column: span 2;">
+                <label for="pyqUploadSubject">Subject</label>
+                <select id="pyqUploadSubject" required>
+                  <option value="" disabled selected>Select Subject</option>
+                  <option>English</option><option>Hindi</option><option>Mathematics</option>
+                  <option>Science</option><option>Social Science</option>
+                </select>
+              </div>
+            </div>
+
+            <button type="submit" class="btn btn-primary ripple" id="pyqUploadSubmitBtn">
+              <span class="btn-label">Upload PYQ</span>
+            </button>
+          </form>
+        </div>
+
+        <div class="dashboard-card">
+          <h3 class="dashboard-card-title">Recently Uploaded</h3>
+          <div class="documents-list" id="recentPyqsList">
+            <p class="documents-empty-state">No PYQs uploaded yet.</p>
+          </div>
+        </div>
+      </section>
+
+      <!-- ============ APPOINTMENTS PANEL ============ -->
+      <section class="dashboard-panel" data-panel="appointments">
+        <div class="dashboard-header">
+          <div>
+            <h1>Appointment Requests</h1>
+            <p>Parent requests to meet with school staff.</p>
+          </div>
+        </div>
+        <div class="dashboard-card">
+          <div class="notice-list" id="staffAppointmentsList">
+            <p class="list-empty-state">Loading appointments...</p>
+          </div>
+        </div>
+      </section>
+
+      <!-- ============ PROFILE PANEL ============ -->
+      <section class="dashboard-panel" data-panel="profile">
+        <div class="dashboard-header">
+          <div><h1>My Profile</h1><p>Your staff account information.</p></div>
+        </div>
+        <div class="dashboard-card">
+          <div class="profile-card">
+            <div class="profile-photo-placeholder">Photo</div>
+            <div class="profile-details">
+              <h3 id="profileName">—</h3>
+              <p id="profileEmail">—</p>
+              <p><span class="status-badge blue">Staff</span></p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+    </div>
+  </div>
+</main>
+
+<script src="js/script.js"></script>
+<script src="js/cloudinary-upload.js"></script>
+<script type="module" src="js/staff-dashboard.js"></script>
+</body>
+</html>
