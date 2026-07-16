@@ -177,7 +177,9 @@ export async function getUserProfile(uid) {
      });
 ----------------------------------------------------- */
 export function requireAuth(allowedRoles, redirectTo, onReady) {
-  onAuthStateChanged(auth, async function (user) {
+  auth.authStateReady().then(async function () {
+    var user = auth.currentUser;
+
     if (!user) {
       window.location.href = redirectTo;
       return;
@@ -203,7 +205,8 @@ export function requireAuth(allowedRoles, redirectTo, onReady) {
    chooser if nobody is.
 ----------------------------------------------------- */
 export function onAuthReady(callback) {
-  onAuthStateChanged(auth, async function (user) {
+  auth.authStateReady().then(async function () {
+    var user = auth.currentUser;
     if (!user) {
       callback(null, null);
       return;
