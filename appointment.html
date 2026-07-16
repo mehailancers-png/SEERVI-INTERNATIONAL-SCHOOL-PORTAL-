@@ -1,0 +1,212 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Book Appointment | SIS ERP Portal — Seervi International School</title>
+<meta name="description" content="Parents can book an appointment with Seervi International School staff.">
+<meta name="theme-color" content="#0B3D91">
+<link rel="manifest" href="manifest.json">
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+
+<link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+<a href="#main-content" class="skip-link">Skip to main content</a>
+
+<div class="sidebar-overlay" id="sidebarOverlay"></div>
+
+<aside class="sidebar" id="sidebar" aria-hidden="true">
+  <div class="sidebar-header">
+    <div class="sidebar-logo">
+      <div class="logo-placeholder small">SIS</div>
+      <span class="sidebar-school-name">Seervi International School</span>
+    </div>
+    <button class="sidebar-close" id="sidebarClose" aria-label="Close menu">
+      <span></span><span></span>
+    </button>
+  </div>
+
+  <nav class="sidebar-nav" aria-label="Main Navigation">
+    <ul>
+      <li><a href="index.html" class="sidebar-link" data-nav="home"><span class="icon" aria-hidden="true">🏠</span>Home</a></li>
+      <li><a href="results.html" class="sidebar-link" data-nav="results"><span class="icon" aria-hidden="true">📊</span>Results</a></li>
+      <li><a href="documents.html" class="sidebar-link" data-nav="documents"><span class="icon" aria-hidden="true">📄</span>Documents</a></li>
+      <li><a href="pyq.html" class="sidebar-link" data-nav="pyq"><span class="icon" aria-hidden="true">📝</span>PYQs</a></li>
+      <li><a href="appointment.html" class="sidebar-link active" data-nav="appointment"><span class="icon" aria-hidden="true">📅</span>Appointment</a></li>
+    </ul>
+    <div class="sidebar-divider"></div>
+    <p class="sidebar-section-label">Quick Services</p>
+    <ul>
+      <li><a href="student-login.html" class="sidebar-link" data-nav="student"><span class="icon" aria-hidden="true">🎓</span>Student Portal</a></li>
+      <li><a href="parent-portal.html" class="sidebar-link" data-nav="parent"><span class="icon" aria-hidden="true">👪</span>Parent Portal</a></li>
+      <li><a href="staff-login.html" class="sidebar-link" data-nav="staff"><span class="icon" aria-hidden="true">🧑‍🏫</span>Staff Portal</a></li>
+    </ul>
+  </nav>
+  <div class="sidebar-footer">
+    <p>&copy; 2026 Seervi International School</p>
+    <p>Jaitaran, Beawar, Rajasthan</p>
+  </div>
+</aside>
+
+<header class="site-header" id="siteHeader">
+  <div class="header-container">
+    <div class="header-brand">
+      <div class="logo-placeholder">SIS</div>
+      <div class="header-school-name">
+        <span class="school-name-main">Seervi International School</span>
+        <span class="school-name-sub">Jaitaran, Beawar, Rajasthan</span>
+      </div>
+    </div>
+    <button class="hamburger-btn" id="hamburgerBtn" aria-label="Open menu" aria-expanded="false" aria-controls="sidebar">
+      <span class="hamburger-line"></span>
+      <span class="hamburger-line"></span>
+      <span class="hamburger-line"></span>
+    </button>
+  </div>
+</header>
+
+<main id="main-content">
+
+  <div class="auth-guard" id="authGuard">
+    <div class="auth-guard-spinner"></div>
+    <p>Checking your login...</p>
+  </div>
+
+  <div id="pageContent" hidden>
+
+  <section class="page-banner">
+    <div class="page-banner-overlay"></div>
+    <div class="container page-banner-content fade-in-up">
+      <p class="hero-eyebrow">Meet With Us</p>
+      <h1>Book an Appointment</h1>
+      <p class="page-banner-sub">Schedule a meeting with school staff at a time that works for you.</p>
+    </div>
+  </section>
+
+  <div class="container">
+    <div class="auth-status-bar reveal">
+      <span>Logged in as <strong id="authStatusName">—</strong> <span class="status-badge blue">Parent</span></span>
+      <div class="btn-group">
+        <a href="parent-portal.html" class="btn btn-ghost btn-sm">My Dashboard</a>
+        <button type="button" class="btn btn-ghost btn-sm" id="authStatusLogout">Log Out</button>
+      </div>
+    </div>
+  </div>
+
+  <section class="section" id="appointment-section">
+    <div class="container">
+      <div class="search-card reveal">
+        <form id="appointmentForm" data-validate novalidate>
+          <div class="search-form">
+            <div class="form-group">
+              <label for="childName">Child's Name</label>
+              <input type="text" id="childName" name="childName" placeholder="Enter child's full name" required>
+              <span class="field-error-message">Please enter your child's name.</span>
+            </div>
+
+            <div class="form-group">
+              <label for="apptPurpose">Purpose of Visit</label>
+              <select id="apptPurpose" name="apptPurpose" required>
+                <option value="" disabled selected>Select Purpose</option>
+                <option>Academic Concern</option>
+                <option>Fee / Admission Query</option>
+                <option>Discipline Matter</option>
+                <option>General Meeting</option>
+                <option>Other</option>
+              </select>
+              <span class="field-error-message">Please select a purpose.</span>
+            </div>
+
+            <div class="form-group">
+              <label for="apptDate">Preferred Date</label>
+              <input type="date" id="apptDate" name="apptDate" required>
+              <span class="field-error-message">Please select a preferred date.</span>
+            </div>
+
+            <div class="form-group">
+              <label for="apptTime">Preferred Time</label>
+              <input type="time" id="apptTime" name="apptTime" required>
+              <span class="field-error-message">Please select a preferred time.</span>
+            </div>
+
+            <div class="form-group" style="grid-column: span 2;">
+              <label for="apptMessage">Message (Optional)</label>
+              <textarea id="apptMessage" name="apptMessage" rows="4" placeholder="Any additional details..."></textarea>
+            </div>
+
+            <button type="submit" class="btn btn-primary ripple search-submit-btn" id="apptSubmitBtn">
+              <span class="btn-label">Request Appointment</span>
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </section>
+
+  </div><!-- /#pageContent -->
+
+</main>
+
+<!-- ============ SUCCESS MODAL ============ -->
+<div class="modal" id="successModal" aria-hidden="true">
+  <div class="modal-box">
+    <div class="modal-icon success">✓</div>
+    <h3>Appointment Requested!</h3>
+    <p>Your appointment request has been sent to the school office. You'll be notified once it's confirmed.</p>
+    <div class="modal-actions">
+      <a href="parent-portal.html" class="btn btn-primary ripple" data-modal-close>Go to Dashboard</a>
+    </div>
+  </div>
+</div>
+
+<footer class="site-footer">
+  <div class="container footer-grid">
+    <div class="footer-col">
+      <div class="footer-brand">
+        <div class="logo-placeholder small">SIS</div>
+        <span>Seervi International School</span>
+      </div>
+      <p>An official ERP Portal committed to transparency and academic excellence.</p>
+    </div>
+    <div class="footer-col">
+      <h4>Quick Links</h4>
+      <ul>
+        <li><a href="results.html">Results</a></li>
+        <li><a href="documents.html">Documents</a></li>
+        <li><a href="pyq.html">PYQs</a></li>
+        <li><a href="appointment.html">Appointment</a></li>
+      </ul>
+    </div>
+    <div class="footer-col">
+      <h4>Portals</h4>
+      <ul>
+        <li><a href="student-login.html">Student Login</a></li>
+        <li><a href="parent-portal.html">Parent Portal</a></li>
+        <li><a href="staff-login.html">Staff Portal</a></li>
+      </ul>
+    </div>
+    <div class="footer-col">
+      <h4>Contact</h4>
+      <ul>
+        <li>Jaitaran, Beawar, Rajasthan</li>
+        <li>+91 00000 00000</li>
+        <li>info@seervischool.edu.in</li>
+      </ul>
+    </div>
+  </div>
+  <div class="footer-bottom">
+    <p>&copy; 2026 Seervi International School. All Rights Reserved.</p>
+  </div>
+</footer>
+
+<button class="back-to-top" id="backToTop" aria-label="Back to top">↑</button>
+
+<script src="js/script.js"></script>
+<script type="module" src="js/appointment.js"></script>
+</body>
+</html>
