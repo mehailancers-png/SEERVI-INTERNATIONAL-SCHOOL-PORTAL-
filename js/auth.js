@@ -185,12 +185,41 @@ export function requireAuth(allowedRoles, redirectTo, onReady) {
       return;
     }
 
-    var profile = await getUserProfile(user.uid);
+    var profile;
+    try {
+      profile = await getUserProfile(user.uid);
+    } catch (err) {
+      // DIAGNOSTIC: show the real error on screen instead of
+      // silently redirecting, so it can be screenshotted.
+      document.body.innerHTML =
+        '<div style="padding:40px; font-family:monospace; background:#fff3f3; color:#900;">' +
+        '<h2>DEBUG — requireAuth error</h2>' +
+        '<p><strong>User UID:</strong> ' + user.uid + '</p>' +
+        '<p><strong>Error name:</strong> ' + err.name + '</p>' +
+        '<p><strong>Error code:</strong> ' + (err.code || 'none') + '</p>' +
+        '<p><strong>Error message:</strong> ' + err.message + '</p>' +
+        '</div>';
+      return;
+    }
 
-    if (!profile || allowedRoles.indexOf(profile.role) === -1) {
-      // Logged in, but wrong role for this page (e.g. a student
-      // trying to open the staff dashboard URL directly).
-      window.location.href = redirectTo;
+    if (!profile) {
+      document.body.innerHTML =
+        '<div style="padding:40px; font-family:monospace; background:#fff3f3; color:#900;">' +
+        '<h2>DEBUG — requireAuth</h2>' +
+        '<p><strong>User UID:</strong> ' + user.uid + '</p>' +
+        '<p>No Firestore profile document found at users/' + user.uid + '</p>' +
+        '</div>';
+      return;
+    }
+
+    if (allowedRoles.indexOf(profile.role) === -1) {
+      document.body.innerHTML =
+        '<div style="padding:40px; font-family:monospace; background:#fff3f3; color:#900;">' +
+        '<h2>DEBUG — requireAuth</h2>' +
+        '<p><strong>User UID:</strong> ' + user.uid + '</p>' +
+        '<p><strong>Profile role found:</strong> "' + profile.role + '"</p>' +
+        '<p><strong>Allowed roles for this page:</strong> ' + allowedRoles.join(', ') + '</p>' +
+        '</div>';
       return;
     }
 
