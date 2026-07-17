@@ -6,7 +6,7 @@
    only the returned URL + metadata get saved in Firestore.
    ========================================================= */
 
-var CLOUDINARY_CLOUD_NAME = "liyugxww";
+var CLOUDINARY_CLOUD_NAME = "iiyugxww";
 var CLOUDINARY_UPLOAD_PRESET = "SIS-PORTAL";
 var CLOUDINARY_UPLOAD_URL =
   "https://api.cloudinary.com/v1_1/" + CLOUDINARY_CLOUD_NAME + "/auto/upload";
