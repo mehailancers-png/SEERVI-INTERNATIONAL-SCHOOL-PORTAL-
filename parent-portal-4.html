@@ -1,0 +1,210 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Parent Portal | SIS ERP Portal — Seervi International School</title>
+<meta name="description" content="Parent dashboard for child details, results, documents, appointments, and notices at Seervi International School.">
+<meta name="robots" content="noindex, nofollow">
+<meta name="theme-color" content="#0B3D91">
+<link rel="manifest" href="manifest.json">
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+
+<link rel="stylesheet" href="css/style.css">
+</head>
+<body class="dashboard-body">
+
+<a href="#main-content" class="skip-link">Skip to main content</a>
+
+<header class="site-header dashboard-header-bar" id="siteHeader">
+  <div class="header-container">
+    <div class="header-brand">
+      <div class="logo-placeholder">SIS</div>
+      <div class="header-school-name">
+        <span class="school-name-main">Seervi International School</span>
+        <span class="school-name-sub">Parent Portal</span>
+      </div>
+    </div>
+    <div class="header-actions">
+      <div class="notif-bell-wrapper">
+        <button class="notif-bell-btn" id="notifBellBtn" aria-label="Notifications">🔔<span class="notif-dot" id="notifDot" hidden></span></button>
+        <div class="notif-dropdown" id="notifDropdown" hidden>
+          <p class="notif-dropdown-title">Notifications</p>
+          <div id="notifDropdownList"><p class="list-empty-state">No notifications yet.</p></div>
+        </div>
+      </div>
+      <a href="index.html" class="btn btn-ghost btn-sm">← Back to Website</a>
+    </div>
+  </div>
+</header>
+
+<div class="auth-guard" id="authGuard">
+  <div class="auth-guard-spinner"></div>
+  <p>Checking your login...</p>
+</div>
+
+<main id="main-content" hidden>
+  <div class="dashboard-layout">
+
+    <nav class="dashboard-nav" aria-label="Dashboard Navigation">
+      <div class="dashboard-nav-profile">
+        <div class="avatar-upload-wrapper">
+          <div class="dashboard-avatar" id="navAvatar">P</div>
+          <button type="button" class="avatar-upload-btn" id="avatarUploadBtn" aria-label="Change profile picture">📷</button>
+          <input type="file" id="avatarFileInput" accept="image/*" hidden>
+        </div>
+        <div>
+          <div class="dashboard-nav-name" id="navName">Loading...</div>
+          <div class="dashboard-nav-role">Parent</div>
+        </div>
+      </div>
+
+      <button class="dashboard-nav-link active" data-panel="child">👶 Child Details</button>
+      <button class="dashboard-nav-link" data-panel="results">📊 Results</button>
+      <button class="dashboard-nav-link" data-panel="attendance">🗓️ Attendance</button>
+      <button class="dashboard-nav-link" data-panel="documents">📄 Documents</button>
+      <button class="dashboard-nav-link" data-panel="appointment">📅 Appointment</button>
+
+      <button class="dashboard-nav-link logout" id="logoutBtn">🚪 Log Out</button>
+    </nav>
+
+    <div class="dashboard-main">
+
+      <!-- ============ CHILD DETAILS PANEL ============ -->
+      <section class="dashboard-panel active" data-panel="child">
+        <div class="dashboard-header">
+          <div>
+            <h1>Child Details</h1>
+            <p>Link your account to your child's so you can see their real results and documents.</p>
+          </div>
+        </div>
+
+        <div class="dashboard-card">
+          <h3 class="dashboard-card-title">Link a Child</h3>
+          <form id="linkChildForm" style="display:flex; gap:12px; flex-wrap:wrap; align-items:flex-end;">
+            <div class="form-group" style="flex:1; min-width:200px;">
+              <label for="linkStudentId">Child's SIS Student ID</label>
+              <input type="text" id="linkStudentId" placeholder="e.g. SIS-2026-0417" required>
+            </div>
+            <button type="submit" class="btn btn-primary ripple" id="linkSubmitBtn">
+              <span class="btn-label">Send Link Request</span>
+            </button>
+          </form>
+          <p id="linkFormMessage" style="margin-top:14px; font-size:13px;" hidden></p>
+        </div>
+
+        <div class="dashboard-card">
+          <h3 class="dashboard-card-title">Link Status</h3>
+          <div class="notice-list" id="linkStatusList">
+            <p class="list-empty-state">No link requests yet.</p>
+          </div>
+        </div>
+      </section>
+
+      <!-- ============ RESULTS PANEL ============ -->
+      <section class="dashboard-panel" data-panel="results">
+        <div class="dashboard-header">
+          <div>
+            <h1>Child's Results</h1>
+            <p>Live once your child accepts your link request.</p>
+          </div>
+        </div>
+        <div class="dashboard-card" id="linkedResultsCard" hidden>
+          <div class="data-table-wrapper">
+            <table class="data-table" id="parentResultsTable">
+              <thead><tr><th>Subject</th><th>Marks Obtained</th><th>Max Marks</th><th>Grade</th></tr></thead>
+              <tbody id="parentResultsTableBody"></tbody>
+            </table>
+          </div>
+        </div>
+        <div class="dashboard-card" id="unlinkedResultsCard">
+          <p>Link your child's account first (Child Details panel), and once they accept, their real results will show here automatically. In the meantime, you can also search using their SIS ID:</p>
+          <a href="results.html" class="btn btn-primary btn-sm ripple" style="margin-top:14px;">Go to Results Page →</a>
+        </div>
+      </section>
+
+      <!-- ============ ATTENDANCE PANEL ============ -->
+      <section class="dashboard-panel" data-panel="attendance">
+        <div class="dashboard-header">
+          <div>
+            <h1>Child's Attendance</h1>
+            <p>Live once your child accepts your link request.</p>
+          </div>
+        </div>
+        <div class="stat-grid" id="parentAttendanceStatGrid" hidden>
+          <div class="stat-card">
+            <div class="stat-card-value" id="parentStatAttendancePercent">—</div>
+            <div class="stat-card-label">Attendance %</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-card-value" id="parentStatDaysPresent">—</div>
+            <div class="stat-card-label">Days Present</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-card-value" id="parentStatDaysTotal">—</div>
+            <div class="stat-card-label">Total Working Days</div>
+          </div>
+        </div>
+        <div class="dashboard-card" id="linkedAttendanceCard" hidden>
+          <div class="data-table-wrapper">
+            <table class="data-table" id="parentAttendanceTable">
+              <thead><tr><th>Month</th><th>Present</th><th>Absent</th><th>Percentage</th></tr></thead>
+              <tbody id="parentAttendanceTableBody"></tbody>
+            </table>
+          </div>
+        </div>
+        <div class="dashboard-card" id="unlinkedAttendanceCard">
+          <p>Link your child's account first (Child Details panel). Once they accept, their real attendance record will show here automatically.</p>
+        </div>
+      </section>
+
+      <!-- ============ DOCUMENTS PANEL ============ -->
+      <section class="dashboard-panel" data-panel="documents">
+        <div class="dashboard-header">
+          <div>
+            <h1>Child's Documents</h1>
+            <p>Live once your child accepts your link request.</p>
+          </div>
+          <a href="documents.html" class="btn btn-primary btn-sm ripple">Upload on Their Behalf →</a>
+        </div>
+        <div class="dashboard-card" id="linkedDocumentsCard" hidden>
+          <h3 class="dashboard-card-title">Documents</h3>
+          <div class="documents-list" id="dashboardDocumentsList">
+            <p class="documents-empty-state">Loading documents...</p>
+          </div>
+        </div>
+        <div class="dashboard-card" id="unlinkedDocumentsCard">
+          <p>Link your child's account first (Child Details panel). Once they accept, their real documents — with status, review notes, and download links — will show here automatically.</p>
+        </div>
+      </section>
+
+      <!-- ============ APPOINTMENT PANEL ============ -->
+      <section class="dashboard-panel" data-panel="appointment">
+        <div class="dashboard-header">
+          <div>
+            <h1>Appointments</h1>
+            <p>Requests you've made to meet with school staff.</p>
+          </div>
+          <a href="appointment.html" class="btn btn-primary btn-sm ripple">Book New Appointment →</a>
+        </div>
+        <div class="dashboard-card">
+          <h3 class="dashboard-card-title">My Appointment Requests</h3>
+          <div class="notice-list" id="appointmentsList">
+            <p class="list-empty-state">Loading your appointments...</p>
+          </div>
+        </div>
+      </section>
+
+
+    </div>
+  </div>
+</main>
+
+<script src="js/script.js"></script>
+<script src="js/cloudinary-upload.js"></script>
+<script type="module" src="js/parent-portal.js"></script>
+</body>
+</html>
