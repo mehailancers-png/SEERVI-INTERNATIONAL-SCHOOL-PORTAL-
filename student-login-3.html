@@ -1,0 +1,362 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Student &amp; Parent Login | SIS ERP Portal — Seervi International School</title>
+<meta name="description" content="Student and Parent login to the Seervi International School ERP Portal.">
+<meta name="author" content="Seervi International School">
+<meta name="theme-color" content="#0B3D91">
+<link rel="manifest" href="manifest.json">
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+
+<link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+<a href="#main-content" class="skip-link">Skip to main content</a>
+
+<div class="sidebar-overlay" id="sidebarOverlay"></div>
+
+<aside class="sidebar" id="sidebar" aria-hidden="true">
+  <div class="sidebar-header">
+    <div class="sidebar-logo">
+      <div class="logo-placeholder small">SIS</div>
+      <span class="sidebar-school-name">Seervi International School</span>
+    </div>
+    <button class="sidebar-close" id="sidebarClose" aria-label="Close menu">
+      <span></span><span></span>
+    </button>
+  </div>
+
+  <nav class="sidebar-nav" aria-label="Main Navigation">
+    <ul>
+      <li><a href="index.html" class="sidebar-link" data-nav="home"><span class="icon" aria-hidden="true">🏠</span>Home</a></li>
+      <li><a href="results.html" class="sidebar-link" data-nav="results"><span class="icon" aria-hidden="true">📊</span>Results</a></li>
+      <li><a href="documents.html" class="sidebar-link" data-nav="documents"><span class="icon" aria-hidden="true">📄</span>Documents</a></li>
+      <li><a href="pyq.html" class="sidebar-link" data-nav="pyq"><span class="icon" aria-hidden="true">📝</span>PYQs</a></li>
+      <li><a href="appointment.html" class="sidebar-link" data-nav="appointment"><span class="icon" aria-hidden="true">📅</span>Appointment</a></li>
+    </ul>
+
+    <div class="sidebar-divider"></div>
+    <p class="sidebar-section-label">Quick Services</p>
+
+    <ul>
+      <li><a href="student-login.html" class="sidebar-link active" data-nav="student"><span class="icon" aria-hidden="true">🎓</span>Student Portal</a></li>
+      <li><a href="parent-portal.html" class="sidebar-link" data-nav="parent"><span class="icon" aria-hidden="true">👪</span>Parent Portal</a></li>
+      <li><a href="staff-login.html" class="sidebar-link" data-nav="staff"><span class="icon" aria-hidden="true">🧑‍🏫</span>Staff Portal</a></li>
+    </ul>
+  </nav>
+
+  <div class="sidebar-footer">
+    <p>&copy; 2026 Seervi International School</p>
+    <p>Jaitaran, Beawar, Rajasthan</p>
+  </div>
+</aside>
+
+<header class="site-header" id="siteHeader">
+  <div class="header-container">
+    <div class="header-brand">
+      <div class="logo-placeholder">SIS</div>
+      <div class="header-school-name">
+        <span class="school-name-main">Seervi International School</span>
+        <span class="school-name-sub">Jaitaran, Beawar, Rajasthan</span>
+      </div>
+    </div>
+
+    <button class="hamburger-btn" id="hamburgerBtn" aria-label="Open menu" aria-expanded="false" aria-controls="sidebar">
+      <span class="hamburger-line"></span>
+      <span class="hamburger-line"></span>
+      <span class="hamburger-line"></span>
+    </button>
+  </div>
+</header>
+
+<main id="main-content">
+
+  <section class="page-banner">
+    <div class="page-banner-overlay"></div>
+    <div class="container page-banner-content fade-in-up">
+      <p class="hero-eyebrow">Quick Service</p>
+      <h1>Student &amp; Parent Login</h1>
+      <p class="page-banner-sub">Access your results, documents, PYQs, and appointments.</p>
+    </div>
+  </section>
+
+  <section class="section auth-section" id="auth-section">
+    <div class="container">
+      <div class="auth-card reveal">
+
+        <div class="search-tabs auth-mode-tabs" role="tablist" aria-label="Login or Sign Up">
+          <button class="search-tab active" type="button" data-mode="login" role="tab" aria-selected="true">Log In</button>
+          <button class="search-tab" type="button" data-mode="signup" role="tab" aria-selected="false">Sign Up</button>
+        </div>
+
+        <!-- ============ ALERT / STATUS MESSAGE ============ -->
+        <div class="auth-alert" id="authAlert" hidden></div>
+
+        <!-- ============ LOGIN FORM ============ -->
+        <form id="loginForm" class="auth-form" data-panel="login">
+          <div class="form-group">
+            <label for="loginEmail">Email</label>
+            <input type="email" id="loginEmail" name="loginEmail" placeholder="you@example.com" required>
+            <span class="field-error-message">Please enter a valid email.</span>
+          </div>
+
+          <div class="form-group">
+            <label for="loginPassword">Password</label>
+            <input type="password" id="loginPassword" name="loginPassword" placeholder="Enter your password" required minlength="6">
+            <span class="field-error-message">Password must be at least 6 characters.</span>
+          </div>
+
+          <button type="submit" class="btn btn-primary ripple auth-submit-btn" id="loginSubmitBtn">
+            <span class="btn-label">Log In</span>
+          </button>
+        </form>
+
+        <!-- ============ SIGN UP FORM ============ -->
+        <form id="signupForm" class="auth-form" data-panel="signup" hidden>
+          <div class="auth-role-toggle">
+            <label class="auth-role-option">
+              <input type="radio" name="signupRole" value="student" checked>
+              <span>I am a Student</span>
+            </label>
+            <label class="auth-role-option">
+              <input type="radio" name="signupRole" value="parent">
+              <span>I am a Parent</span>
+            </label>
+          </div>
+
+          <div class="form-group">
+            <label for="signupName">Full Name</label>
+            <input type="text" id="signupName" name="signupName" placeholder="Enter full name" required>
+            <span class="field-error-message">Please enter your name.</span>
+          </div>
+
+          <div class="form-group">
+            <label for="signupEmail">Email</label>
+            <input type="email" id="signupEmail" name="signupEmail" placeholder="you@example.com" required>
+            <span class="field-error-message">Please enter a valid email.</span>
+          </div>
+
+          <div class="form-group" data-role-field="student">
+            <label for="signupStudentId">SIS Student ID</label>
+            <input type="text" id="signupStudentId" name="signupStudentId" placeholder="e.g. SIS-2026-0417">
+            <span class="field-error-message">Please enter your SIS Student ID.</span>
+          </div>
+
+          <div class="form-group" data-role-field="student">
+            <label for="signupRollNumber">Roll Number</label>
+            <input type="text" id="signupRollNumber" name="signupRollNumber" placeholder="e.g. 24107" inputmode="numeric">
+            <span class="field-error-message">Please enter your roll number.</span>
+          </div>
+
+          <div class="form-group" data-role-field="student">
+            <label for="signupClass">Class</label>
+            <select id="signupClass" name="signupClass">
+              <option value="" disabled selected>Select Class</option>
+              <option>Nursery</option>
+              <option>LKG</option>
+              <option>UKG</option>
+              <option>Class 1</option>
+              <option>Class 2</option>
+              <option>Class 3</option>
+              <option>Class 4</option>
+              <option>Class 5</option>
+              <option>Class 6</option>
+              <option>Class 7</option>
+              <option>Class 8</option>
+              <option>Class 9</option>
+              <option>Class 10</option>
+              <option>Class 11</option>
+              <option>Class 12</option>
+            </select>
+            <span class="field-error-message">Please select your class.</span>
+          </div>
+
+          <div class="form-group" data-role-field="student">
+            <label for="signupSection">Section (Optional)</label>
+            <select id="signupSection" name="signupSection">
+              <option value="">No Section</option>
+              <option>A</option>
+              <option>B</option>
+              <option>C</option>
+              <option>D</option>
+            </select>
+          </div>
+
+          <div class="form-group" data-role-field="parent" hidden>
+            <label for="signupChildId">Child's SIS Student ID</label>
+            <input type="text" id="signupChildId" name="signupChildId" placeholder="e.g. SIS-2026-0417">
+            <span class="field-error-message">Please enter your child's SIS Student ID.</span>
+          </div>
+
+          <div class="form-group">
+            <label for="signupPassword">Password</label>
+            <input type="password" id="signupPassword" name="signupPassword" placeholder="Create a password" required minlength="6">
+            <span class="field-error-message">Password must be at least 6 characters.</span>
+          </div>
+
+          <div class="form-group">
+            <label for="signupConfirmPassword">Confirm Password</label>
+            <input type="password" id="signupConfirmPassword" name="signupConfirmPassword" placeholder="Re-enter password" required minlength="6">
+            <span class="field-error-message">Passwords do not match.</span>
+          </div>
+
+          <button type="submit" class="btn btn-primary ripple auth-submit-btn" id="signupSubmitBtn">
+            <span class="btn-label">Create Account</span>
+          </button>
+        </form>
+
+        <!-- ============ GOOGLE SIGN-IN ============ -->
+        <div class="auth-divider"><span>or</span></div>
+
+        <button type="button" class="btn-google ripple" id="googleSignInBtn">
+          <svg class="btn-google-icon" width="19" height="19" viewBox="0 0 48 48" xmlns="http://www.w3.org/2000/svg">
+            <path fill="#FFC107" d="M43.611 20.083H42V20H24v8h11.303c-1.649 4.657-6.08 8-11.303 8-6.627 0-12-5.373-12-12s5.373-12 12-12c3.059 0 5.842 1.154 7.961 3.039l5.657-5.657C34.046 6.053 29.268 4 24 4 12.955 4 4 12.955 4 24s8.955 20 20 20 20-8.955 20-20c0-1.341-.138-2.65-.389-3.917z"/>
+            <path fill="#FF3D00" d="M6.306 14.691l6.571 4.819C14.655 15.108 18.961 12 24 12c3.059 0 5.842 1.154 7.961 3.039l5.657-5.657C34.046 6.053 29.268 4 24 4 16.318 4 9.656 8.337 6.306 14.691z"/>
+            <path fill="#4CAF50" d="M24 44c5.166 0 9.86-1.977 13.409-5.192l-6.19-5.238A11.91 11.91 0 0 1 24 36c-5.202 0-9.619-3.317-11.283-7.946l-6.522 5.025C9.505 39.556 16.227 44 24 44z"/>
+            <path fill="#1976D2" d="M43.611 20.083H42V20H24v8h11.303a12.04 12.04 0 0 1-4.087 5.571l.003-.002 6.19 5.238C36.971 39.205 44 34 44 24c0-1.341-.138-2.65-.389-3.917z"/>
+          </svg>
+          <span>Continue with Google</span>
+        </button>
+
+        <!-- ============ COMPLETE PROFILE (first-time Google sign-in only) ============ -->
+        <form id="completeProfileForm" class="auth-form" hidden>
+          <div class="info-note-box info">
+            <span class="info-note-icon">👋</span>
+            <span>Welcome! Since this is your first time signing in with Google, please tell us a bit more to finish setting up your account.</span>
+          </div>
+
+          <div class="auth-role-toggle">
+            <label class="auth-role-option">
+              <input type="radio" name="completeRole" value="student" checked>
+              <span>I am a Student</span>
+            </label>
+            <label class="auth-role-option">
+              <input type="radio" name="completeRole" value="parent">
+              <span>I am a Parent</span>
+            </label>
+          </div>
+
+          <div class="form-group">
+            <label for="completeName">Full Name</label>
+            <input type="text" id="completeName" name="completeName" placeholder="Enter full name" required>
+            <span class="field-error-message">Please enter your name.</span>
+          </div>
+
+          <div class="form-group" data-complete-field="student">
+            <label for="completeStudentId">SIS Student ID</label>
+            <input type="text" id="completeStudentId" name="completeStudentId" placeholder="e.g. SIS-2026-0417">
+          </div>
+
+          <div class="form-group" data-complete-field="student">
+            <label for="completeRollNumber">Roll Number</label>
+            <input type="text" id="completeRollNumber" name="completeRollNumber" placeholder="e.g. 24107" inputmode="numeric">
+          </div>
+
+          <div class="form-group" data-complete-field="student">
+            <label for="completeClass">Class</label>
+            <select id="completeClass" name="completeClass">
+              <option value="" disabled selected>Select Class</option>
+              <option>Nursery</option>
+              <option>LKG</option>
+              <option>UKG</option>
+              <option>Class 1</option>
+              <option>Class 2</option>
+              <option>Class 3</option>
+              <option>Class 4</option>
+              <option>Class 5</option>
+              <option>Class 6</option>
+              <option>Class 7</option>
+              <option>Class 8</option>
+              <option>Class 9</option>
+              <option>Class 10</option>
+              <option>Class 11</option>
+              <option>Class 12</option>
+            </select>
+          </div>
+
+          <div class="form-group" data-complete-field="student">
+            <label for="completeSection">Section (Optional)</label>
+            <select id="completeSection" name="completeSection">
+              <option value="">No Section</option>
+              <option>A</option>
+              <option>B</option>
+              <option>C</option>
+              <option>D</option>
+            </select>
+          </div>
+
+          <div class="form-group" data-complete-field="parent" hidden>
+            <label for="completeChildId">Child's SIS Student ID</label>
+            <input type="text" id="completeChildId" name="completeChildId" placeholder="e.g. SIS-2026-0417">
+          </div>
+
+          <button type="submit" class="btn btn-primary ripple auth-submit-btn" id="completeProfileSubmitBtn">
+            <span class="btn-label">Finish Setup</span>
+          </button>
+        </form>
+
+        <p class="auth-staff-note">
+          Are you a teacher or admin? <a href="staff-login.html">Staff Login →</a>
+        </p>
+      </div>
+    </div>
+  </section>
+
+</main>
+
+<footer class="site-footer">
+  <div class="container footer-grid">
+    <div class="footer-col">
+      <div class="footer-brand">
+        <div class="logo-placeholder small">SIS</div>
+        <span>Seervi International School</span>
+      </div>
+      <p>An official ERP Portal committed to transparency and academic excellence.</p>
+    </div>
+
+    <div class="footer-col">
+      <h4>Quick Links</h4>
+      <ul>
+        <li><a href="results.html">Results</a></li>
+        <li><a href="documents.html">Documents</a></li>
+        <li><a href="pyq.html">PYQs</a></li>
+        <li><a href="appointment.html">Appointment</a></li>
+      </ul>
+    </div>
+
+    <div class="footer-col">
+      <h4>Portals</h4>
+      <ul>
+        <li><a href="student-login.html">Student Login</a></li>
+        <li><a href="parent-portal.html">Parent Portal</a></li>
+        <li><a href="staff-login.html">Staff Portal</a></li>
+      </ul>
+    </div>
+
+    <div class="footer-col">
+      <h4>Contact</h4>
+      <ul>
+        <li>Jaitaran, Beawar, Rajasthan</li>
+        <li>+91 00000 00000</li>
+        <li>info@seervischool.edu.in</li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="footer-bottom">
+    <p>&copy; 2026 Seervi International School. All Rights Reserved.</p>
+  </div>
+</footer>
+
+<button class="back-to-top" id="backToTop" aria-label="Back to top">↑</button>
+
+<script src="js/script.js"></script>
+<script type="module" src="js/student-login.js"></script>
+</body>
+</html>
