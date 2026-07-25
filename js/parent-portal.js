@@ -266,7 +266,12 @@ document.addEventListener('DOMContentLoaded', function () {
           '</div>';
       });
       appointmentsList.innerHTML = html;
-    }, function (err) { console.error(err); });
+    }, function (err) {
+      console.error(err);
+      appointmentsList.innerHTML =
+        '<p class="list-empty-state" style="color:var(--color-red); font-family:monospace; font-size:11px;">' +
+        escapeHtml(err.message) + '</p>';
+    });
   }
 
   function escapeHtml(str) {

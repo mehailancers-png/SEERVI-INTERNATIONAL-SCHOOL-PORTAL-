@@ -657,7 +657,12 @@ document.addEventListener('DOMContentLoaded', function () {
           }
         });
       });
-    }, function (err) { console.error('Appointments listener error:', err); });
+    }, function (err) {
+      console.error('Appointments listener error:', err);
+      staffAppointmentsList.innerHTML =
+        '<p class="list-empty-state" style="color:var(--color-red); font-family:monospace; font-size:11px;">' +
+        escapeHtml(err.message) + '</p>';
+    });
 
     /* =====================================================
        NOTIFICATIONS — Send Notification panel
