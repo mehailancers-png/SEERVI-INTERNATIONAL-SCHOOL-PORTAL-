@@ -21,7 +21,7 @@ document.addEventListener('DOMContentLoaded', function () {
   var authGuard = document.getElementById('authGuard');
   var mainContent = document.getElementById('main-content');
 
-  requireAuth(['student'], 'student-login.html', function (user, profile) {
+  requireAuth(['student', 'staff'], 'student-login.html', function (user, profile) {
     authGuard.hidden = true;
     mainContent.hidden = false;
     initDashboard(user, profile);
@@ -29,6 +29,23 @@ document.addEventListener('DOMContentLoaded', function () {
 
   function initDashboard(user, profile) {
     wireNotificationBell(user.uid);
+
+    var isPreview = profile.role === 'staff';
+    if (isPreview) {
+      var banner = document.createElement('div');
+      banner.className = 'info-note-box warning';
+      banner.style.margin = '0 0 24px';
+      banner.innerHTML = '<span class="info-note-icon">🔍</span><span>' +
+        '<strong>Staff Preview Mode</strong> — you are viewing the Student Dashboard as staff, under your own account. ' +
+        'This does not show any real student\'s private data, and photo upload is disabled here.</span>';
+      document.querySelector('.dashboard-main').prepend(banner);
+
+      var avatarBtn = document.getElementById('avatarUploadBtn');
+      var photoTrigger = document.getElementById('profilePhotoTrigger');
+      if (avatarBtn) avatarBtn.hidden = true;
+      if (photoTrigger) photoTrigger.style.pointerEvents = 'none';
+    }
+
     /* -----------------------------------------------------
        NAV PROFILE SNIPPET
     ----------------------------------------------------- */
