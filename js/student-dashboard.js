@@ -249,7 +249,7 @@ document.addEventListener('DOMContentLoaded', function () {
           btn.addEventListener('click', async function () {
             btn.disabled = true;
             try {
-              await respondToLinkRequest(btn.getAttribute('data-id'), btn.getAttribute('data-link-action') === 'accept');
+              await respondToLinkRequest(btn.getAttribute('data-id'), btn.getAttribute('data-link-action') === 'accept', profile.class);
             } catch (err) {
               alert('Could not respond: ' + err.message);
               btn.disabled = false;
@@ -265,6 +265,39 @@ document.addEventListener('DOMContentLoaded', function () {
             return '<div class="notice-item"><span class="notice-item-icon">👪</span><div><h4>' + escapeHtml(r.parentName || 'Parent') + '</h4><p>Linked and can view your results and documents.</p></div></div>';
           }).join('');
     }, function (err) { console.error('Link requests listener error:', err); });
+
+    /* -----------------------------------------------------
+       LIVE HOMEWORK (Firestore, filtered to student's own class)
+    ----------------------------------------------------- */
+    if (profile.class) {
+      var homeworkQuery = query(collection(db, 'homework'), where('class', '==', profile.class), orderBy('createdAt', 'desc'));
+      onSnapshot(homeworkQuery, function (snapshot) {
+        var homeworkList = document.getElementById('homeworkList');
+        if (snapshot.empty) {
+          homeworkList.innerHTML = '<p class="list-empty-state">No homework has been assigned yet. Check back soon.</p>';
+          return;
+        }
+        homeworkList.innerHTML = snapshot.docs.map(function (docSnap) {
+          var h = docSnap.data();
+          var attachmentLink = h.fileURL
+            ? ' • <a href="' + h.fileURL + '" target="_blank" rel="noopener">' + escapeHtml(h.fileName || 'Download attachment') + '</a>'
+            : '';
+          return (
+            '<div class="notice-item">' +
+              '<span class="notice-item-icon">📚</span>' +
+              '<div><h4>' + escapeHtml(h.title) + ' — ' + escapeHtml(h.subject) + '</h4>' +
+              '<p>Due ' + escapeHtml(h.dueDate) + attachmentLink + '</p>' +
+              (h.description ? '<p>' + escapeHtml(h.description) + '</p>' : '') +
+              '</div>' +
+            '</div>'
+          );
+        }).join('');
+      }, function (err) {
+        console.error('Homework listener error:', err);
+        document.getElementById('homeworkList').innerHTML =
+          '<p class="list-empty-state" style="color:var(--color-red); font-family:monospace; font-size:11px;">' + escapeHtml(err.message) + '</p>';
+      });
+    }
 
     /* -----------------------------------------------------
        LIVE DOCUMENTS LIST (Firestore)

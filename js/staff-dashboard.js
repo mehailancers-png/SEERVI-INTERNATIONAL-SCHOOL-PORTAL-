@@ -14,6 +14,7 @@ import {
   onSnapshot,
   doc,
   updateDoc,
+  deleteDoc,
   addDoc,
   setDoc,
   getDoc,
@@ -85,6 +86,10 @@ document.addEventListener('DOMContentLoaded', function () {
 
       if (target === 'notify' && typeof startParentsListenerIfNeeded === 'function') startParentsListenerIfNeeded();
       if (target === 'pyq-upload' && typeof startPyqsListenerIfNeeded === 'function') startPyqsListenerIfNeeded();
+      if (target === 'homework') {
+        if (typeof startHomeworkListenerIfNeeded === 'function') startHomeworkListenerIfNeeded();
+        if (typeof startParentsListenerIfNeeded === 'function') startParentsListenerIfNeeded(); // needed to notify linked parents
+      }
     }
 
     navLinks.forEach(function (link) {
@@ -625,6 +630,269 @@ document.addEventListener('DOMContentLoaded', function () {
             '</article>';
         });
         recentPyqsList.innerHTML = html;
+      });
+    }
+
+    /* =====================================================
+       HOMEWORK MANAGEMENT
+    ===================================================== */
+    var homeworkForm = document.getElementById('homeworkForm');
+    var homeworkDropzone = document.getElementById('homeworkDropzone');
+    var homeworkFileInput = document.getElementById('homeworkFileInput');
+    var homeworkSelectedFile = document.getElementById('homeworkSelectedFile');
+    var homeworkFileName = document.getElementById('homeworkFileName');
+    var homeworkFileRemove = document.getElementById('homeworkFileRemove');
+    var homeworkProgressWrapper = document.getElementById('homeworkProgressWrapper');
+    var homeworkProgressFill = document.getElementById('homeworkProgressFill');
+    var homeworkProgressLabel = document.getElementById('homeworkProgressLabel');
+    var homeworkSubmitBtn = document.getElementById('homeworkSubmitBtn');
+    var homeworkCancelEditBtn = document.getElementById('homeworkCancelEditBtn');
+    var homeworkPanelTitle = document.getElementById('homeworkPanelTitle');
+    var homeworkList = document.getElementById('homeworkList');
+    var homeworkFilterClass = document.getElementById('homeworkFilterClass');
+
+    var editingHomeworkId = null;
+    var editingHomeworkFileURL = null;
+    var editingHomeworkFileName = null;
+    var allHomework = [];
+    var homeworkListenerStarted = false;
+
+    homeworkDropzone.addEventListener('click', function () { homeworkFileInput.click(); });
+    homeworkDropzone.addEventListener('keydown', function (e) {
+      if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); homeworkFileInput.click(); }
+    });
+    ['dragenter', 'dragover'].forEach(function (evt) {
+      homeworkDropzone.addEventListener(evt, function (e) { e.preventDefault(); homeworkDropzone.classList.add('dragover'); });
+    });
+    ['dragleave', 'drop'].forEach(function (evt) {
+      homeworkDropzone.addEventListener(evt, function (e) { e.preventDefault(); homeworkDropzone.classList.remove('dragover'); });
+    });
+    homeworkDropzone.addEventListener('drop', function (e) {
+      var files = e.dataTransfer.files;
+      if (files && files.length) { homeworkFileInput.files = files; showHomeworkFile(files[0]); }
+    });
+    homeworkFileInput.addEventListener('change', function () {
+      if (homeworkFileInput.files && homeworkFileInput.files.length) showHomeworkFile(homeworkFileInput.files[0]);
+    });
+    function showHomeworkFile(file) {
+      homeworkFileName.textContent = file.name;
+      homeworkSelectedFile.hidden = false;
+    }
+    homeworkFileRemove.addEventListener('click', function () {
+      homeworkFileInput.value = '';
+      homeworkSelectedFile.hidden = true;
+    });
+
+    function resetHomeworkForm() {
+      homeworkForm.reset();
+      homeworkFileInput.value = '';
+      homeworkSelectedFile.hidden = true;
+      editingHomeworkId = null;
+      editingHomeworkFileURL = null;
+      editingHomeworkFileName = null;
+      homeworkPanelTitle.textContent = 'Assign Homework';
+      homeworkSubmitBtn.querySelector('.btn-label').textContent = 'Assign Homework';
+      homeworkCancelEditBtn.hidden = true;
+    }
+
+    homeworkCancelEditBtn.addEventListener('click', resetHomeworkForm);
+
+    homeworkForm.addEventListener('submit', async function (e) {
+      e.preventDefault();
+
+      var classVal = document.getElementById('homeworkClass').value;
+      var subjectVal = document.getElementById('homeworkSubject').value;
+      var title = document.getElementById('homeworkTitle').value.trim();
+      var description = document.getElementById('homeworkDescription').value.trim();
+      var dueDate = document.getElementById('homeworkDueDate').value;
+      var file = homeworkFileInput.files && homeworkFileInput.files[0];
+
+      if (!classVal || !subjectVal || !title || !dueDate) {
+        alert('Please fill in class, subject, title, and due date.');
+        return;
+      }
+      if (file && file.size > 10 * 1024 * 1024) {
+        alert('Attachment is too large. Maximum size is 10 MB.');
+        return;
+      }
+
+      homeworkSubmitBtn.disabled = true;
+      homeworkSubmitBtn.querySelector('.btn-label').textContent = editingHomeworkId ? 'Saving...' : 'Assigning...';
+
+      try {
+        var fileURL = editingHomeworkFileURL;
+        var fileName = editingHomeworkFileName;
+
+        if (file) {
+          homeworkProgressWrapper.hidden = false;
+          var result = await window.uploadFileToCloudinary(file, function (pct) {
+            homeworkProgressFill.style.width = pct + '%';
+            homeworkProgressLabel.textContent = 'Uploading... ' + pct + '%';
+          });
+          fileURL = result.secureUrl;
+          fileName = file.name;
+        }
+
+        var homeworkData = {
+          class: classVal,
+          subject: subjectVal,
+          title: title,
+          description: description || null,
+          dueDate: dueDate,
+          fileURL: fileURL || null,
+          fileName: fileName || null,
+          updatedByUid: user.uid,
+          updatedByName: profile.name,
+          updatedAt: serverTimestamp()
+        };
+
+        if (editingHomeworkId) {
+          await updateDoc(doc(db, 'homework', editingHomeworkId), homeworkData);
+
+          // Parent Transparency: notify class + linked parents of the update
+          var classStudentUids = allStudents.filter(function (s) { return s.class === classVal; }).map(function (s) { return s.uid; });
+          var classStudentIds = allStudents.filter(function (s) { return s.class === classVal; }).map(function (s) { return s.studentId; });
+          var linkedParentUids = allParents.filter(function (p) { return classStudentIds.indexOf(p.childStudentId) !== -1; }).map(function (p) { return p.uid; });
+          var updateRecipients = classStudentUids.concat(linkedParentUids);
+
+          if (updateRecipients.length > 0) {
+            await sendNotification({
+              senderUid: user.uid,
+              senderName: profile.name,
+              targetType: 'class',
+              targetLabel: classVal,
+              recipientUids: updateRecipients,
+              title: 'Homework Updated: ' + title,
+              message: subjectVal + ' — due ' + dueDate
+            });
+          }
+
+        } else {
+          homeworkData.createdByUid = user.uid;
+          homeworkData.createdByName = profile.name;
+          homeworkData.createdAt = serverTimestamp();
+          await addDoc(collection(db, 'homework'), homeworkData);
+
+          // Parent Transparency: notify every student in the class + their linked parents
+          var newClassStudentUids = allStudents.filter(function (s) { return s.class === classVal; }).map(function (s) { return s.uid; });
+          var newClassStudentIds = allStudents.filter(function (s) { return s.class === classVal; }).map(function (s) { return s.studentId; });
+          var newLinkedParentUids = allParents.filter(function (p) { return newClassStudentIds.indexOf(p.childStudentId) !== -1; }).map(function (p) { return p.uid; });
+          var newRecipients = newClassStudentUids.concat(newLinkedParentUids);
+
+          if (newRecipients.length > 0) {
+            await sendNotification({
+              senderUid: user.uid,
+              senderName: profile.name,
+              targetType: 'class',
+              targetLabel: classVal,
+              recipientUids: newRecipients,
+              title: 'New Homework: ' + title,
+              message: subjectVal + ' — due ' + dueDate
+            });
+          }
+        }
+
+        resetHomeworkForm();
+
+      } catch (err) {
+        console.error(err);
+        alert('Could not save homework: ' + err.message);
+      }
+
+      homeworkProgressWrapper.hidden = true;
+      homeworkSubmitBtn.disabled = false;
+    });
+
+    function renderHomeworkList() {
+      var filterVal = homeworkFilterClass.value;
+      var filtered = filterVal === 'all' ? allHomework : allHomework.filter(function (h) { return h.class === filterVal; });
+
+      if (filtered.length === 0) {
+        homeworkList.innerHTML = '<p class="documents-empty-state">No homework assigned yet.</p>';
+        return;
+      }
+
+      homeworkList.innerHTML = filtered.map(function (h) {
+        var attachmentLink = h.fileURL
+          ? ' • <a href="' + h.fileURL + '" target="_blank" rel="noopener">' + escapeHtml(h.fileName || 'View attachment') + '</a>'
+          : '';
+        return (
+          '<article class="document-item">' +
+            '<div class="document-item-main">' +
+              '<span class="document-item-icon">📚</span>' +
+              '<div>' +
+                '<h4>' + escapeHtml(h.title) + ' — ' + escapeHtml(h.class) + ' (' + escapeHtml(h.subject) + ')</h4>' +
+                '<p>Due ' + escapeHtml(h.dueDate) + attachmentLink + '</p>' +
+              '</div>' +
+            '</div>' +
+            '<div class="btn-group">' +
+              '<button class="btn btn-ghost btn-sm homework-edit-btn" data-id="' + h.id + '">Edit</button>' +
+              '<button class="btn btn-danger btn-sm homework-delete-btn" data-id="' + h.id + '">Delete</button>' +
+            '</div>' +
+          '</article>'
+        );
+      }).join('');
+
+      homeworkList.querySelectorAll('.homework-edit-btn').forEach(function (btn) {
+        btn.addEventListener('click', function () {
+          var h = allHomework.find(function (item) { return item.id === btn.getAttribute('data-id'); });
+          if (!h) return;
+
+          editingHomeworkId = h.id;
+          editingHomeworkFileURL = h.fileURL || null;
+          editingHomeworkFileName = h.fileName || null;
+
+          document.getElementById('homeworkClass').value = h.class;
+          document.getElementById('homeworkSubject').value = h.subject;
+          document.getElementById('homeworkTitle').value = h.title;
+          document.getElementById('homeworkDescription').value = h.description || '';
+          document.getElementById('homeworkDueDate').value = h.dueDate;
+
+          if (h.fileURL) {
+            homeworkFileName.textContent = h.fileName || 'Current attachment';
+            homeworkSelectedFile.hidden = false;
+          } else {
+            homeworkSelectedFile.hidden = true;
+          }
+
+          homeworkPanelTitle.textContent = 'Edit Homework';
+          homeworkSubmitBtn.querySelector('.btn-label').textContent = 'Save Changes';
+          homeworkCancelEditBtn.hidden = false;
+          window.scrollTo({ top: 0, behavior: 'smooth' });
+        });
+      });
+
+      homeworkList.querySelectorAll('.homework-delete-btn').forEach(function (btn) {
+        btn.addEventListener('click', async function () {
+          if (!confirm('Delete this homework? This cannot be undone.')) return;
+          btn.disabled = true;
+          try {
+            await deleteDoc(doc(db, 'homework', btn.getAttribute('data-id')));
+          } catch (err) {
+            alert('Could not delete: ' + err.message);
+            btn.disabled = false;
+          }
+        });
+      });
+    }
+
+    homeworkFilterClass.addEventListener('change', renderHomeworkList);
+
+    function startHomeworkListenerIfNeeded() {
+      if (homeworkListenerStarted) return;
+      homeworkListenerStarted = true;
+      var homeworkQuery = query(collection(db, 'homework'), orderBy('createdAt', 'desc'));
+      onSnapshot(homeworkQuery, function (snapshot) {
+        allHomework = [];
+        snapshot.forEach(function (docSnap) {
+          var data = docSnap.data();
+          data.id = docSnap.id;
+          allHomework.push(data);
+        });
+        renderHomeworkList();
+      }, function (err) {
+        console.error('Homework listener error:', err);
+        homeworkList.innerHTML = '<p class="documents-empty-state" style="color:var(--color-red); font-family:monospace; font-size:11px;">' + escapeHtml(err.message) + '</p>';
       });
     }
 

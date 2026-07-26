@@ -186,10 +186,10 @@ export async function sendLinkRequest(parentUid, parentName, studentId) {
   return requestId;
 }
 
-export async function respondToLinkRequest(requestId, accept) {
-  await updateDoc(doc(db, "linkRequests", requestId), {
-    status: accept ? "accepted" : "rejected"
-  });
+export async function respondToLinkRequest(requestId, accept, studentClass) {
+  var updateData = { status: accept ? "accepted" : "rejected" };
+  if (accept && studentClass) updateData.studentClass = studentClass;
+  await updateDoc(doc(db, "linkRequests", requestId), updateData);
 }
 
 /* -----------------------------------------------------

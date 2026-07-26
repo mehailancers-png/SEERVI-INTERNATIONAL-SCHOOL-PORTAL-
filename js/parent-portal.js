@@ -116,16 +116,21 @@ document.addEventListener('DOMContentLoaded', function () {
         document.getElementById('unlinkedResultsCard').hidden = true;
         document.getElementById('linkedAttendanceCard').hidden = false;
         document.getElementById('unlinkedAttendanceCard').hidden = true;
+        document.getElementById('linkedHomeworkCard').hidden = false;
+        document.getElementById('unlinkedHomeworkCard').hidden = true;
         document.getElementById('linkedDocumentsCard').hidden = false;
         document.getElementById('unlinkedDocumentsCard').hidden = true;
         watchLinkedResults(linkedStudentUid);
         watchLinkedAttendance(linkedStudentUid);
+        watchLinkedHomework(acceptedLink.studentClass);
         watchLinkedDocuments(linkedStudentUid);
       } else {
         document.getElementById('linkedResultsCard').hidden = true;
         document.getElementById('unlinkedResultsCard').hidden = false;
         document.getElementById('linkedAttendanceCard').hidden = true;
         document.getElementById('unlinkedAttendanceCard').hidden = false;
+        document.getElementById('linkedHomeworkCard').hidden = true;
+        document.getElementById('unlinkedHomeworkCard').hidden = false;
         document.getElementById('linkedDocumentsCard').hidden = true;
         document.getElementById('unlinkedDocumentsCard').hidden = false;
       }
@@ -180,6 +185,34 @@ document.addEventListener('DOMContentLoaded', function () {
           return '<tr><td>' + escapeHtml(m.name) + '</td><td>' + m.present + '</td><td>' + m.absent + '</td><td>' + monthPct + '%</td></tr>';
         }).join('');
       }, function (err) { console.error('Linked attendance listener error:', err); });
+    }
+
+    function watchLinkedHomework(studentClass) {
+      var listEl = document.getElementById('parentHomeworkList');
+      if (!studentClass) {
+        listEl.innerHTML = '<p class="list-empty-state">Homework isn\'t available for this link yet — ask your child to re-accept the link request to enable it.</p>';
+        return;
+      }
+      var hwQuery = query(collection(db, 'homework'), where('class', '==', studentClass), orderBy('createdAt', 'desc'));
+      onSnapshot(hwQuery, function (snapshot) {
+        if (snapshot.empty) {
+          listEl.innerHTML = '<p class="list-empty-state">No homework assigned yet.</p>';
+          return;
+        }
+        listEl.innerHTML = snapshot.docs.map(function (docSnap) {
+          var h = docSnap.data();
+          var attachmentLink = h.fileURL
+            ? ' • <a href="' + h.fileURL + '" target="_blank" rel="noopener">' + escapeHtml(h.fileName || 'Download') + '</a>'
+            : '';
+          return (
+            '<div class="notice-item">' +
+              '<span class="notice-item-icon">📚</span>' +
+              '<div><h4>' + escapeHtml(h.title) + ' — ' + escapeHtml(h.subject) + '</h4>' +
+              '<p>Due ' + escapeHtml(h.dueDate) + attachmentLink + '</p></div>' +
+            '</div>'
+          );
+        }).join('');
+      }, function (err) { console.error('Linked homework listener error:', err); });
     }
 
     function watchLinkedDocuments(studentUid) {
