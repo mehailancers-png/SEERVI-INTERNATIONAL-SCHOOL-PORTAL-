@@ -9,6 +9,7 @@
    ========================================================= */
 
 import { requireAuth, logOut } from "./auth.js";
+import { sendNotification, getLinkedParentUids } from "./notifications.js";
 import { db } from "./firebase-config.js";
 import {
   collection,
@@ -139,6 +140,28 @@ document.addEventListener('DOMContentLoaded', function () {
           uploadedAt: serverTimestamp()
         });
 
+        // Parent Transparency: if a student uploaded this themselves,
+        // notify their linked parent(s). (If a parent uploaded it on
+        // the child's behalf, no need to notify themselves.)
+        if (profile.role === 'student') {
+          try {
+            var uploadLinkedParents = await getLinkedParentUids(user.uid);
+            if (uploadLinkedParents.length > 0) {
+              await sendNotification({
+                senderUid: user.uid,
+                senderName: displayName,
+                targetType: 'parent',
+                targetLabel: 'Linked Parent(s)',
+                recipientUids: uploadLinkedParents,
+                title: 'Document Uploaded',
+                message: displayName + ' uploaded a ' + docType + '. It is now pending review.'
+              });
+            }
+          } catch (notifyErr) {
+            console.error('Could not send document upload notification:', notifyErr);
+          }
+        }
+
         uploadForm.reset();
         fileInput.value = '';
         selectedFile.hidden = true;
@@ -233,6 +256,27 @@ document.addEventListener('DOMContentLoaded', function () {
                 reviewedAt: serverTimestamp(),
                 rejectionReason: action === 'reject' ? rejectionReason.trim() : null
               });
+
+              // Parent Transparency: notify the student + their linked parent(s)
+              try {
+                var reviewedSnap = snapshot.docs.find(function (ds) { return ds.id === btn.getAttribute('data-id'); });
+                var reviewedData = reviewedSnap ? reviewedSnap.data() : null;
+                if (reviewedData && reviewedData.studentUid) {
+                  var docLinkedParents = await getLinkedParentUids(reviewedData.studentUid);
+                  await sendNotification({
+                    senderUid: user.uid,
+                    senderName: profile.name,
+                    targetType: 'student',
+                    targetLabel: reviewedData.studentName || 'Student',
+                    recipientUids: [reviewedData.studentUid].concat(docLinkedParents),
+                    title: action === 'verify' ? 'Document Verified' : 'Document Rejected',
+                    message: (reviewedData.docType || 'Your document') + (action === 'reject' ? ' — Reason: ' + rejectionReason.trim() : ' has been verified.')
+                  });
+                }
+              } catch (notifyErr) {
+                console.error('Could not send document review notification:', notifyErr);
+              }
+
             } catch (err) {
               alert('Could not update: ' + err.message);
               btn.disabled = false;

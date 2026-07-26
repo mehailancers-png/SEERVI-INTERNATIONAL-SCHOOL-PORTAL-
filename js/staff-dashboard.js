@@ -4,7 +4,7 @@
    ========================================================= */
 
 import { requireAuth, logOut, updateProfilePhoto } from "./auth.js";
-import { resolveRecipients, sendNotification, watchSentNotifications } from "./notifications.js";
+import { resolveRecipients, sendNotification, watchSentNotifications, getLinkedParentUids } from "./notifications.js";
 import { db } from "./firebase-config.js";
 import {
   collection,
@@ -340,6 +340,26 @@ document.addEventListener('DOMContentLoaded', function () {
               reviewedAt: serverTimestamp(),
               rejectionReason: action === 'reject' ? rejectionReason.trim() : null
             });
+
+            // Parent Transparency: notify the student + their linked parent(s)
+            try {
+              var reviewedDoc = allDocuments.find(function (dd) { return dd.id === id; });
+              if (reviewedDoc && reviewedDoc.studentUid) {
+                var docLinkedParents = await getLinkedParentUids(reviewedDoc.studentUid);
+                await sendNotification({
+                  senderUid: user.uid,
+                  senderName: profile.name,
+                  targetType: 'student',
+                  targetLabel: reviewedDoc.studentName || 'Student',
+                  recipientUids: [reviewedDoc.studentUid].concat(docLinkedParents),
+                  title: action === 'verify' ? 'Document Verified' : 'Document Rejected',
+                  message: (reviewedDoc.docType || 'Your document') + (action === 'reject' ? ' — Reason: ' + rejectionReason.trim() : ' has been verified.')
+                });
+              }
+            } catch (notifyErr) {
+              console.error('Could not send document review notification:', notifyErr);
+            }
+
           } catch (err) {
             alert('Could not update status: ' + err.message);
             btn.disabled = false;
@@ -420,6 +440,23 @@ document.addEventListener('DOMContentLoaded', function () {
           uploadedBy: profile.name,
           uploadedAt: serverTimestamp()
         });
+
+        // Parent Transparency: notify the student + their linked parent(s)
+        try {
+          var resultLinkedParents = await getLinkedParentUids(uid);
+          await sendNotification({
+            senderUid: user.uid,
+            senderName: profile.name,
+            targetType: 'student',
+            targetLabel: student ? student.name : 'Student',
+            recipientUids: [uid].concat(resultLinkedParents),
+            title: 'Result Published',
+            message: (student ? student.class + ' — ' : '') + 'Your latest result has been published. Check the Results panel.'
+          });
+        } catch (notifyErr) {
+          console.error('Could not send result notification:', notifyErr);
+        }
+
         alert('Result saved successfully!');
       } catch (err) {
         alert('Could not save result: ' + err.message);
@@ -946,6 +983,25 @@ document.addEventListener('DOMContentLoaded', function () {
           btn.disabled = true;
           try {
             await updateDoc(doc(db, 'appointments', id), { status: newStatus });
+
+            // Parent Transparency: notify the parent who requested it
+            try {
+              var apptData = appts.find(function (a) { return a.id === id; });
+              if (apptData && apptData.parentUid) {
+                await sendNotification({
+                  senderUid: user.uid,
+                  senderName: profile.name,
+                  targetType: 'parent',
+                  targetLabel: apptData.parentName || 'Parent',
+                  recipientUids: [apptData.parentUid],
+                  title: newStatus === 'approved' ? 'Appointment Approved' : 'Appointment Rejected',
+                  message: (apptData.purpose || 'Your appointment request') + ' for ' + (apptData.preferredDate || '') + ' has been ' + newStatus + '.'
+                });
+              }
+            } catch (notifyErr) {
+              console.error('Could not send appointment notification:', notifyErr);
+            }
+
           } catch (err) {
             alert('Could not update: ' + err.message);
             btn.disabled = false;

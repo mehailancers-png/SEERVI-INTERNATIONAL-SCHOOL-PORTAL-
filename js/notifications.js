@@ -22,8 +22,30 @@ import {
   doc,
   updateDoc,
   arrayUnion,
+  getDocs,
   serverTimestamp
 } from "https://www.gstatic.com/firebasejs/10.13.0/firebase-firestore.js";
+
+/* -----------------------------------------------------
+   GET LINKED PARENT UIDS
+   Given a student's uid, finds every parent whose link
+   request to that student has been accepted. Used across
+   the Parent Transparency wiring (results, documents,
+   appointments) so a parent automatically gets notified
+   whenever something happens for their linked child —
+   without needing to ask the student.
+----------------------------------------------------- */
+export async function getLinkedParentUids(studentUid) {
+  var q = query(
+    collection(db, 'linkRequests'),
+    where('studentUid', '==', studentUid),
+    where('status', '==', 'accepted')
+  );
+  var snapshot = await getDocs(q);
+  var uids = [];
+  snapshot.forEach(function (docSnap) { uids.push(docSnap.data().parentUid); });
+  return uids;
+}
 
 /* -----------------------------------------------------
    RESOLVE RECIPIENTS
