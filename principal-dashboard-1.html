@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Principal Dashboard | SIS ERP Portal — Seervi International School</title>
+<meta name="robots" content="noindex, nofollow">
+<meta name="theme-color" content="#0B3D91">
+<link rel="manifest" href="manifest.json">
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+
+<link rel="stylesheet" href="css/style.css">
+</head>
+<body class="dashboard-body">
+
+<a href="#main-content" class="skip-link">Skip to main content</a>
+
+<header class="site-header dashboard-header-bar" id="siteHeader">
+  <div class="header-container">
+    <div class="header-brand">
+      <div class="logo-placeholder">SIS</div>
+      <div class="header-school-name">
+        <span class="school-name-main">Seervi International School</span>
+        <span class="school-name-sub">Principal Dashboard</span>
+      </div>
+    </div>
+    <div class="header-actions">
+      <div class="notif-bell-wrapper">
+        <button class="notif-bell-btn" id="notifBellBtn" aria-label="Notifications">🔔<span class="notif-dot" id="notifDot" hidden></span></button>
+        <div class="notif-dropdown" id="notifDropdown" hidden>
+          <p class="notif-dropdown-title">Notifications</p>
+          <div id="notifDropdownList"><p class="list-empty-state">No notifications yet.</p></div>
+        </div>
+      </div>
+      <a href="index.html" class="btn btn-ghost btn-sm">← Back to Website</a>
+    </div>
+  </div>
+</header>
+
+<div class="auth-guard" id="authGuard">
+  <div class="auth-guard-spinner"></div>
+  <p>Checking your login...</p>
+</div>
+
+<main id="main-content" hidden>
+  <div class="dashboard-layout">
+
+    <nav class="dashboard-nav" aria-label="Dashboard Navigation">
+      <div class="dashboard-nav-profile">
+        <div class="avatar-upload-wrapper">
+          <div class="dashboard-avatar" id="navAvatar">P</div>
+        </div>
+        <div>
+          <div class="dashboard-nav-name" id="navName">Loading...</div>
+          <div class="dashboard-nav-role">Principal</div>
+        </div>
+      </div>
+
+      <a href="staff-dashboard.html" class="dashboard-nav-link" style="display:flex; text-decoration:none;">🧑‍🏫 Open Staff Dashboard</a>
+
+      <button class="dashboard-nav-link logout" id="logoutBtn">🚪 Log Out</button>
+    </nav>
+
+    <div class="dashboard-main">
+
+      <div class="dashboard-header">
+        <div>
+          <h1>School Overview</h1>
+          <p>A single-screen view of the entire ERP.</p>
+        </div>
+      </div>
+
+      <!-- ============ TOP-LEVEL STATS ============ -->
+      <div class="stat-grid">
+        <div class="stat-card">
+          <div class="stat-card-value" id="statTotalStudents">—</div>
+          <div class="stat-card-label">Total Students</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-card-value" id="statTotalParents">—</div>
+          <div class="stat-card-label">Total Parents</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-card-value" id="statTotalTeachers">—</div>
+          <div class="stat-card-label">Total Teachers</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-card-value" id="statTotalClasses">—</div>
+          <div class="stat-card-label">Total Classes</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-card-value" id="statPendingDocsP">—</div>
+          <div class="stat-card-label">Pending Document Verifications</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-card-value" id="statPendingApptsP">—</div>
+          <div class="stat-card-label">Pending Appointments</div>
+        </div>
+      </div>
+
+      <!-- ============ RECENT NOTIFICATIONS ============ -->
+      <div class="dashboard-card">
+        <h3 class="dashboard-card-title">Recent Notifications (School-wide)</h3>
+        <div class="notice-list" id="principalNotificationsList">
+          <p class="list-empty-state">Loading...</p>
+        </div>
+      </div>
+
+      <!-- ============ LATEST SCHOOL NEWS ============ -->
+      <div class="dashboard-card">
+        <h3 class="dashboard-card-title">Latest School News</h3>
+        <p class="list-empty-state">The School News system hasn't been built yet — coming in a future update.</p>
+      </div>
+
+      <!-- ============ RECENT FEEDBACK ============ -->
+      <div class="dashboard-card">
+        <h3 class="dashboard-card-title">Recent Feedback</h3>
+        <p class="list-empty-state">The Feedback &amp; Contact system hasn't been built yet — coming in a future update.</p>
+      </div>
+
+      <!-- ============ LATEST ACTIVITY LOGS ============ -->
+      <div class="dashboard-card">
+        <h3 class="dashboard-card-title">Latest Activity</h3>
+        <div class="notice-list" id="principalActivityList">
+          <p class="list-empty-state">Loading...</p>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</main>
+
+<script src="js/script.js"></script>
+<script type="module" src="js/principal-dashboard.js"></script>
+</body>
+</html>
