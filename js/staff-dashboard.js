@@ -90,6 +90,7 @@ document.addEventListener('DOMContentLoaded', function () {
         if (typeof startHomeworkListenerIfNeeded === 'function') startHomeworkListenerIfNeeded();
         if (typeof startParentsListenerIfNeeded === 'function') startParentsListenerIfNeeded(); // needed to notify linked parents
       }
+      if (target === 'resources' && typeof startResourcesListenerIfNeeded === 'function') startResourcesListenerIfNeeded();
     }
 
     navLinks.forEach(function (link) {
@@ -930,6 +931,146 @@ document.addEventListener('DOMContentLoaded', function () {
       }, function (err) {
         console.error('Homework listener error:', err);
         homeworkList.innerHTML = '<p class="documents-empty-state" style="color:var(--color-red); font-family:monospace; font-size:11px;">' + escapeHtml(err.message) + '</p>';
+      });
+    }
+
+    /* =====================================================
+       RESOURCE CENTRE
+    ===================================================== */
+    var resourceDropzone = document.getElementById('resourceDropzone');
+    var resourceFileInput = document.getElementById('resourceFileInput');
+    var resourceSelectedFile = document.getElementById('resourceSelectedFile');
+    var resourceFileName = document.getElementById('resourceFileName');
+    var resourceFileRemove = document.getElementById('resourceFileRemove');
+    var resourceUploadForm = document.getElementById('resourceUploadForm');
+    var resourceProgressWrapper = document.getElementById('resourceProgressWrapper');
+    var resourceProgressFill = document.getElementById('resourceProgressFill');
+    var resourceProgressLabel = document.getElementById('resourceProgressLabel');
+    var resourceUploadSubmitBtn = document.getElementById('resourceUploadSubmitBtn');
+    var uploadedResourcesList = document.getElementById('uploadedResourcesList');
+    var resourcesListenerStarted = false;
+
+    resourceDropzone.addEventListener('click', function () { resourceFileInput.click(); });
+    resourceDropzone.addEventListener('keydown', function (e) {
+      if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); resourceFileInput.click(); }
+    });
+    ['dragenter', 'dragover'].forEach(function (evt) {
+      resourceDropzone.addEventListener(evt, function (e) { e.preventDefault(); resourceDropzone.classList.add('dragover'); });
+    });
+    ['dragleave', 'drop'].forEach(function (evt) {
+      resourceDropzone.addEventListener(evt, function (e) { e.preventDefault(); resourceDropzone.classList.remove('dragover'); });
+    });
+    resourceDropzone.addEventListener('drop', function (e) {
+      var files = e.dataTransfer.files;
+      if (files && files.length) { resourceFileInput.files = files; showResourceFile(files[0]); }
+    });
+    resourceFileInput.addEventListener('change', function () {
+      if (resourceFileInput.files && resourceFileInput.files.length) showResourceFile(resourceFileInput.files[0]);
+    });
+    function showResourceFile(file) {
+      resourceFileName.textContent = file.name;
+      resourceSelectedFile.hidden = false;
+    }
+    resourceFileRemove.addEventListener('click', function () {
+      resourceFileInput.value = '';
+      resourceSelectedFile.hidden = true;
+    });
+
+    resourceUploadForm.addEventListener('submit', async function (e) {
+      e.preventDefault();
+
+      var file = resourceFileInput.files && resourceFileInput.files[0];
+      var title = document.getElementById('resourceUploadTitle').value.trim();
+      var classVal = document.getElementById('resourceUploadClass').value;
+      var categoryVal = document.getElementById('resourceUploadCategory').value;
+
+      if (!file || !title || !classVal || !categoryVal) {
+        alert('Please fill in all fields and choose a file.');
+        return;
+      }
+      if (file.size > 20 * 1024 * 1024) {
+        alert('File is too large. Maximum size is 20 MB.');
+        return;
+      }
+
+      resourceUploadSubmitBtn.disabled = true;
+      resourceUploadSubmitBtn.querySelector('.btn-label').textContent = 'Uploading...';
+      resourceProgressWrapper.hidden = false;
+
+      try {
+        var result = await window.uploadFileToCloudinary(file, function (pct) {
+          resourceProgressFill.style.width = pct + '%';
+          resourceProgressLabel.textContent = 'Uploading... ' + pct + '%';
+        });
+
+        await addDoc(collection(db, 'resources'), {
+          title: title,
+          class: classVal,
+          category: categoryVal,
+          fileName: file.name,
+          fileURL: result.secureUrl,
+          uploadedByUid: user.uid,
+          uploadedByName: profile.name,
+          uploadedAt: serverTimestamp()
+        });
+
+        resourceUploadForm.reset();
+        resourceFileInput.value = '';
+        resourceSelectedFile.hidden = true;
+        resourceProgressWrapper.hidden = true;
+        alert('Resource uploaded successfully!');
+
+      } catch (err) {
+        console.error(err);
+        alert('Upload failed: ' + err.message);
+        resourceProgressWrapper.hidden = true;
+      }
+
+      resourceUploadSubmitBtn.disabled = false;
+      resourceUploadSubmitBtn.querySelector('.btn-label').textContent = 'Upload Resource';
+    });
+
+    function startResourcesListenerIfNeeded() {
+      if (resourcesListenerStarted) return;
+      resourcesListenerStarted = true;
+      var resourcesQuery = query(collection(db, 'resources'), orderBy('uploadedAt', 'desc'));
+      onSnapshot(resourcesQuery, function (snapshot) {
+        if (snapshot.empty) {
+          uploadedResourcesList.innerHTML = '<p class="documents-empty-state">No resources uploaded yet.</p>';
+          return;
+        }
+        uploadedResourcesList.innerHTML = snapshot.docs.map(function (docSnap) {
+          var r = docSnap.data();
+          return (
+            '<article class="document-item">' +
+              '<div class="document-item-main">' +
+                '<span class="document-item-icon">📂</span>' +
+                '<div><h4>' + escapeHtml(r.title || 'Untitled') + '</h4>' +
+                '<p>' + escapeHtml(r.class || '') + ' • ' + escapeHtml(r.category || '') + '</p></div>' +
+              '</div>' +
+              '<div class="btn-group">' +
+                '<a href="' + r.fileURL + '" target="_blank" rel="noopener" class="btn btn-ghost btn-sm">View</a>' +
+                '<button class="btn btn-danger btn-sm resource-delete-btn" data-id="' + docSnap.id + '">Delete</button>' +
+              '</div>' +
+            '</article>'
+          );
+        }).join('');
+
+        uploadedResourcesList.querySelectorAll('.resource-delete-btn').forEach(function (btn) {
+          btn.addEventListener('click', async function () {
+            if (!confirm('Delete this resource? This cannot be undone.')) return;
+            btn.disabled = true;
+            try {
+              await deleteDoc(doc(db, 'resources', btn.getAttribute('data-id')));
+            } catch (err) {
+              alert('Could not delete: ' + err.message);
+              btn.disabled = false;
+            }
+          });
+        });
+      }, function (err) {
+        console.error('Resources listener error:', err);
+        uploadedResourcesList.innerHTML = '<p class="documents-empty-state" style="color:var(--color-red); font-family:monospace; font-size:11px;">' + escapeHtml(err.message) + '</p>';
       });
     }
 
