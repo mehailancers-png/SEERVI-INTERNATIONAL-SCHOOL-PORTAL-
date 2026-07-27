@@ -33,14 +33,16 @@ document.addEventListener('DOMContentLoaded', function () {
   var authAlert = document.getElementById('authAlert');
 
   /* -----------------------------------------------------
-     If already logged in as staff, skip straight to the
-     dashboard.
+     If already logged in as staff/principal, skip straight
+     to the right dashboard.
   ----------------------------------------------------- */
   onAuthStateChanged(auth, async function (user) {
     if (!user) return;
     var profile = await getUserProfile(user.uid);
     if (profile && profile.role === 'staff') {
       window.location.href = 'staff-dashboard.html';
+    } else if (profile && profile.role === 'principal') {
+      window.location.href = 'principal-dashboard.html';
     }
   });
 
@@ -100,14 +102,14 @@ document.addEventListener('DOMContentLoaded', function () {
         return;
       }
 
-      if (profile.role !== 'staff') {
+      if (profile.role !== 'staff' && profile.role !== 'principal') {
         showAlert('This account is not registered as staff. Please contact the school office if this is unexpected.', 'error');
         setButtonLoading(btn, false, 'Verifying...', 'Staff Log In');
         return;
       }
 
       showAlert('Welcome back! Redirecting to your dashboard...', 'success');
-      window.location.href = 'staff-dashboard.html';
+      window.location.href = profile.role === 'principal' ? 'principal-dashboard.html' : 'staff-dashboard.html';
 
     } catch (err) {
       showAlert(friendlyFirebaseError(err), 'error');
@@ -140,7 +142,7 @@ document.addEventListener('DOMContentLoaded', function () {
       var user = await signInWithGoogle();
       var profile = await getUserProfile(user.uid);
 
-      if (!profile || profile.role !== 'staff') {
+      if (!profile || (profile.role !== 'staff' && profile.role !== 'principal')) {
         await logOut();
         showAlert(
           'This Google account is not registered as staff yet. Sign up as a student/parent first, ' +
@@ -152,7 +154,7 @@ document.addEventListener('DOMContentLoaded', function () {
       }
 
       showAlert('Welcome back! Redirecting to your dashboard...', 'success');
-      window.location.href = 'staff-dashboard.html';
+      window.location.href = profile.role === 'principal' ? 'principal-dashboard.html' : 'staff-dashboard.html';
 
     } catch (err) {
       showAlert(friendlyFirebaseError(err), 'error');

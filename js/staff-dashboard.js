@@ -26,7 +26,7 @@ document.addEventListener('DOMContentLoaded', function () {
   var authGuard = document.getElementById('authGuard');
   var mainContent = document.getElementById('main-content');
 
-  requireAuth(['staff'], 'staff-login.html', function (user, profile) {
+  requireAuth(['staff', 'principal'], 'staff-login.html', function (user, profile) {
     authGuard.hidden = true;
     mainContent.hidden = false;
     initStaffDashboard(user, profile);
