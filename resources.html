@@ -3,12 +3,12 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Previous Year Question Papers | SIS ERP Portal — Seervi International School</title>
-<meta name="description" content="Browse and download class-wise and subject-wise previous year question papers at Seervi International School, Jaitaran, Beawar, Rajasthan.">
+<title>Resource Centre | SIS ERP Portal — Seervi International School</title>
+<meta name="description" content="Browse and download syllabus, holiday homework, book lists, academic calendars, forms, and study materials at Seervi International School.">
 <meta name="author" content="Seervi International School">
 
-<meta property="og:title" content="PYQs | SIS ERP Portal">
-<meta property="og:description" content="Browse and download previous year question papers at Seervi International School.">
+<meta property="og:title" content="Resource Centre | SIS ERP Portal">
+<meta property="og:description" content="Browse and download school resources at Seervi International School.">
 <meta property="og:type" content="website">
 
 <meta name="theme-color" content="#0B3D91">
@@ -42,8 +42,8 @@
       <li><a href="index.html" class="sidebar-link" data-nav="home"><span class="icon" aria-hidden="true">🏠</span>Home</a></li>
       <li><a href="results.html" class="sidebar-link" data-nav="results"><span class="icon" aria-hidden="true">📊</span>Results</a></li>
       <li><a href="documents.html" class="sidebar-link" data-nav="documents"><span class="icon" aria-hidden="true">📄</span>Documents</a></li>
-      <li><a href="pyq.html" class="sidebar-link active" data-nav="pyq"><span class="icon" aria-hidden="true">📝</span>PYQs</a></li>
-      <li><a href="resources.html" class="sidebar-link" data-nav="resources"><span class="icon" aria-hidden="true">📂</span>Resource Centre</a></li>
+      <li><a href="pyq.html" class="sidebar-link" data-nav="pyq"><span class="icon" aria-hidden="true">📝</span>PYQs</a></li>
+      <li><a href="resources.html" class="sidebar-link active" data-nav="resources"><span class="icon" aria-hidden="true">📂</span>Resource Centre</a></li>
       <li><a href="appointment.html" class="sidebar-link" data-nav="appointment"><span class="icon" aria-hidden="true">📅</span>Appointment</a></li>
     </ul>
 
@@ -94,9 +94,9 @@
   <section class="page-banner">
     <div class="page-banner-overlay"></div>
     <div class="container page-banner-content fade-in-up">
-      <p class="hero-eyebrow">Exam Preparation</p>
-      <h1>Previous Year Question Papers</h1>
-      <p class="page-banner-sub">Filter by class and subject, search by keyword, and download papers instantly.</p>
+      <p class="hero-eyebrow">Resource Centre</p>
+      <h1>Syllabus, Forms &amp; Study Materials</h1>
+      <p class="page-banner-sub">Filter by class and category, search by title, and download instantly.</p>
     </div>
   </section>
 
@@ -116,47 +116,48 @@
     <div class="container">
       <div class="pyq-filter-card reveal">
         <div class="form-group">
-          <label for="pyqClass">Class</label>
-          <select id="pyqClass">
-            <option value="all">All Classes</option>
-            <option value="Class 6">Class 6</option>
-            <option value="Class 7">Class 7</option>
-            <option value="Class 8">Class 8</option>
-            <option value="Class 9">Class 9</option>
-            <option value="Class 10">Class 10</option>
-            <option value="Class 11">Class 11</option>
-            <option value="Class 12">Class 12</option>
+          <label for="resourceClass">Class</label>
+          <select id="resourceClass">
+            <option value="all">Any Class</option>
+            <option>Nursery</option><option>LKG</option><option>UKG</option>
+            <option>Class 1</option><option>Class 2</option><option>Class 3</option>
+            <option>Class 4</option><option>Class 5</option><option>Class 6</option>
+            <option>Class 7</option><option>Class 8</option><option>Class 9</option>
+            <option>Class 10</option><option>Class 11</option><option>Class 12</option>
+            <option value="All Classes">General (All Classes)</option>
           </select>
         </div>
 
         <div class="form-group">
-          <label for="pyqSubject">Subject</label>
-          <select id="pyqSubject">
-            <option value="all">All Subjects</option>
-            <option value="English">English</option>
-            <option value="Hindi">Hindi</option>
-            <option value="Mathematics">Mathematics</option>
-            <option value="Science">Science</option>
-            <option value="Social Science">Social Science</option>
+          <label for="resourceCategory">Category</label>
+          <select id="resourceCategory">
+            <option value="all">All Categories</option>
+            <option>Syllabus</option>
+            <option>Holiday Homework</option>
+            <option>Book List</option>
+            <option>Academic Calendar</option>
+            <option>Forms</option>
+            <option>Important PDFs</option>
+            <option>Study Materials</option>
           </select>
         </div>
 
         <div class="form-group pyq-search-group">
-          <label for="pyqSearch">Search</label>
-          <input type="text" id="pyqSearch" placeholder="Search by paper name...">
+          <label for="resourceSearch">Search</label>
+          <input type="text" id="resourceSearch" placeholder="Search by title...">
         </div>
       </div>
 
       <!-- ============ RESULTS COUNT ============ -->
-      <p class="pyq-results-count reveal" id="pyqResultsCount">Loading question papers...</p>
+      <p class="pyq-results-count reveal" id="resourceResultsCount">Loading resources...</p>
 
-      <!-- ============ PYQ GRID ============ -->
-      <div class="pyq-grid" id="pyqGrid">
-        <!-- Cards injected live from Firestore by js/pyq.js -->
+      <!-- ============ RESOURCE GRID ============ -->
+      <div class="pyq-grid" id="resourceGrid">
+        <!-- Cards injected live from Firestore by js/resources.js -->
       </div>
 
-      <p class="pyq-empty-state" id="pyqEmptyState" hidden>
-        No question papers matched your search. Try a different class, subject, or keyword.
+      <p class="pyq-empty-state" id="resourceEmptyState" hidden>
+        No resources matched your search. Try a different class, category, or keyword.
       </p>
     </div>
   </section>
@@ -213,6 +214,6 @@
 <button class="back-to-top" id="backToTop" aria-label="Back to top">↑</button>
 
 <script src="js/script.js"></script>
-<script type="module" src="js/pyq.js"></script>
+<script type="module" src="js/resources.js"></script>
 </body>
 </html>

@@ -3,14 +3,10 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Previous Year Question Papers | SIS ERP Portal — Seervi International School</title>
-<meta name="description" content="Browse and download class-wise and subject-wise previous year question papers at Seervi International School, Jaitaran, Beawar, Rajasthan.">
+<title>Staff Login | SIS ERP Portal — Seervi International School</title>
+<meta name="description" content="Staff and admin login to the Seervi International School ERP Portal.">
 <meta name="author" content="Seervi International School">
-
-<meta property="og:title" content="PYQs | SIS ERP Portal">
-<meta property="og:description" content="Browse and download previous year question papers at Seervi International School.">
-<meta property="og:type" content="website">
-
+<meta name="robots" content="noindex, nofollow">
 <meta name="theme-color" content="#0B3D91">
 <link rel="manifest" href="manifest.json">
 
@@ -42,7 +38,7 @@
       <li><a href="index.html" class="sidebar-link" data-nav="home"><span class="icon" aria-hidden="true">🏠</span>Home</a></li>
       <li><a href="results.html" class="sidebar-link" data-nav="results"><span class="icon" aria-hidden="true">📊</span>Results</a></li>
       <li><a href="documents.html" class="sidebar-link" data-nav="documents"><span class="icon" aria-hidden="true">📄</span>Documents</a></li>
-      <li><a href="pyq.html" class="sidebar-link active" data-nav="pyq"><span class="icon" aria-hidden="true">📝</span>PYQs</a></li>
+      <li><a href="pyq.html" class="sidebar-link" data-nav="pyq"><span class="icon" aria-hidden="true">📝</span>PYQs</a></li>
       <li><a href="resources.html" class="sidebar-link" data-nav="resources"><span class="icon" aria-hidden="true">📂</span>Resource Centre</a></li>
       <li><a href="appointment.html" class="sidebar-link" data-nav="appointment"><span class="icon" aria-hidden="true">📅</span>Appointment</a></li>
     </ul>
@@ -53,7 +49,7 @@
     <ul>
       <li><a href="student-login.html" class="sidebar-link" data-nav="student"><span class="icon" aria-hidden="true">🎓</span>Student Portal</a></li>
       <li><a href="parent-portal.html" class="sidebar-link" data-nav="parent"><span class="icon" aria-hidden="true">👪</span>Parent Portal</a></li>
-      <li><a href="staff-login.html" class="sidebar-link" data-nav="staff"><span class="icon" aria-hidden="true">🧑‍🏫</span>Staff Portal</a></li>
+      <li><a href="staff-login.html" class="sidebar-link active" data-nav="staff"><span class="icon" aria-hidden="true">🧑‍🏫</span>Staff Portal</a></li>
     </ul>
   </nav>
 
@@ -83,85 +79,72 @@
 
 <main id="main-content">
 
-  <!-- ============ AUTH GUARD OVERLAY ============ -->
-  <div class="auth-guard" id="authGuard">
-    <div class="auth-guard-spinner"></div>
-    <p>Checking your login...</p>
-  </div>
-
-  <div id="pageContent" hidden>
-
   <section class="page-banner">
     <div class="page-banner-overlay"></div>
     <div class="container page-banner-content fade-in-up">
-      <p class="hero-eyebrow">Exam Preparation</p>
-      <h1>Previous Year Question Papers</h1>
-      <p class="page-banner-sub">Filter by class and subject, search by keyword, and download papers instantly.</p>
+      <p class="hero-eyebrow">Quick Service</p>
+      <h1>Staff Login</h1>
+      <p class="page-banner-sub">Restricted access for teachers and administrators only.</p>
     </div>
   </section>
 
-  <!-- ============ AUTH STATUS BAR ============ -->
-  <div class="container">
-    <div class="auth-status-bar reveal">
-      <span>Logged in as <strong id="authStatusName">—</strong> <span class="status-badge blue" id="authStatusRole">—</span></span>
-      <div class="btn-group">
-        <a href="student-dashboard.html" class="btn btn-ghost btn-sm" id="authStatusDashboardLink">My Dashboard</a>
-        <button type="button" class="btn btn-ghost btn-sm" id="authStatusLogout">Log Out</button>
-      </div>
-    </div>
-  </div>
-
-  <!-- ============ FILTER / SEARCH BAR ============ -->
-  <section class="section pyq-section" id="pyq-section">
+  <section class="section auth-section" id="auth-section">
     <div class="container">
-      <div class="pyq-filter-card reveal">
-        <div class="form-group">
-          <label for="pyqClass">Class</label>
-          <select id="pyqClass">
-            <option value="all">All Classes</option>
-            <option value="Class 6">Class 6</option>
-            <option value="Class 7">Class 7</option>
-            <option value="Class 8">Class 8</option>
-            <option value="Class 9">Class 9</option>
-            <option value="Class 10">Class 10</option>
-            <option value="Class 11">Class 11</option>
-            <option value="Class 12">Class 12</option>
-          </select>
+      <div class="auth-card reveal">
+
+        <div class="info-note-box warning">
+          <span class="info-note-icon">🔒</span>
+          <span>
+            Staff accounts are never self-registered. If you're a teacher or admin without
+            access yet, contact the school office to have your account activated and receive
+            your Staff Access Code.
+          </span>
         </div>
 
-        <div class="form-group">
-          <label for="pyqSubject">Subject</label>
-          <select id="pyqSubject">
-            <option value="all">All Subjects</option>
-            <option value="English">English</option>
-            <option value="Hindi">Hindi</option>
-            <option value="Mathematics">Mathematics</option>
-            <option value="Science">Science</option>
-            <option value="Social Science">Social Science</option>
-          </select>
-        </div>
+        <div class="auth-alert" id="authAlert" hidden></div>
 
-        <div class="form-group pyq-search-group">
-          <label for="pyqSearch">Search</label>
-          <input type="text" id="pyqSearch" placeholder="Search by paper name...">
-        </div>
+        <form id="staffLoginForm" class="auth-form">
+          <div class="form-group">
+            <label for="staffEmail">Staff Email</label>
+            <input type="email" id="staffEmail" name="staffEmail" placeholder="you@seervischool.edu.in" required>
+            <span class="field-error-message">Please enter a valid email.</span>
+          </div>
+
+          <div class="form-group">
+            <label for="staffPassword">Password</label>
+            <input type="password" id="staffPassword" name="staffPassword" placeholder="Enter your password" required minlength="6">
+            <span class="field-error-message">Password must be at least 6 characters.</span>
+          </div>
+
+          <div class="form-group">
+            <label for="staffAccessCode">Staff Access Code</label>
+            <input type="password" id="staffAccessCode" name="staffAccessCode" placeholder="Provided by the school office" required autocomplete="off">
+            <span class="field-error-message">Please enter your Staff Access Code.</span>
+          </div>
+
+          <button type="submit" class="btn btn-primary ripple auth-submit-btn" id="staffLoginSubmitBtn">
+            <span class="btn-label">Staff Log In</span>
+          </button>
+        </form>
+
+        <div class="auth-divider"><span>or</span></div>
+
+        <button type="button" class="btn-google ripple" id="staffGoogleSignInBtn">
+          <svg class="btn-google-icon" width="19" height="19" viewBox="0 0 48 48" xmlns="http://www.w3.org/2000/svg">
+            <path fill="#FFC107" d="M43.611 20.083H42V20H24v8h11.303c-1.649 4.657-6.08 8-11.303 8-6.627 0-12-5.373-12-12s5.373-12 12-12c3.059 0 5.842 1.154 7.961 3.039l5.657-5.657C34.046 6.053 29.268 4 24 4 12.955 4 4 12.955 4 24s8.955 20 20 20 20-8.955 20-20c0-1.341-.138-2.65-.389-3.917z"/>
+            <path fill="#FF3D00" d="M6.306 14.691l6.571 4.819C14.655 15.108 18.961 12 24 12c3.059 0 5.842 1.154 7.961 3.039l5.657-5.657C34.046 6.053 29.268 4 24 4 16.318 4 9.656 8.337 6.306 14.691z"/>
+            <path fill="#4CAF50" d="M24 44c5.166 0 9.86-1.977 13.409-5.192l-6.19-5.238A11.91 11.91 0 0 1 24 36c-5.202 0-9.619-3.317-11.283-7.946l-6.522 5.025C9.505 39.556 16.227 44 24 44z"/>
+            <path fill="#1976D2" d="M43.611 20.083H42V20H24v8h11.303a12.04 12.04 0 0 1-4.087 5.571l.003-.002 6.19 5.238C36.971 39.205 44 34 44 24c0-1.341-.138-2.65-.389-3.917z"/>
+          </svg>
+          <span>Continue with Google</span>
+        </button>
+
+        <p class="auth-staff-note">
+          Not staff? <a href="student-login.html">Student / Parent Login →</a>
+        </p>
       </div>
-
-      <!-- ============ RESULTS COUNT ============ -->
-      <p class="pyq-results-count reveal" id="pyqResultsCount">Loading question papers...</p>
-
-      <!-- ============ PYQ GRID ============ -->
-      <div class="pyq-grid" id="pyqGrid">
-        <!-- Cards injected live from Firestore by js/pyq.js -->
-      </div>
-
-      <p class="pyq-empty-state" id="pyqEmptyState" hidden>
-        No question papers matched your search. Try a different class, subject, or keyword.
-      </p>
     </div>
   </section>
-
-  </div><!-- /#pageContent -->
 
 </main>
 
@@ -213,6 +196,6 @@
 <button class="back-to-top" id="backToTop" aria-label="Back to top">↑</button>
 
 <script src="js/script.js"></script>
-<script type="module" src="js/pyq.js"></script>
+<script type="module" src="js/staff-login.js"></script>
 </body>
 </html>
