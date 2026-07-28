@@ -107,6 +107,35 @@ document.addEventListener('DOMContentLoaded', function () {
     });
 
     /* =====================================================
+       LATEST SCHOOL NEWS
+    ===================================================== */
+    var newsQuery = query(collection(db, 'news'), orderBy('publishedAt', 'desc'), limit(5));
+    onSnapshot(newsQuery, function (snapshot) {
+      var list = document.getElementById('principalNewsList');
+      if (snapshot.empty) {
+        list.innerHTML = '<p class="list-empty-state">Nothing published yet.</p>';
+        return;
+      }
+      list.innerHTML = snapshot.docs.map(function (docSnap) {
+        var n = docSnap.data();
+        var dateStr = n.publishedAt && n.publishedAt.toDate
+          ? n.publishedAt.toDate().toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' })
+          : 'Just now';
+        return (
+          '<div class="notice-item">' +
+            '<span class="notice-item-icon">📰</span>' +
+            '<div><h4>' + escapeHtml(n.title) + '</h4>' +
+            '<p>' + escapeHtml(n.type || '') + ' • ' + escapeHtml(n.publishedByName || '') + ' • ' + dateStr + '</p></div>' +
+          '</div>'
+        );
+      }).join('');
+    }, function (err) {
+      console.error('News listener error:', err);
+      document.getElementById('principalNewsList').innerHTML =
+        '<p class="list-empty-state" style="color:var(--color-red); font-family:monospace; font-size:11px;">' + escapeHtml(err.message) + '</p>';
+    });
+
+    /* =====================================================
        LATEST ACTIVITY — merged recent items across collections
        (one-time fetch; this is a snapshot-in-time feed, not
        real-time, to keep the page lightweight)

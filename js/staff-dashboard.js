@@ -91,6 +91,10 @@ document.addEventListener('DOMContentLoaded', function () {
         if (typeof startParentsListenerIfNeeded === 'function') startParentsListenerIfNeeded(); // needed to notify linked parents
       }
       if (target === 'resources' && typeof startResourcesListenerIfNeeded === 'function') startResourcesListenerIfNeeded();
+      if (target === 'news') {
+        if (typeof startNewsListenerIfNeeded === 'function') startNewsListenerIfNeeded();
+        if (typeof startParentsListenerIfNeeded === 'function') startParentsListenerIfNeeded(); // needed to notify all parents
+      }
     }
 
     navLinks.forEach(function (link) {
@@ -1071,6 +1075,169 @@ document.addEventListener('DOMContentLoaded', function () {
       }, function (err) {
         console.error('Resources listener error:', err);
         uploadedResourcesList.innerHTML = '<p class="documents-empty-state" style="color:var(--color-red); font-family:monospace; font-size:11px;">' + escapeHtml(err.message) + '</p>';
+      });
+    }
+
+    /* =====================================================
+       PUBLISH NEWS
+    ===================================================== */
+    var newsDropzone = document.getElementById('newsDropzone');
+    var newsFileInput = document.getElementById('newsFileInput');
+    var newsSelectedFile = document.getElementById('newsSelectedFile');
+    var newsFileName = document.getElementById('newsFileName');
+    var newsFileRemove = document.getElementById('newsFileRemove');
+    var newsPublishForm = document.getElementById('newsPublishForm');
+    var newsProgressWrapper = document.getElementById('newsProgressWrapper');
+    var newsProgressFill = document.getElementById('newsProgressFill');
+    var newsProgressLabel = document.getElementById('newsProgressLabel');
+    var newsPublishSubmitBtn = document.getElementById('newsPublishSubmitBtn');
+    var publishedNewsList = document.getElementById('publishedNewsList');
+    var newsListenerStarted = false;
+
+    newsDropzone.addEventListener('click', function () { newsFileInput.click(); });
+    newsDropzone.addEventListener('keydown', function (e) {
+      if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); newsFileInput.click(); }
+    });
+    ['dragenter', 'dragover'].forEach(function (evt) {
+      newsDropzone.addEventListener(evt, function (e) { e.preventDefault(); newsDropzone.classList.add('dragover'); });
+    });
+    ['dragleave', 'drop'].forEach(function (evt) {
+      newsDropzone.addEventListener(evt, function (e) { e.preventDefault(); newsDropzone.classList.remove('dragover'); });
+    });
+    newsDropzone.addEventListener('drop', function (e) {
+      var files = e.dataTransfer.files;
+      if (files && files.length) { newsFileInput.files = files; showNewsFile(files[0]); }
+    });
+    newsFileInput.addEventListener('change', function () {
+      if (newsFileInput.files && newsFileInput.files.length) showNewsFile(newsFileInput.files[0]);
+    });
+    function showNewsFile(file) {
+      newsFileName.textContent = file.name;
+      newsSelectedFile.hidden = false;
+    }
+    newsFileRemove.addEventListener('click', function () {
+      newsFileInput.value = '';
+      newsSelectedFile.hidden = true;
+    });
+
+    newsPublishForm.addEventListener('submit', async function (e) {
+      e.preventDefault();
+
+      var type = document.getElementById('newsPublishType').value;
+      var title = document.getElementById('newsPublishTitle').value.trim();
+      var body = document.getElementById('newsPublishBody').value.trim();
+      var file = newsFileInput.files && newsFileInput.files[0];
+
+      if (!type || !title || !body) {
+        alert('Please select a type, and fill in title and body.');
+        return;
+      }
+      if (file && file.size > 50 * 1024 * 1024) {
+        alert('Attachment is too large. Maximum size is 50 MB.');
+        return;
+      }
+
+      newsPublishSubmitBtn.disabled = true;
+      newsPublishSubmitBtn.querySelector('.btn-label').textContent = 'Publishing...';
+
+      try {
+        var fileURL = null, fileName = null;
+
+        if (file) {
+          newsProgressWrapper.hidden = false;
+          var result = await window.uploadFileToCloudinary(file, function (pct) {
+            newsProgressFill.style.width = pct + '%';
+            newsProgressLabel.textContent = 'Uploading... ' + pct + '%';
+          });
+          fileURL = result.secureUrl;
+          fileName = file.name;
+        }
+
+        await addDoc(collection(db, 'news'), {
+          type: type,
+          title: title,
+          body: body,
+          fileURL: fileURL,
+          fileName: fileName,
+          publishedByUid: user.uid,
+          publishedByName: profile.name,
+          publishedAt: serverTimestamp()
+        });
+
+        // Parent Transparency / spec requirement: notify every
+        // student and parent the moment news/newsletter is published.
+        try {
+          var schoolWideRecipients = allStudents.map(function (s) { return s.uid; })
+            .concat(allParents.map(function (p) { return p.uid; }));
+          if (schoolWideRecipients.length > 0) {
+            await sendNotification({
+              senderUid: user.uid,
+              senderName: profile.name,
+              targetType: 'school',
+              targetLabel: 'Whole School',
+              recipientUids: schoolWideRecipients,
+              title: 'New ' + type + ': ' + title,
+              message: body.length > 120 ? body.slice(0, 120) + '…' : body
+            });
+          }
+        } catch (notifyErr) {
+          console.error('Could not send news notification:', notifyErr);
+        }
+
+        newsPublishForm.reset();
+        newsFileInput.value = '';
+        newsSelectedFile.hidden = true;
+        newsProgressWrapper.hidden = true;
+        alert('Published successfully! Students and parents have been notified.');
+
+      } catch (err) {
+        console.error(err);
+        alert('Could not publish: ' + err.message);
+        newsProgressWrapper.hidden = true;
+      }
+
+      newsPublishSubmitBtn.disabled = false;
+      newsPublishSubmitBtn.querySelector('.btn-label').textContent = 'Publish & Notify Everyone';
+    });
+
+    function startNewsListenerIfNeeded() {
+      if (newsListenerStarted) return;
+      newsListenerStarted = true;
+      var newsQuery = query(collection(db, 'news'), orderBy('publishedAt', 'desc'));
+      onSnapshot(newsQuery, function (snapshot) {
+        if (snapshot.empty) {
+          publishedNewsList.innerHTML = '<p class="documents-empty-state">Nothing published yet.</p>';
+          return;
+        }
+        publishedNewsList.innerHTML = snapshot.docs.map(function (docSnap) {
+          var n = docSnap.data();
+          return (
+            '<article class="document-item">' +
+              '<div class="document-item-main">' +
+                '<span class="document-item-icon">📰</span>' +
+                '<div><h4>' + escapeHtml(n.title || 'Untitled') + '</h4>' +
+                '<p>' + escapeHtml(n.type || '') + (n.fileURL ? ' • <a href="' + n.fileURL + '" target="_blank" rel="noopener">View attachment</a>' : '') + '</p></div>' +
+              '</div>' +
+              '<button class="btn btn-danger btn-sm news-delete-btn" data-id="' + docSnap.id + '">Delete</button>' +
+            '</article>'
+          );
+        }).join('');
+
+        publishedNewsList.querySelectorAll('.news-delete-btn').forEach(function (btn) {
+          btn.addEventListener('click', async function () {
+            if (!confirm('Delete this published item? This cannot be undone.')) return;
+            btn.disabled = true;
+            try {
+              await deleteDoc(doc(db, 'news', btn.getAttribute('data-id')));
+            } catch (err) {
+              alert('Could not delete: ' + err.message);
+              btn.disabled = false;
+            }
+          });
+        });
+      }, function (err) {
+        console.error('News listener error:', err);
+        publishedNewsList.innerHTML = '<p class="documents-empty-state" style="color:var(--color-red); font-family:monospace; font-size:11px;">' + escapeHtml(err.message) + '</p>';
       });
     }
 
