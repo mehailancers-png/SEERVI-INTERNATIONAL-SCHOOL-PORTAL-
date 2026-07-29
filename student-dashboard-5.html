@@ -1,0 +1,257 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Student Dashboard | SIS ERP Portal — Seervi International School</title>
+<meta name="description" content="Student dashboard for results, attendance, homework, documents, and profile at Seervi International School.">
+<meta name="robots" content="noindex, nofollow">
+<meta name="theme-color" content="#0B3D91">
+<link rel="manifest" href="manifest.json">
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+
+<link rel="stylesheet" href="css/style.css">
+</head>
+<body class="dashboard-body">
+
+<a href="#main-content" class="skip-link">Skip to main content</a>
+
+<header class="site-header dashboard-header-bar" id="siteHeader">
+  <div class="header-container">
+    <div class="header-brand">
+      <div class="logo-placeholder">SIS</div>
+      <div class="header-school-name">
+        <span class="school-name-main">Seervi International School</span>
+        <span class="school-name-sub">Student Dashboard</span>
+      </div>
+    </div>
+    <div class="header-actions">
+      <div class="notif-bell-wrapper">
+        <button class="notif-bell-btn" id="notifBellBtn" aria-label="Notifications">🔔<span class="notif-dot" id="notifDot" hidden></span></button>
+        <div class="notif-dropdown" id="notifDropdown" hidden>
+          <p class="notif-dropdown-title">Notifications</p>
+          <div id="notifDropdownList"><p class="list-empty-state">No notifications yet.</p></div>
+        </div>
+      </div>
+      <a href="index.html" class="btn btn-ghost btn-sm">← Back to Website</a>
+    </div>
+  </div>
+</header>
+
+<!-- ============ AUTH GUARD OVERLAY ============ -->
+<div class="auth-guard" id="authGuard">
+  <div class="auth-guard-spinner"></div>
+  <p>Checking your login...</p>
+</div>
+
+<main id="main-content" hidden>
+  <div class="dashboard-layout">
+
+    <!-- ============ DASHBOARD SIDE NAV ============ -->
+    <nav class="dashboard-nav" aria-label="Dashboard Navigation">
+      <div class="dashboard-nav-profile">
+        <div class="avatar-upload-wrapper">
+          <div class="dashboard-avatar" id="navAvatar">S</div>
+          <button type="button" class="avatar-upload-btn" id="avatarUploadBtn" aria-label="Change profile picture">📷</button>
+          <input type="file" id="avatarFileInput" accept="image/*" hidden>
+        </div>
+        <div>
+          <div class="dashboard-nav-name" id="navName">Loading...</div>
+          <div class="dashboard-nav-role">Student</div>
+        </div>
+      </div>
+
+      <button class="dashboard-nav-link active" data-panel="results">📊 Results</button>
+      <button class="dashboard-nav-link" data-panel="attendance">🗓️ Attendance</button>
+      <button class="dashboard-nav-link" data-panel="homework">📚 Homework</button>
+      <button class="dashboard-nav-link" data-panel="documents">📄 Documents</button>
+      <button class="dashboard-nav-link" data-panel="links">🔗 Parent Requests <span class="nav-badge" id="linkRequestBadge" hidden>0</span></button>
+      <button class="dashboard-nav-link" data-panel="profile">👤 Profile</button>
+
+      <button class="dashboard-nav-link logout" id="logoutBtn">🚪 Log Out</button>
+    </nav>
+
+    <!-- ============ DASHBOARD MAIN CONTENT ============ -->
+    <div class="dashboard-main">
+
+      <!-- ============ RESULTS PANEL ============ -->
+      <section class="dashboard-panel active" data-panel="results">
+        <div class="dashboard-header">
+          <div>
+            <h1>My Results</h1>
+            <p>Your latest academic performance, subject by subject.</p>
+          </div>
+        </div>
+
+        <div class="stat-grid" id="resultsStatGrid">
+          <div class="stat-card">
+            <div class="stat-card-value" id="statOverallPercentage">—</div>
+            <div class="stat-card-label">Overall Percentage</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-card-value" id="statOverallStatus">—</div>
+            <div class="stat-card-label">Result Status</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-card-value" id="statSubjectCount">—</div>
+            <div class="stat-card-label">Subjects</div>
+          </div>
+        </div>
+
+        <div class="dashboard-card">
+          <h3 class="dashboard-card-title">Subject-wise Marks</h3>
+          <div class="data-table-wrapper">
+            <table class="data-table" id="resultsDataTable">
+              <thead>
+                <tr>
+                  <th>Subject</th>
+                  <th>Marks Obtained</th>
+                  <th>Max Marks</th>
+                  <th>Grade</th>
+                </tr>
+              </thead>
+              <tbody id="resultsTableBody">
+                <tr><td colspan="4">No results published yet. Check back later or use the public <a href="results.html">Results page</a>.</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </section>
+
+      <!-- ============ ATTENDANCE PANEL ============ -->
+      <section class="dashboard-panel" data-panel="attendance">
+        <div class="dashboard-header">
+          <div>
+            <h1>My Attendance</h1>
+            <p>Your attendance record for the current academic session.</p>
+          </div>
+        </div>
+
+        <div class="stat-grid">
+          <div class="stat-card">
+            <div class="stat-card-value" id="statAttendancePercent">—</div>
+            <div class="stat-card-label">Attendance %</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-card-value" id="statDaysPresent">—</div>
+            <div class="stat-card-label">Days Present</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-card-value" id="statDaysTotal">—</div>
+            <div class="stat-card-label">Total Working Days</div>
+          </div>
+        </div>
+
+        <div class="dashboard-card">
+          <h3 class="dashboard-card-title">Monthly Breakdown</h3>
+          <div class="data-table-wrapper">
+            <table class="data-table" id="attendanceDataTable">
+              <thead>
+                <tr>
+                  <th>Month</th>
+                  <th>Present</th>
+                  <th>Absent</th>
+                  <th>Percentage</th>
+                </tr>
+              </thead>
+              <tbody id="attendanceTableBody">
+                <tr><td colspan="4">Attendance records are not published yet. Please check back later.</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </section>
+
+      <!-- ============ HOMEWORK PANEL ============ -->
+      <section class="dashboard-panel" data-panel="homework">
+        <div class="dashboard-header">
+          <div>
+            <h1>Homework</h1>
+            <p>Assignments shared by your teachers.</p>
+          </div>
+        </div>
+
+        <div class="dashboard-card">
+          <h3 class="dashboard-card-title">Pending &amp; Recent Homework</h3>
+          <div class="notice-list" id="homeworkList">
+            <p class="list-empty-state">No homework has been assigned yet. Check back soon.</p>
+          </div>
+        </div>
+      </section>
+
+      <!-- ============ DOCUMENTS PANEL ============ -->
+      <section class="dashboard-panel" data-panel="documents">
+        <div class="dashboard-header">
+          <div>
+            <h1>My Documents</h1>
+            <p>Upload documents and track their verification status.</p>
+          </div>
+          <a href="documents.html" class="btn btn-primary btn-sm ripple">Go to Document Center →</a>
+        </div>
+
+        <div class="dashboard-card">
+          <h3 class="dashboard-card-title">Recent Uploads</h3>
+          <div class="documents-list" id="dashboardDocumentsList">
+            <p class="documents-empty-state">Loading your documents...</p>
+          </div>
+        </div>
+      </section>
+
+      <!-- ============ PARENT LINK REQUESTS PANEL ============ -->
+      <section class="dashboard-panel" data-panel="links">
+        <div class="dashboard-header">
+          <div>
+            <h1>Parent Link Requests</h1>
+            <p>Approve a parent's request to view your results and documents.</p>
+          </div>
+        </div>
+
+        <div class="dashboard-card">
+          <h3 class="dashboard-card-title">Pending Requests</h3>
+          <div class="notice-list" id="linkRequestsList">
+            <p class="list-empty-state">Loading...</p>
+          </div>
+        </div>
+
+        <div class="dashboard-card">
+          <h3 class="dashboard-card-title">Linked Parents</h3>
+          <div class="notice-list" id="linkedParentsList">
+            <p class="list-empty-state">No parent linked yet.</p>
+          </div>
+        </div>
+      </section>
+
+      <!-- ============ PROFILE PANEL ============ -->
+      <section class="dashboard-panel" data-panel="profile">
+        <div class="dashboard-header">
+          <div>
+            <h1>My Profile</h1>
+            <p>Your account information on file with the school.</p>
+          </div>
+        </div>
+
+        <div class="dashboard-card">
+          <div class="profile-card">
+            <div class="profile-photo-placeholder" id="profilePhotoTrigger" role="button" tabindex="0" title="Click to change your photo">Click to Add Photo</div>
+            <div class="profile-details">
+              <h3 id="profileName">—</h3>
+              <p id="profileEmail">—</p>
+              <p id="profileStudentId">—</p>
+              <p id="profileClass">—</p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+    </div>
+  </div>
+</main>
+
+<script src="js/script.js"></script>
+<script src="js/cloudinary-upload.js"></script>
+<script type="module" src="js/student-dashboard.js"></script>
+</body>
+</html>
