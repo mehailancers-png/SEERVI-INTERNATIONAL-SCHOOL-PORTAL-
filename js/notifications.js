@@ -85,7 +85,7 @@ export function resolveRecipients(targetType, targetValue, allStudents, allParen
 /* -----------------------------------------------------
    SEND NOTIFICATION (staff only — enforced by Firestore rules)
 ----------------------------------------------------- */
-export async function sendNotification({ senderUid, senderName, targetType, targetLabel, recipientUids, title, message }) {
+export async function sendNotification({ senderUid, senderName, targetType, targetLabel, recipientUids, title, message, ticketId }) {
   if (!recipientUids || recipientUids.length === 0) {
     throw new Error('No recipients matched this audience — nothing was sent.');
   }
@@ -97,6 +97,7 @@ export async function sendNotification({ senderUid, senderName, targetType, targ
     recipientUids: recipientUids,
     title: title,
     message: message,
+    ticketId: ticketId || null,
     readBy: [],
     createdAt: serverTimestamp()
   });
@@ -209,7 +210,7 @@ export function wireNotificationBell(uid) {
         ? n.createdAt.toDate().toLocaleDateString('en-GB', { day: '2-digit', month: 'short' })
         : '';
       return (
-        '<div class="notif-item' + (isRead ? '' : ' unread') + '" data-id="' + n.id + '">' +
+        '<div class="notif-item' + (isRead ? '' : ' unread') + '" data-id="' + n.id + '"' + (n.ticketId ? ' data-ticket-id="' + n.ticketId + '"' : '') + '>' +
           '<p class="notif-item-title">' + escapeHtmlLocal(n.title) + '</p>' +
           '<p class="notif-item-message">' + escapeHtmlLocal(n.message) + '</p>' +
           '<p class="notif-item-meta">' + escapeHtmlLocal(n.senderName || 'Staff') + ' • ' + dateStr + '</p>' +
@@ -222,6 +223,10 @@ export function wireNotificationBell(uid) {
         markNotificationRead(item.getAttribute('data-id'), uid).catch(function (err) {
           console.error('Could not mark as read:', err);
         });
+        var ticketId = item.getAttribute('data-ticket-id');
+        if (ticketId && typeof window.__openFeedbackThread === 'function') {
+          window.__openFeedbackThread(ticketId);
+        }
       });
     });
   });

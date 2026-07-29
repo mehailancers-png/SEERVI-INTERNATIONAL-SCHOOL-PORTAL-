@@ -5,6 +5,7 @@
 
 import { requireAuth, logOut } from "./auth.js";
 import { wireNotificationBell } from "./notifications.js";
+import { wireFeedbackUI } from "./feedback.js";
 import { db } from "./firebase-config.js";
 import {
   collection,
@@ -29,6 +30,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
   function initPrincipalDashboard(user, profile) {
     wireNotificationBell(user.uid);
+    wireFeedbackUI(user, profile);
     document.getElementById('navName').textContent = profile.name || 'Principal';
     document.getElementById('navAvatar').textContent = (profile.name || 'P').charAt(0).toUpperCase();
 
@@ -132,6 +134,33 @@ document.addEventListener('DOMContentLoaded', function () {
     }, function (err) {
       console.error('News listener error:', err);
       document.getElementById('principalNewsList').innerHTML =
+        '<p class="list-empty-state" style="color:var(--color-red); font-family:monospace; font-size:11px;">' + escapeHtml(err.message) + '</p>';
+    });
+
+    /* =====================================================
+       RECENT FEEDBACK
+    ===================================================== */
+    var feedbackQuery = query(collection(db, 'feedback'), orderBy('submittedAt', 'desc'), limit(5));
+    onSnapshot(feedbackQuery, function (snapshot) {
+      var list = document.getElementById('principalFeedbackList');
+      if (snapshot.empty) {
+        list.innerHTML = '<p class="list-empty-state">No tickets submitted yet.</p>';
+        return;
+      }
+      list.innerHTML = snapshot.docs.map(function (docSnap) {
+        var t = docSnap.data();
+        var statusClass = t.status === 'resolved' ? 'green' : t.status === 'in_progress' ? 'gold' : 'blue';
+        return (
+          '<div class="notice-item">' +
+            '<span class="notice-item-icon">🎫</span>' +
+            '<div><h4>' + escapeHtml(t.ticketNumber) + ' — ' + escapeHtml(t.subject) + '</h4>' +
+            '<p>' + escapeHtml(t.category) + ' • ' + escapeHtml(t.submittedByName || '') + ' • <span class="status-badge ' + statusClass + '">' + escapeHtml((t.status || 'open').replace('_', ' ')) + '</span></p></div>' +
+          '</div>'
+        );
+      }).join('');
+    }, function (err) {
+      console.error('Feedback listener error:', err);
+      document.getElementById('principalFeedbackList').innerHTML =
         '<p class="list-empty-state" style="color:var(--color-red); font-family:monospace; font-size:11px;">' + escapeHtml(err.message) + '</p>';
     });
 

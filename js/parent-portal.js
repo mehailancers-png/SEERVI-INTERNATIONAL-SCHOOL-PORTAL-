@@ -5,6 +5,7 @@
 
 import { requireAuth, logOut, updateProfilePhoto, sendLinkRequest } from "./auth.js";
 import { wireNotificationBell } from "./notifications.js";
+import { wireFeedbackUI } from "./feedback.js";
 import { db } from "./firebase-config.js";
 import {
   collection,
@@ -28,6 +29,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
   function initPortal(user, profile) {
     wireNotificationBell(user.uid);
+    wireFeedbackUI(user, profile);
     document.getElementById('navName').textContent = profile.name || 'Parent';
     document.getElementById('navAvatar').textContent = (profile.name || 'P').charAt(0).toUpperCase();
 

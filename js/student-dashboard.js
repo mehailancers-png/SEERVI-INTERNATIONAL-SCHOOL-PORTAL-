@@ -5,6 +5,7 @@
 
 import { requireAuth, logOut, updateProfilePhoto, respondToLinkRequest } from "./auth.js";
 import { wireNotificationBell } from "./notifications.js";
+import { wireFeedbackUI } from "./feedback.js";
 import { db } from "./firebase-config.js";
 import {
   collection,
@@ -348,6 +349,11 @@ document.addEventListener('DOMContentLoaded', function () {
       documentsList.innerHTML = '<p class="documents-empty-state">Could not load documents right now. Please try again later.</p>';
       console.error('Documents listener error:', err);
     });
+
+    /* -----------------------------------------------------
+       FEEDBACK & CONTACT (modal-based 2-way conversation)
+    ----------------------------------------------------- */
+    wireFeedbackUI(user, profile);
   }
 
   function escapeHtml(str) {

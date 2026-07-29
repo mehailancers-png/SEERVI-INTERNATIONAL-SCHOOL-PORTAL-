@@ -5,6 +5,7 @@
 
 import { requireAuth, logOut, updateProfilePhoto } from "./auth.js";
 import { resolveRecipients, sendNotification, watchSentNotifications, getLinkedParentUids } from "./notifications.js";
+import { wireFeedbackUI } from "./feedback.js";
 import { db } from "./firebase-config.js";
 import {
   collection,
@@ -33,6 +34,7 @@ document.addEventListener('DOMContentLoaded', function () {
   });
 
   function initStaffDashboard(user, profile) {
+    wireFeedbackUI(user, profile);
     document.getElementById('navName').textContent = profile.name || 'Staff';
     document.getElementById('navAvatar').textContent = (profile.name || 'T').charAt(0).toUpperCase();
     document.getElementById('profileName').textContent = profile.name || '—';
