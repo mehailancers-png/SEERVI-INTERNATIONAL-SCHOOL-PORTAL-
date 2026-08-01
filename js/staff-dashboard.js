@@ -93,6 +93,7 @@ document.addEventListener('DOMContentLoaded', function () {
         if (typeof startParentsListenerIfNeeded === 'function') startParentsListenerIfNeeded(); // needed to notify linked parents
       }
       if (target === 'resources' && typeof startResourcesListenerIfNeeded === 'function') startResourcesListenerIfNeeded();
+      if (target === 'blog' && typeof startBlogListenerIfNeeded === 'function') startBlogListenerIfNeeded();
       if (target === 'news') {
         if (typeof startNewsListenerIfNeeded === 'function') startNewsListenerIfNeeded();
         if (typeof startParentsListenerIfNeeded === 'function') startParentsListenerIfNeeded(); // needed to notify all parents
@@ -1240,6 +1241,147 @@ document.addEventListener('DOMContentLoaded', function () {
       }, function (err) {
         console.error('News listener error:', err);
         publishedNewsList.innerHTML = '<p class="documents-empty-state" style="color:var(--color-red); font-family:monospace; font-size:11px;">' + escapeHtml(err.message) + '</p>';
+      });
+    }
+
+    /* =====================================================
+       SCHOOL BLOG
+    ===================================================== */
+    var blogCoverDropzone = document.getElementById('blogCoverDropzone');
+    var blogCoverInput = document.getElementById('blogCoverInput');
+    var blogCoverSelected = document.getElementById('blogCoverSelected');
+    var blogCoverName = document.getElementById('blogCoverName');
+    var blogCoverRemove = document.getElementById('blogCoverRemove');
+    var blogPublishForm = document.getElementById('blogPublishForm');
+    var blogProgressWrapper = document.getElementById('blogProgressWrapper');
+    var blogProgressFill = document.getElementById('blogProgressFill');
+    var blogProgressLabel = document.getElementById('blogProgressLabel');
+    var blogPublishSubmitBtn = document.getElementById('blogPublishSubmitBtn');
+    var publishedBlogList = document.getElementById('publishedBlogList');
+    var blogListenerStarted = false;
+
+    blogCoverDropzone.addEventListener('click', function () { blogCoverInput.click(); });
+    blogCoverDropzone.addEventListener('keydown', function (e) {
+      if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); blogCoverInput.click(); }
+    });
+    ['dragenter', 'dragover'].forEach(function (evt) {
+      blogCoverDropzone.addEventListener(evt, function (e) { e.preventDefault(); blogCoverDropzone.classList.add('dragover'); });
+    });
+    ['dragleave', 'drop'].forEach(function (evt) {
+      blogCoverDropzone.addEventListener(evt, function (e) { e.preventDefault(); blogCoverDropzone.classList.remove('dragover'); });
+    });
+    blogCoverDropzone.addEventListener('drop', function (e) {
+      var files = e.dataTransfer.files;
+      if (files && files.length) { blogCoverInput.files = files; showBlogCover(files[0]); }
+    });
+    blogCoverInput.addEventListener('change', function () {
+      if (blogCoverInput.files && blogCoverInput.files.length) showBlogCover(blogCoverInput.files[0]);
+    });
+    function showBlogCover(file) {
+      blogCoverName.textContent = file.name;
+      blogCoverSelected.hidden = false;
+    }
+    blogCoverRemove.addEventListener('click', function () {
+      blogCoverInput.value = '';
+      blogCoverSelected.hidden = true;
+    });
+
+    blogPublishForm.addEventListener('submit', async function (e) {
+      e.preventDefault();
+
+      var category = document.getElementById('blogCategorySelect').value;
+      var title = document.getElementById('blogTitleInput').value.trim();
+      var body = document.getElementById('blogBodyInput').value.trim();
+      var coverFile = blogCoverInput.files && blogCoverInput.files[0];
+
+      if (!category || !title || !body) {
+        alert('Please select a category, and fill in title and article body.');
+        return;
+      }
+      if (coverFile && coverFile.size > 10 * 1024 * 1024) {
+        alert('Cover image is too large. Maximum size is 10 MB.');
+        return;
+      }
+
+      blogPublishSubmitBtn.disabled = true;
+      blogPublishSubmitBtn.querySelector('.btn-label').textContent = 'Publishing...';
+
+      try {
+        var coverImageURL = null;
+
+        if (coverFile) {
+          blogProgressWrapper.hidden = false;
+          var result = await window.uploadFileToCloudinary(coverFile, function (pct) {
+            blogProgressFill.style.width = pct + '%';
+            blogProgressLabel.textContent = 'Uploading... ' + pct + '%';
+          });
+          coverImageURL = result.secureUrl;
+        }
+
+        await addDoc(collection(db, 'blog'), {
+          category: category,
+          title: title,
+          body: body,
+          coverImageURL: coverImageURL,
+          publishedByUid: user.uid,
+          publishedByName: profile.name,
+          publishedAt: serverTimestamp()
+        });
+
+        blogPublishForm.reset();
+        blogCoverInput.value = '';
+        blogCoverSelected.hidden = true;
+        blogProgressWrapper.hidden = true;
+        alert('Article published!');
+
+      } catch (err) {
+        console.error(err);
+        alert('Could not publish: ' + err.message);
+        blogProgressWrapper.hidden = true;
+      }
+
+      blogPublishSubmitBtn.disabled = false;
+      blogPublishSubmitBtn.querySelector('.btn-label').textContent = 'Publish Article';
+    });
+
+    function startBlogListenerIfNeeded() {
+      if (blogListenerStarted) return;
+      blogListenerStarted = true;
+      var blogQuery = query(collection(db, 'blog'), orderBy('publishedAt', 'desc'));
+      onSnapshot(blogQuery, function (snapshot) {
+        if (snapshot.empty) {
+          publishedBlogList.innerHTML = '<p class="documents-empty-state">Nothing published yet.</p>';
+          return;
+        }
+        publishedBlogList.innerHTML = snapshot.docs.map(function (docSnap) {
+          var p = docSnap.data();
+          return (
+            '<article class="document-item">' +
+              '<div class="document-item-main">' +
+                '<span class="document-item-icon">✍️</span>' +
+                '<div><h4>' + escapeHtml(p.title || 'Untitled') + '</h4>' +
+                '<p>' + escapeHtml(p.category || '') + '</p></div>' +
+              '</div>' +
+              '<button class="btn btn-danger btn-sm blog-delete-btn" data-id="' + docSnap.id + '">Delete</button>' +
+            '</article>'
+          );
+        }).join('');
+
+        publishedBlogList.querySelectorAll('.blog-delete-btn').forEach(function (btn) {
+          btn.addEventListener('click', async function () {
+            if (!confirm('Delete this article? This cannot be undone.')) return;
+            btn.disabled = true;
+            try {
+              await deleteDoc(doc(db, 'blog', btn.getAttribute('data-id')));
+            } catch (err) {
+              alert('Could not delete: ' + err.message);
+              btn.disabled = false;
+            }
+          });
+        });
+      }, function (err) {
+        console.error('Blog listener error:', err);
+        publishedBlogList.innerHTML = '<p class="documents-empty-state" style="color:var(--color-red); font-family:monospace; font-size:11px;">' + escapeHtml(err.message) + '</p>';
       });
     }
 
