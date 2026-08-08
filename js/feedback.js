@@ -31,17 +31,26 @@ var CATEGORIES = ['Suggestion', 'Complaint', 'Technical Issue', 'Academic Issue'
 
 /* -----------------------------------------------------
    SEQUENTIAL TICKET NUMBER (transaction-safe)
+   If this fails for any reason (permissions hiccup, first-
+   ever run, transient network issue), we fall back to a
+   timestamp-based number instead of blocking submission —
+   numbering is cosmetic, actually saving the ticket is not.
 ----------------------------------------------------- */
 async function getNextTicketNumber() {
-  var counterRef = doc(db, "counters", "feedback");
-  var next = await runTransaction(db, async function (transaction) {
-    var snap = await transaction.get(counterRef);
-    var current = snap.exists() ? (snap.data().value || 0) : 0;
-    var updated = current + 1;
-    transaction.set(counterRef, { value: updated });
-    return updated;
-  });
-  return "TKT-" + String(next).padStart(6, "0");
+  try {
+    var counterRef = doc(db, "counters", "feedback");
+    var next = await runTransaction(db, async function (transaction) {
+      var snap = await transaction.get(counterRef);
+      var current = snap.exists() ? (snap.data().value || 0) : 0;
+      var updated = current + 1;
+      transaction.set(counterRef, { value: updated });
+      return updated;
+    });
+    return "TKT-" + String(next).padStart(6, "0");
+  } catch (counterErr) {
+    console.error("Ticket counter failed, falling back to timestamp-based number:", counterErr.code, counterErr.message);
+    return "TKT-" + Date.now().toString().slice(-8);
+  }
 }
 
 /* -----------------------------------------------------
@@ -49,19 +58,25 @@ async function getNextTicketNumber() {
 ----------------------------------------------------- */
 async function createTicket({ uid, name, role, category, subject, firstMessage }) {
   var ticketNumber = await getNextTicketNumber();
-  var docRef = await addDoc(collection(db, "feedback"), {
-    ticketNumber: ticketNumber,
-    submittedByUid: uid,
-    submittedByName: name,
-    submittedByRole: role,
-    category: category,
-    subject: subject,
-    status: "open",
-    messages: [{ senderUid: uid, senderName: name, senderRole: role, text: firstMessage, sentAt: new Date().toISOString() }],
-    submittedAt: serverTimestamp(),
-    lastUpdatedAt: serverTimestamp()
-  });
-  return { id: docRef.id, ticketNumber: ticketNumber };
+
+  try {
+    var docRef = await addDoc(collection(db, "feedback"), {
+      ticketNumber: ticketNumber,
+      submittedByUid: uid,
+      submittedByName: name,
+      submittedByRole: role,
+      category: category,
+      subject: subject,
+      status: "open",
+      messages: [{ senderUid: uid, senderName: name, senderRole: role, text: firstMessage, sentAt: new Date().toISOString() }],
+      submittedAt: serverTimestamp(),
+      lastUpdatedAt: serverTimestamp()
+    });
+    return { id: docRef.id, ticketNumber: ticketNumber };
+  } catch (writeErr) {
+    console.error("createTicket addDoc failed:", writeErr.code, writeErr.message);
+    throw new Error((writeErr.code ? "[" + writeErr.code + "] " : "") + writeErr.message);
+  }
 }
 
 async function sendMessage({ ticketId, ticket, senderUid, senderName, senderRole, text }) {
@@ -235,14 +250,18 @@ export function wireFeedbackUI(user, profile) {
 
       var btn = this;
       btn.disabled = true;
+      btn.textContent = 'Submitting...';
       try {
-        await createTicket({ uid: user.uid, name: profile.name, role: profile.role, category: category, subject: subject, firstMessage: message });
+        var result = await createTicket({ uid: user.uid, name: profile.name, role: profile.role, category: category, subject: subject, firstMessage: message });
         document.getElementById('feedbackSubjectInput').value = '';
         document.getElementById('feedbackMessageInput').value = '';
         newTicketForm.hidden = true;
+        alert('Ticket submitted! Your ticket number is ' + result.ticketNumber + '.');
       } catch (err) {
-        alert('Could not submit: ' + err.message);
+        console.error('Ticket submission failed:', err.code, err.message, err);
+        alert('Could not submit your ticket.\n\n' + (err.code ? 'Error code: ' + err.code + '\n' : '') + 'Details: ' + err.message);
       }
+      btn.textContent = 'Submit Ticket';
       btn.disabled = false;
     });
   }
