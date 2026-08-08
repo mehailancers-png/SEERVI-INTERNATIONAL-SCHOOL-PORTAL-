@@ -1418,10 +1418,17 @@ document.addEventListener('DOMContentLoaded', function () {
       e.preventDefault();
       var file = mediaFileInput.files && mediaFileInput.files[0];
       var title = document.getElementById('mediaTitleInput').value.trim();
-      var eventName = document.getElementById('mediaEventInput').value.trim();
+      var classVal = document.getElementById('mediaClassSelect').value;
+      var eventName = document.getElementById('mediaEventSelect').value;
 
-      if (!file || !title || !eventName) { alert('Please fill in all fields and choose a file.'); return; }
-      if (file.size > 50 * 1024 * 1024) { alert('File is too large. Maximum size is 50 MB.'); return; }
+      if (!file || !title || !classVal || !eventName) {
+        alert('Please fill in Title, Class, Event and choose a file.');
+        return;
+      }
+      if (file.size > 50 * 1024 * 1024) {
+        alert('File is too large. Maximum size is 50 MB.');
+        return;
+      }
 
       mediaUploadSubmitBtn.disabled = true;
       mediaUploadSubmitBtn.querySelector('.btn-label').textContent = 'Uploading...';
@@ -1435,6 +1442,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
         await addDoc(collection(db, 'media'), {
           title: title,
+          class: classVal,
           event: eventName,
           mediaType: /\.(mp4|mov|avi|webm)$/i.test(file.name) ? 'video' : 'image',
           fileURL: result.secureUrl,
@@ -1462,14 +1470,19 @@ document.addEventListener('DOMContentLoaded', function () {
       if (mediaListenerStarted) return;
       mediaListenerStarted = true;
       onSnapshot(query(collection(db, 'media'), orderBy('uploadedAt', 'desc')), function (snapshot) {
-        if (snapshot.empty) { uploadedMediaList.innerHTML = '<p class="documents-empty-state">No media uploaded yet.</p>'; return; }
+        if (snapshot.empty) {
+          uploadedMediaList.innerHTML = '<p class="documents-empty-state">No media uploaded yet.</p>';
+          return;
+        }
         uploadedMediaList.innerHTML = snapshot.docs.map(function (docSnap) {
           var m = docSnap.data();
+          var meta = [m.class, m.event].filter(Boolean).join(' • ');
           return (
             '<article class="document-item">' +
               '<div class="document-item-main">' +
                 '<span class="document-item-icon">' + (m.mediaType === 'video' ? '🎬' : '🖼️') + '</span>' +
-                '<div><h4>' + escapeHtml(m.title || 'Untitled') + '</h4><p>' + escapeHtml(m.event || '') + '</p></div>' +
+                '<div><h4>' + escapeHtml(m.title || 'Untitled') + '</h4>' +
+                '<p>' + escapeHtml(meta) + '</p></div>' +
               '</div>' +
               '<button class="btn btn-danger btn-sm media-delete-btn" data-id="' + docSnap.id + '">Delete</button>' +
             '</article>'

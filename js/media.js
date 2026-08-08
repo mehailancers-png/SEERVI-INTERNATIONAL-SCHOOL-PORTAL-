@@ -1,5 +1,6 @@
 /* =========================================================
    MEDIA.JS — Media Centre browse/lightbox
+   Supports filtering by Class + Event + Search
    ========================================================= */
 import { onAuthReady, logOut } from "./auth.js";
 import { db } from "./firebase-config.js";
@@ -28,6 +29,7 @@ document.addEventListener('DOMContentLoaded', function () {
       await logOut(); window.location.href = 'student-login.html';
     });
 
+    var classFilter = document.getElementById('mediaClassFilter');
     var eventFilter = document.getElementById('mediaEventFilter');
     var searchInput = document.getElementById('mediaSearch');
     var grid = document.getElementById('mediaGrid');
@@ -48,13 +50,6 @@ document.addEventListener('DOMContentLoaded', function () {
     onSnapshot(query(collection(db, 'media'), orderBy('uploadedAt', 'desc')), function (snapshot) {
       allMedia = [];
       snapshot.forEach(function (d) { allMedia.push(d.data()); });
-
-      var events = {};
-      allMedia.forEach(function (m) { if (m.event) events[m.event] = true; });
-      var currentVal = eventFilter.value;
-      eventFilter.innerHTML = '<option value="all">All Events</option>' +
-        Object.keys(events).sort().map(function (ev) { return '<option' + (ev === currentVal ? ' selected' : '') + '>' + escapeHtml(ev) + '</option>'; }).join('');
-
       render();
     }, function (err) {
       grid.innerHTML = '';
@@ -63,17 +58,26 @@ document.addEventListener('DOMContentLoaded', function () {
     });
 
     function render() {
+      var classVal = classFilter.value;
       var evVal = eventFilter.value;
       var searchVal = searchInput.value.trim().toLowerCase();
+
       var filtered = allMedia.filter(function (m) {
-        var matchesEvent = evVal === 'all' || m.event === evVal;
+        var matchesClass = classVal === 'all' || (m.class || '') === classVal;
+        var matchesEvent = evVal === 'all' || (m.event || '') === evVal;
         var matchesSearch = !searchVal || (m.title || '').toLowerCase().indexOf(searchVal) !== -1;
-        return matchesEvent && matchesSearch;
+        return matchesClass && matchesEvent && matchesSearch;
       });
 
-      resultsCount.textContent = allMedia.length === 0 ? 'No media uploaded yet.' : 'Showing ' + filtered.length + ' of ' + allMedia.length + ' item(s)';
+      resultsCount.textContent = allMedia.length === 0
+        ? 'No media uploaded yet.'
+        : 'Showing ' + filtered.length + ' of ' + allMedia.length + ' item(s)';
 
-      if (filtered.length === 0) { grid.innerHTML = ''; emptyState.hidden = false; return; }
+      if (filtered.length === 0) {
+        grid.innerHTML = '';
+        emptyState.hidden = false;
+        return;
+      }
       emptyState.hidden = true;
 
       grid.innerHTML = filtered.map(function (m, i) {
@@ -81,11 +85,12 @@ document.addEventListener('DOMContentLoaded', function () {
         var thumb = isVideo
           ? '<div style="width:100%; height:150px; background:var(--color-bg); border-radius:var(--radius-md); display:flex; align-items:center; justify-content:center; font-size:32px;">🎬</div>'
           : '<img src="' + m.fileURL + '" alt="" style="width:100%; height:150px; object-fit:cover; border-radius:var(--radius-md);">';
+        var meta = [m.class, m.event].filter(Boolean).join(' • ');
         return (
           '<div class="pyq-card media-item" data-index="' + i + '" style="cursor:pointer; padding:14px;">' +
             thumb +
             '<h3 style="font-size:14px; margin-top:10px;">' + escapeHtml(m.title || 'Untitled') + '</h3>' +
-            '<p class="pyq-card-meta">' + escapeHtml(m.event || '') + '</p>' +
+            '<p class="pyq-card-meta">' + escapeHtml(meta) + '</p>' +
           '</div>'
         );
       }).join('');
@@ -97,12 +102,16 @@ document.addEventListener('DOMContentLoaded', function () {
           lightboxContent.innerHTML = m.mediaType === 'video'
             ? '<video controls autoplay style="width:100%; border-radius:var(--radius-md);"><source src="' + m.fileURL + '"></video>'
             : '<img src="' + m.fileURL + '" style="width:100%; border-radius:var(--radius-md);">';
-          lightboxContent.innerHTML += '<h3 style="margin-top:14px;">' + escapeHtml(m.title || '') + '</h3><p class="pyq-card-meta">' + escapeHtml(m.event || '') + '</p>';
+          var meta = [m.class, m.event].filter(Boolean).join(' • ');
+          lightboxContent.innerHTML +=
+            '<h3 style="margin-top:14px;">' + escapeHtml(m.title || '') + '</h3>' +
+            '<p class="pyq-card-meta">' + escapeHtml(meta) + '</p>';
           lightbox.classList.add('open');
         });
       });
     }
 
+    classFilter.addEventListener('change', render);
     eventFilter.addEventListener('change', render);
     searchInput.addEventListener('input', render);
   }
