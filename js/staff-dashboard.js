@@ -94,6 +94,7 @@ document.addEventListener('DOMContentLoaded', function () {
       }
       if (target === 'resources' && typeof startResourcesListenerIfNeeded === 'function') startResourcesListenerIfNeeded();
       if (target === 'blog' && typeof startBlogListenerIfNeeded === 'function') startBlogListenerIfNeeded();
+      if (target === 'media' && typeof startMediaListenerIfNeeded === 'function') startMediaListenerIfNeeded();
       if (target === 'news') {
         if (typeof startNewsListenerIfNeeded === 'function') startNewsListenerIfNeeded();
         if (typeof startParentsListenerIfNeeded === 'function') startParentsListenerIfNeeded(); // needed to notify all parents
@@ -1382,6 +1383,109 @@ document.addEventListener('DOMContentLoaded', function () {
       }, function (err) {
         console.error('Blog listener error:', err);
         publishedBlogList.innerHTML = '<p class="documents-empty-state" style="color:var(--color-red); font-family:monospace; font-size:11px;">' + escapeHtml(err.message) + '</p>';
+      });
+    }
+
+    /* =====================================================
+       MEDIA CENTRE
+    ===================================================== */
+    var mediaDropzone = document.getElementById('mediaDropzone');
+    var mediaFileInput = document.getElementById('mediaFileInput');
+    var mediaSelectedFile = document.getElementById('mediaSelectedFile');
+    var mediaFileName = document.getElementById('mediaFileName');
+    var mediaFileRemove = document.getElementById('mediaFileRemove');
+    var mediaUploadForm = document.getElementById('mediaUploadForm');
+    var mediaProgressWrapper = document.getElementById('mediaProgressWrapper');
+    var mediaProgressFill = document.getElementById('mediaProgressFill');
+    var mediaProgressLabel = document.getElementById('mediaProgressLabel');
+    var mediaUploadSubmitBtn = document.getElementById('mediaUploadSubmitBtn');
+    var uploadedMediaList = document.getElementById('uploadedMediaList');
+    var mediaListenerStarted = false;
+
+    mediaDropzone.addEventListener('click', function () { mediaFileInput.click(); });
+    mediaDropzone.addEventListener('keydown', function (e) { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); mediaFileInput.click(); } });
+    ['dragenter', 'dragover'].forEach(function (evt) { mediaDropzone.addEventListener(evt, function (e) { e.preventDefault(); mediaDropzone.classList.add('dragover'); }); });
+    ['dragleave', 'drop'].forEach(function (evt) { mediaDropzone.addEventListener(evt, function (e) { e.preventDefault(); mediaDropzone.classList.remove('dragover'); }); });
+    mediaDropzone.addEventListener('drop', function (e) {
+      var files = e.dataTransfer.files;
+      if (files && files.length) { mediaFileInput.files = files; showMediaFile(files[0]); }
+    });
+    mediaFileInput.addEventListener('change', function () { if (mediaFileInput.files && mediaFileInput.files.length) showMediaFile(mediaFileInput.files[0]); });
+    function showMediaFile(file) { mediaFileName.textContent = file.name; mediaSelectedFile.hidden = false; }
+    mediaFileRemove.addEventListener('click', function () { mediaFileInput.value = ''; mediaSelectedFile.hidden = true; });
+
+    mediaUploadForm.addEventListener('submit', async function (e) {
+      e.preventDefault();
+      var file = mediaFileInput.files && mediaFileInput.files[0];
+      var title = document.getElementById('mediaTitleInput').value.trim();
+      var eventName = document.getElementById('mediaEventInput').value.trim();
+
+      if (!file || !title || !eventName) { alert('Please fill in all fields and choose a file.'); return; }
+      if (file.size > 50 * 1024 * 1024) { alert('File is too large. Maximum size is 50 MB.'); return; }
+
+      mediaUploadSubmitBtn.disabled = true;
+      mediaUploadSubmitBtn.querySelector('.btn-label').textContent = 'Uploading...';
+      mediaProgressWrapper.hidden = false;
+
+      try {
+        var result = await window.uploadFileToCloudinary(file, function (pct) {
+          mediaProgressFill.style.width = pct + '%';
+          mediaProgressLabel.textContent = 'Uploading... ' + pct + '%';
+        });
+
+        await addDoc(collection(db, 'media'), {
+          title: title,
+          event: eventName,
+          mediaType: /\.(mp4|mov|avi|webm)$/i.test(file.name) ? 'video' : 'image',
+          fileURL: result.secureUrl,
+          uploadedByUid: user.uid,
+          uploadedByName: profile.name,
+          uploadedAt: serverTimestamp()
+        });
+
+        mediaUploadForm.reset();
+        mediaFileInput.value = '';
+        mediaSelectedFile.hidden = true;
+        mediaProgressWrapper.hidden = true;
+        alert('Media uploaded!');
+      } catch (err) {
+        console.error(err);
+        alert('Upload failed: ' + err.message);
+        mediaProgressWrapper.hidden = true;
+      }
+
+      mediaUploadSubmitBtn.disabled = false;
+      mediaUploadSubmitBtn.querySelector('.btn-label').textContent = 'Upload Media';
+    });
+
+    function startMediaListenerIfNeeded() {
+      if (mediaListenerStarted) return;
+      mediaListenerStarted = true;
+      onSnapshot(query(collection(db, 'media'), orderBy('uploadedAt', 'desc')), function (snapshot) {
+        if (snapshot.empty) { uploadedMediaList.innerHTML = '<p class="documents-empty-state">No media uploaded yet.</p>'; return; }
+        uploadedMediaList.innerHTML = snapshot.docs.map(function (docSnap) {
+          var m = docSnap.data();
+          return (
+            '<article class="document-item">' +
+              '<div class="document-item-main">' +
+                '<span class="document-item-icon">' + (m.mediaType === 'video' ? '🎬' : '🖼️') + '</span>' +
+                '<div><h4>' + escapeHtml(m.title || 'Untitled') + '</h4><p>' + escapeHtml(m.event || '') + '</p></div>' +
+              '</div>' +
+              '<button class="btn btn-danger btn-sm media-delete-btn" data-id="' + docSnap.id + '">Delete</button>' +
+            '</article>'
+          );
+        }).join('');
+        uploadedMediaList.querySelectorAll('.media-delete-btn').forEach(function (btn) {
+          btn.addEventListener('click', async function () {
+            if (!confirm('Delete this media item? This cannot be undone.')) return;
+            btn.disabled = true;
+            try { await deleteDoc(doc(db, 'media', btn.getAttribute('data-id'))); }
+            catch (err) { alert('Could not delete: ' + err.message); btn.disabled = false; }
+          });
+        });
+      }, function (err) {
+        console.error('Media listener error:', err);
+        uploadedMediaList.innerHTML = '<p class="documents-empty-state" style="color:var(--color-red); font-family:monospace; font-size:11px;">' + escapeHtml(err.message) + '</p>';
       });
     }
 
