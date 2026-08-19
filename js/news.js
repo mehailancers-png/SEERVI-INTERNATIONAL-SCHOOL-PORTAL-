@@ -42,11 +42,12 @@ document.addEventListener('DOMContentLoaded', function () {
       window.location.href = 'student-login.html';
     });
 
-    var typeFilter   = document.getElementById('newsTypeFilter');
+    var newsTabs      = document.querySelectorAll('[data-newstab]');
     var searchInput  = document.getElementById('newsSearch');
     var listEl       = document.getElementById('newsList');
     var emptyState   = document.getElementById('newsEmptyState');
     var resultsCount = document.getElementById('newsResultsCount');
+    var activeTab = 'sis';
 
     var allNews = [];
 
@@ -62,20 +63,31 @@ document.addEventListener('DOMContentLoaded', function () {
       console.error('News listener error:', err);
     });
 
+    newsTabs.forEach(function (tab) {
+      tab.addEventListener('click', function () {
+        newsTabs.forEach(function (t) { t.classList.remove('active'); t.setAttribute('aria-selected', 'false'); });
+        tab.classList.add('active');
+        tab.setAttribute('aria-selected', 'true');
+        activeTab = tab.getAttribute('data-newstab');
+        renderList();
+      });
+    });
+
     function renderList() {
-      var typeVal = typeFilter.value;
       var searchVal = searchInput.value.trim().toLowerCase();
 
-      var filtered = allNews.filter(function (n) {
-        var matchesType = typeVal === 'all' || n.type === typeVal;
-        var matchesSearch = !searchVal || (n.title || '').toLowerCase().indexOf(searchVal) !== -1;
-        return matchesType && matchesSearch;
+      var scoped = allNews.filter(function (n) {
+        return activeTab === 'enewsletter' ? n.type === 'E-Newsletter' : n.type !== 'E-Newsletter';
       });
 
-      if (allNews.length === 0) {
-        resultsCount.textContent = 'No news has been published yet.';
+      var filtered = scoped.filter(function (n) {
+        return !searchVal || (n.title || '').toLowerCase().indexOf(searchVal) !== -1;
+      });
+
+      if (scoped.length === 0) {
+        resultsCount.textContent = activeTab === 'enewsletter' ? 'No e-newsletters published yet.' : 'No school news published yet.';
       } else {
-        resultsCount.textContent = 'Showing ' + filtered.length + ' of ' + allNews.length + ' item(s)';
+        resultsCount.textContent = 'Showing ' + filtered.length + ' of ' + scoped.length + ' item(s)';
       }
 
       if (filtered.length === 0) {
@@ -85,6 +97,23 @@ document.addEventListener('DOMContentLoaded', function () {
       }
 
       emptyState.hidden = true;
+
+      if (activeTab === 'enewsletter') {
+        listEl.innerHTML = filtered.map(function (n) {
+          var dateStr = n.publishedAt && n.publishedAt.toDate
+            ? n.publishedAt.toDate().toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' })
+            : '';
+          return (
+            '<article class="dashboard-card" style="margin-bottom:0; display:flex; justify-content:space-between; align-items:center; gap:14px; flex-wrap:wrap;">' +
+              '<div><h3 style="color:var(--color-primary); font-size:16px;">📄 ' + escapeHtml(n.title || 'Untitled') + '</h3>' +
+              '<p style="font-size:13px; color:var(--color-text-muted);">' + escapeHtml(n.publishedByName || 'School Office') + ' • ' + dateStr + '</p></div>' +
+              (n.fileURL ? '<a href="' + n.fileURL + '" target="_blank" rel="noopener" class="btn btn-primary btn-sm ripple">⬇ View PDF</a>' : '') +
+            '</article>'
+          );
+        }).join('');
+        return;
+      }
+
       listEl.innerHTML = filtered.map(function (n) {
         var dateStr = n.publishedAt && n.publishedAt.toDate
           ? n.publishedAt.toDate().toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' })
@@ -110,7 +139,6 @@ document.addEventListener('DOMContentLoaded', function () {
       }).join('');
     }
 
-    typeFilter.addEventListener('change', renderList);
     searchInput.addEventListener('input', renderList);
   }
 

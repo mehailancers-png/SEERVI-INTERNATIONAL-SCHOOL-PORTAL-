@@ -20,6 +20,7 @@ document.addEventListener('DOMContentLoaded', function () {
     sidebar.setAttribute('aria-hidden', 'false');
     hamburgerBtn.setAttribute('aria-expanded', 'true');
     document.body.style.overflow = 'hidden';
+    if (edgeArrow) { edgeArrow.classList.add('sidebar-open'); edgeArrow.textContent = '›'; edgeArrow.setAttribute('aria-label', 'Close menu'); }
 
     // Move focus into the sidebar for keyboard/screen-reader users
     var firstLink = sidebar.querySelector('.sidebar-link');
@@ -33,11 +34,27 @@ document.addEventListener('DOMContentLoaded', function () {
     sidebar.setAttribute('aria-hidden', 'true');
     hamburgerBtn.setAttribute('aria-expanded', 'false');
     document.body.style.overflow = '';
+    if (edgeArrow) { edgeArrow.classList.remove('sidebar-open'); edgeArrow.textContent = '‹'; edgeArrow.setAttribute('aria-label', 'Open menu'); }
     hamburgerBtn.focus();
   }
 
   function isSidebarOpen() {
     return sidebar && sidebar.classList.contains('open');
+  }
+
+  // Small always-visible edge tab, in addition to the hamburger,
+  // for quickly opening/closing the sidebar with one tap.
+  var edgeArrow = null;
+  if (sidebar) {
+    edgeArrow = document.createElement('button');
+    edgeArrow.type = 'button';
+    edgeArrow.className = 'sidebar-edge-arrow';
+    edgeArrow.textContent = '‹';
+    edgeArrow.setAttribute('aria-label', 'Open menu');
+    document.body.appendChild(edgeArrow);
+    edgeArrow.addEventListener('click', function () {
+      isSidebarOpen() ? closeSidebar() : openSidebar();
+    });
   }
 
   if (hamburgerBtn) {
