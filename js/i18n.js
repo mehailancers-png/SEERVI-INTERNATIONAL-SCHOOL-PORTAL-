@@ -1,5 +1,5 @@
 /* =========================================================
-   I18N.JS — Hindi / English language switcher (v3)
+   I18N.JS — Hindi / English language switcher (v4)
    Seervi International School — SIS ERP Portal
 
    SCOPE (per school requirement):
@@ -7,18 +7,18 @@
      Parent Portal, Student Dashboard, Results, Documents,
      Attendance, Homework, Notifications, Feedback/Contact,
      Parent-child linking, login forms, status messages.
-   - COSMETIC / PRESENTATION pages (Index, About, Achievements,
-     Gallery, Media showcase, etc.) remain primarily English.
+   - COSMETIC / PRESENTATION pages remain primarily English.
      Only shared navigation labels are translated.
 
-   Architecture (unchanged):
+   Architecture:
    - Flat English → Hindi phrase dictionary.
    - Full DOM text walk + attribute translation.
    - MutationObserver catches dynamic Firestore content.
    - Skips <script>, <style>, <select>, <option> (data safety).
    - SIS IDs, names, emails, filenames never match phrases.
 
-   Translations use complete natural phrases, not word-by-word.
+   v4: Expanded dictionary with all remaining utility strings
+   that were still showing in English after language switch.
    ========================================================= */
 
 (function () {
@@ -32,7 +32,7 @@
   ----------------------------------------------------- */
   var PHRASES = {
 
-    /* ===== Shared navigation (kept short & natural) ===== */
+    /* ===== Shared navigation ===== */
     "Home": "होम",
     "Results": "परिणाम",
     "Documents": "दस्तावेज़",
@@ -46,6 +46,7 @@
     "Parent Portal": "अभिभावक पोर्टल",
     "Staff Portal": "स्टाफ पोर्टल",
     "Quick Services": "त्वरित सेवाएं",
+    "Quick Service": "त्वरित सेवा",
     "Quick Links": "त्वरित लिंक",
     "Portals": "पोर्टल",
     "Contact": "संपर्क",
@@ -66,6 +67,7 @@
     "Roll Number": "रोल नंबर",
     "Class": "कक्षा",
     "Section": "सेक्शन",
+    "Section (Optional)": "सेक्शन (वैकल्पिक)",
     "I am a Student": "मैं एक छात्र हूं",
     "I am a Parent": "मैं एक अभिभावक हूं",
     "Create Account": "खाता बनाएं",
@@ -75,12 +77,41 @@
     "Staff Email": "स्टाफ ईमेल",
     "Staff Access Code": "स्टाफ एक्सेस कोड",
     "Staff Log In": "स्टाफ लॉग इन",
-    "Checking your login...": "आपका लॉगिन जांचा जा रहा है...",
+    "Staff Login": "स्टाफ लॉगिन",
     "Student Login": "छात्र लॉगिन",
     "Parent Login": "अभिभावक लॉगिन",
-    "Staff Login": "स्टाफ लॉगिन",
+    "Student & Parent Login": "छात्र और अभिभावक लॉगिन",
+    "Checking your login...": "आपका लॉगिन जांचा जा रहा है...",
+    "Access your results, documents, PYQs, and appointments.": "अपने परिणाम, दस्तावेज़, प्रश्नपत्र और नियुक्तियाँ देखें।",
+    "Restricted access for teachers and administrators only.": "केवल शिक्षकों और प्रशासकों के लिए सीमित पहुंच।",
+    "Staff accounts are never self-registered. If you're a teacher or admin without access yet, contact the school office to have your account activated and receive your Staff Access Code.": "स्टाफ खाते स्वयं पंजीकृत नहीं होते। यदि आप शिक्षक या व्यवस्थापक हैं और अभी पहुंच नहीं है, तो स्कूल कार्यालय से संपर्क करें ताकि आपका खाता सक्रिय हो और आपको स्टाफ एक्सेस कोड मिल सके।",
+    "Not staff?": "स्टाफ नहीं हैं?",
+    "Student / Parent Login →": "छात्र / अभिभावक लॉगिन →",
+    "or": "या",
+    "Please enter a valid email.": "कृपया एक वैध ईमेल दर्ज करें।",
+    "Please enter a valid email address.": "कृपया एक वैध ईमेल पता दर्ज करें।",
+    "Password must be at least 6 characters.": "पासवर्ड कम से कम 6 अक्षर का होना चाहिए।",
+    "Please enter your name.": "कृपया अपना नाम दर्ज करें।",
+    "Please enter your SIS Student ID.": "कृपया अपनी SIS छात्र आईडी दर्ज करें।",
+    "Please enter your roll number.": "कृपया अपना रोल नंबर दर्ज करें।",
+    "Please select your class.": "कृपया अपनी कक्षा चुनें।",
+    "Please enter your child's SIS Student ID.": "कृपया अपने बच्चे की SIS छात्र आईडी दर्ज करें।",
+    "Please enter your Staff Access Code.": "कृपया अपना स्टाफ एक्सेस कोड दर्ज करें।",
+    "Incorrect email or password.": "ईमेल या पासवर्ड गलत है।",
+    "Too many attempts. Please wait a moment and try again.": "बहुत अधिक प्रयास। कृपया थोड़ी देर बाद पुनः प्रयास करें।",
+    "Email/Password sign-in is not enabled yet. Please contact the school office.": "ईमेल/पासवर्ड साइन-इन अभी सक्षम नहीं है। कृपया स्कूल कार्यालय से संपर्क करें।",
+    "Network error. Check your internet connection.": "नेटवर्क त्रुटि। अपना इंटरनेट कनेक्शन जांचें।",
+    "Something went wrong. Please try again.": "कुछ गलत हो गया। कृपया पुनः प्रयास करें।",
+    "Account found but profile is missing. Please contact the school office.": "खाता मिला लेकिन प्रोफ़ाइल नहीं मिली। कृपया स्कूल कार्यालय से संपर्क करें।",
+    "This account is not registered as staff. Please contact the school office if this is unexpected.": "यह खाता स्टाफ के रूप में पंजीकृत नहीं है। यदि यह अप्रत्याशित है तो स्कूल कार्यालय से संपर्क करें।",
+    "Welcome back! Redirecting to your dashboard...": "वापसी पर स्वागत है! आपके डैशबोर्ड पर भेजा जा रहा है...",
+    "Please enter your Staff Access Code above before continuing with Google.": "Google से जारी रखने से पहले ऊपर अपना स्टाफ एक्सेस कोड दर्ज करें।",
+    "This Google account is not registered as staff yet. Sign up as a student/parent first, then contact the school office to have your account promoted to staff.": "यह Google खाता अभी स्टाफ के रूप में पंजीकृत नहीं है। पहले छात्र/अभिभावक के रूप में साइन अप करें, फिर स्कूल कार्यालय से संपर्क करके खाते को स्टाफ बनाएं।",
+    "Invalid Staff Access Code. Please check with the school office.": "अमान्य स्टाफ एक्सेस कोड। कृपया स्कूल कार्यालय से जांच करें।",
+    "Please enter a valid email and password.": "कृपया वैध ईमेल और पासवर्ड दर्ज करें।",
+    "Verifying...": "सत्यापित हो रहा है...",
 
-    /* ===== Dashboard navigation labels ===== */
+    /* ===== Dashboard navigation ===== */
     "Attendance": "उपस्थिति",
     "Homework": "गृहकार्य",
     "Profile": "प्रोफ़ाइल",
@@ -88,6 +119,7 @@
     "Parent Link Requests": "अभिभावक लिंक अनुरोध",
     "Child Details": "बच्चे का विवरण",
     "Students": "छात्र",
+    "Subjects": "विषय",
     "Upload Results": "परिणाम अपलोड करें",
     "Upload Attendance": "उपस्थिति अपलोड करें",
     "Upload PYQs": "प्रश्नपत्र अपलोड करें",
@@ -99,7 +131,7 @@
     "Feedback & Tickets": "प्रतिक्रिया और टिकट",
     "Notifications": "सूचनाएं",
 
-    /* ===== Main headings (utility) ===== */
+    /* ===== Main headings ===== */
     "My Results": "मेरे परिणाम",
     "My Attendance": "मेरी उपस्थिति",
     "My Documents": "मेरे दस्तावेज़",
@@ -129,6 +161,9 @@
     "Pending Requests": "लंबित अनुरोध",
     "Linked Parents": "लिंक किए गए अभिभावक",
     "My Appointment Requests": "मेरे नियुक्ति अनुरोध",
+    "Student Dashboard": "छात्र डैशबोर्ड",
+    "Academic Records": "शैक्षणिक रिकॉर्ड",
+    "Document Center": "दस्तावेज़ केंद्र",
 
     /* ===== Buttons & actions ===== */
     "Search Result": "परिणाम खोजें",
@@ -137,6 +172,7 @@
     "Submit Ticket": "टिकट जमा करें",
     "Download": "डाउनलोड करें",
     "Download Result": "परिणाम डाउनलोड करें",
+    "Download attachment": "अटैचमेंट डाउनलोड करें",
     "Upload": "अपलोड करें",
     "Save Changes": "परिवर्तन सहेजें",
     "Save Result": "परिणाम सहेजें",
@@ -168,9 +204,13 @@
     "Go to Document Center →": "दस्तावेज़ केंद्र पर जाएं →",
     "Upload on Their Behalf →": "उनकी ओर से अपलोड करें →",
     "Book New Appointment →": "नई नियुक्ति बुक करें →",
+    "Upload one →": "एक अपलोड करें →",
     "Click to Add Photo": "फोटो जोड़ने के लिए क्लिक करें",
     "Click to upload": "अपलोड करने के लिए क्लिक करें",
     "or drag and drop": "या खींचकर छोड़ें",
+    "✓ Accept": "✓ स्वीकार करें",
+    "✓ Verify": "✓ सत्यापित करें",
+    "✕ Reject": "✕ अस्वीकार करें",
 
     /* ===== Form labels ===== */
     "Category": "श्रेणी",
@@ -204,6 +244,7 @@
     "Days Present": "उपस्थित दिन",
     "Total Working Days": "कुल कार्य दिवस",
     "SIS ID": "SIS आईडी",
+    "No Section": "कोई सेक्शन नहीं",
 
     /* ===== Status words ===== */
     "Pending": "लंबित",
@@ -218,8 +259,9 @@
     "Fail": "अनुत्तीर्ण",
     "PASS": "उत्तीर्ण",
     "FAIL": "अनुत्तीर्ण",
+    "Status": "स्थिति",
 
-    /* ===== Empty states & messages (natural complete sentences) ===== */
+    /* ===== Empty states & short messages ===== */
     "Loading...": "लोड हो रहा है...",
     "Loading documents...": "दस्तावेज़ लोड हो रहे हैं...",
     "Loading your documents...": "आपके दस्तावेज़ लोड हो रहे हैं...",
@@ -237,6 +279,7 @@
     "No tickets submitted yet.": "अभी तक कोई टिकट जमा नहीं किया गया है।",
     "No parent linked yet.": "अभी तक कोई अभिभावक लिंक नहीं किया गया है।",
     "No homework assigned yet.": "अभी तक कोई गृहकार्य नहीं सौंपा गया है।",
+    "No pending requests.": "कोई लंबित अनुरोध नहीं है।",
     "Uploaded": "अपलोड किया गया",
     "Reviewed by": "समीक्षक",
     "Due": "नियत तारीख",
@@ -244,8 +287,9 @@
     "Recipients": "प्राप्तकर्ता",
     "Reference ID": "संदर्भ आईडी",
     "Just now": "अभी अभी",
+    "Recently Sent": "हाल ही में भेजा गया",
 
-    /* ===== Longer instructional sentences (utility pages) ===== */
+    /* ===== Longer instructional / dynamic sentences ===== */
     "Link your account to your child's so you can see their real results and documents.": "अपने खाते को बच्चे के खाते से लिंक करें ताकि आप उनके वास्तविक परिणाम और दस्तावेज़ देख सकें।",
     "Live once your child accepts your link request.": "जब आपका बच्चा आपके लिंक अनुरोध को स्वीकार कर लेगा, तब यह लाइव हो जाएगा।",
     "Link your child's account first (Child Details panel), and once they accept, their real results will show here automatically. In the meantime, you can also search using their SIS ID:": "पहले बच्चे के खाते को लिंक करें (बच्चे का विवरण पैनल)। जब वे स्वीकार करेंगे, तो उनके वास्तविक परिणाम यहाँ अपने आप दिखेंगे। इस बीच आप उनकी SIS आईडी से भी खोज सकते हैं:",
@@ -265,6 +309,7 @@
     "Search using your Roll Number or SIS ID to view your latest result.": "अपना रोल नंबर या SIS आईडी डालकर अपना नवीनतम परिणाम देखें।",
     "Results are published by the school as soon as they're available. If your result isn't showing yet, please check back later.": "परिणाम उपलब्ध होते ही स्कूल द्वारा प्रकाशित किए जाते हैं। यदि आपका परिणाम अभी नहीं दिख रहा है, तो कृपया बाद में दोबारा देखें।",
     "You haven't uploaded any documents yet. Use the form above to submit one — it will appear here as Pending until a teacher reviews it.": "आपने अभी तक कोई दस्तावेज़ अपलोड नहीं किया है। ऊपर दिए गए फॉर्म से जमा करें — शिक्षक की समीक्षा होने तक यह यहाँ लंबित दिखेगा।",
+    "You haven't uploaded any documents yet.": "आपने अभी तक कोई दस्तावेज़ अपलोड नहीं किया है।",
     "Document Submitted": "दस्तावेज़ जमा किया गया",
     "Your document is received by the school office.": "आपका दस्तावेज़ स्कूल कार्यालय द्वारा प्राप्त कर लिया गया है।",
     "Under Review": "समीक्षाधीन",
@@ -279,13 +324,15 @@
     "Your child hasn't uploaded any documents yet.": "आपके बच्चे ने अभी तक कोई दस्तावेज़ अपलोड नहीं किया है।",
     "Attendance records are not published yet. Please check back later.": "उपस्थिति रिकॉर्ड अभी प्रकाशित नहीं हुए हैं। कृपया बाद में दोबारा देखें।",
     "No results published yet. Check back later or use the public Results page.": "अभी तक कोई परिणाम प्रकाशित नहीं हुआ है। बाद में देखें या सार्वजनिक परिणाम पृष्ठ का उपयोग करें।",
+    "No results published yet. Check back later or use the public": "अभी तक कोई परिणाम प्रकाशित नहीं हुआ है। बाद में देखें या सार्वजनिक",
+    "Results page": "परिणाम पृष्ठ",
     "Please enter a valid roll number.": "कृपया एक वैध रोल नंबर दर्ज करें।",
     "Please enter a valid SIS ID.": "कृपया एक वैध SIS आईडी दर्ज करें।",
     "Please select a class.": "कृपया कक्षा चुनें।",
     "Please select a document type.": "कृपया दस्तावेज़ का प्रकार चुनें।",
+    "Please enter a roll number.": "कृपया रोल नंबर दर्ज करें।",
+    "Please enter a SIS ID.": "कृपया SIS आईडी दर्ज करें।",
     "Student Name": "छात्र का नाम",
-    "Academic Records": "शैक्षणिक रिकॉर्ड",
-    "Document Center": "दस्तावेज़ केंद्र",
     "Parent": "अभिभावक",
     "Student": "छात्र",
     "Staff": "स्टाफ",
@@ -298,7 +345,42 @@
     "Back to top": "ऊपर जाएं",
     "Remove selected file": "चयनित फ़ाइल हटाएं",
     "Upload document, click or drag a file here": "दस्तावेज़ अपलोड करें, क्लिक करें या फ़ाइल यहाँ खींचें",
-    "Switch language / भाषा बदलें": "भाषा बदलें / Switch language"
+    "Switch language / भाषा बदलें": "भाषा बदलें / Switch language",
+    "Linked and can view your results and documents.": "लिंक हो चुका है और आपके परिणाम व दस्तावेज़ देख सकता है।",
+    "They will be able to see your results and documents once accepted.": "स्वीकार होने के बाद वे आपके परिणाम और दस्तावेज़ देख सकेंगे।",
+    "wants to link as your parent": "आपके अभिभावक के रूप में लिंक करना चाहता है",
+    "No student found with that SIS Student ID. Please check and try again.": "उस SIS छात्र आईडी से कोई छात्र नहीं मिला। कृपया जांचें और पुनः प्रयास करें।",
+    "Could not update photo:": "फोटो अपडेट नहीं हो सकी:",
+    "Could not respond:": "जवाब नहीं दिया जा सका:",
+    "Could not update:": "अपडेट नहीं हो सका:",
+    "Could not search right now:": "अभी खोज नहीं हो सकी:",
+    "Upload failed:": "अपलोड विफल:",
+    "Could not load documents right now. Please try again later.": "अभी दस्तावेज़ लोड नहीं हो सके। कृपया बाद में पुनः प्रयास करें।",
+    "Homework isn't available for this link yet — ask your child to re-accept the link request to enable it.": "इस लिंक के लिए गृहकार्य अभी उपलब्ध नहीं है — इसे सक्षम करने के लिए बच्चे से लिंक अनुरोध दोबारा स्वीकार करने को कहें।",
+    "A rejection reason is required.": "अस्वीकृति का कारण आवश्यक है।",
+    "Please enter a reason for rejecting this document (shown to the student/parent):": "इस दस्तावेज़ को अस्वीकार करने का कारण दर्ज करें (छात्र/अभिभावक को दिखाया जाएगा):",
+    "Document Verified": "दस्तावेज़ सत्यापित",
+    "Document Rejected": "दस्तावेज़ अस्वीकृत",
+    "has been verified.": "सत्यापित कर दिया गया है।",
+    "Your document": "आपका दस्तावेज़",
+    "No result found for": "के लिए कोई परिणाम नहीं मिला",
+    "The result may not have been published yet, or the ID may be incorrect.": "परिणाम अभी प्रकाशित नहीं हुआ होगा, या आईडी गलत हो सकती है।",
+    "A result was found for this ID, but under": "इस आईडी के लिए परिणाम मिला, लेकिन",
+    "instead of": "के बजाय",
+    "Staff Preview Mode": "स्टाफ पूर्वावलोकन मोड",
+    "you are viewing the Parent Portal as staff, under your own account.": "आप स्टाफ के रूप में अभिभावक पोर्टल देख रहे हैं, अपने खाते के अंतर्गत।",
+    "you are viewing the Student Dashboard as staff, under your own account.": "आप स्टाफ के रूप में छात्र डैशबोर्ड देख रहे हैं, अपने खाते के अंतर्गत।",
+    "Linking a child and photo upload are disabled here to avoid affecting any real account.": "किसी वास्तविक खाते को प्रभावित न करने के लिए यहाँ बच्चे को लिंक करना और फोटो अपलोड अक्षम है।",
+    "This does not show any real student's private data, and photo upload is disabled here.": "यह किसी वास्तविक छात्र का निजी डेटा नहीं दिखाता, और यहाँ फोटो अपलोड अक्षम है।",
+    "Upload helper not loaded. Make sure js/cloudinary-upload.js is included on this page.": "अपलोड हेल्पर लोड नहीं हुआ। सुनिश्चित करें कि js/cloudinary-upload.js इस पृष्ठ पर शामिल है।",
+    "Public sign up only allows student or parent accounts.": "सार्वजनिक साइन अप केवल छात्र या अभिभावक खातों की अनुमति देता है।",
+    "An official ERP Portal committed to transparency and academic excellence.": "पारदर्शिता और शैक्षणिक उत्कृष्टता के लिए प्रतिबद्ध आधिकारिक ERP पोर्टल।",
+    "All Rights Reserved.": "सर्वाधिकार सुरक्षित।",
+    "Profile photo": "प्रोफ़ाइल फोटो",
+    "Click to change your photo": "अपनी फोटो बदलने के लिए क्लिक करें",
+    "Reply on Ticket": "टिकट पर जवाब",
+    "It is now pending review.": "अब यह समीक्षा के लिए लंबित है।",
+    "uploaded a": "ने अपलोड किया"
   };
 
   var REVERSE_PHRASES = {};
@@ -345,7 +427,6 @@
       if (translated !== n.nodeValue) n.nodeValue = translated;
     });
 
-    // Attributes that hold visible text (placeholders, aria-labels, titles)
     ['placeholder', 'aria-label', 'title'].forEach(function (attr) {
       var els = root.querySelectorAll('[' + attr + ']');
       els.forEach(function (el) {
@@ -356,7 +437,6 @@
         if (translated !== val) el.setAttribute(attr, translated);
       });
     });
-    // Root element itself might carry one of these attributes
     ['placeholder', 'aria-label', 'title'].forEach(function (attr) {
       if (root.hasAttribute && root.hasAttribute(attr)) {
         var val = root.getAttribute(attr);
@@ -390,8 +470,6 @@
   function injectToggle() {
     var host = document.querySelector('.header-actions') || document.querySelector('.header-container');
     if (!host) return;
-
-    // Avoid duplicate toggle if script is loaded more than once
     if (document.getElementById('langToggleBtn')) return;
 
     var btn = document.createElement('button');
@@ -421,8 +499,6 @@
   document.addEventListener('DOMContentLoaded', function () {
     injectToggle();
 
-    // Observer must be ready before the first pass so late-arriving
-    // Firestore content (lists, dashboards, modals) is also translated.
     observer = new MutationObserver(function (mutations) {
       observer.disconnect();
       mutations.forEach(function (m) {
