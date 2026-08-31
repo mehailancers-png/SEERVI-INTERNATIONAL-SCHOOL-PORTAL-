@@ -2912,18 +2912,370 @@ select:focus-visible {
   font-weight: 700;
   margin-left: auto;
 }
+
+
+/* =========================================================
+   FORM & CARD UI/UX REFINEMENTS
+   Cleaner arrangement of boxes on utility / form pages
+   (Results, Documents, Login, Appointment, Parent Portal)
+========================================================= */
+
+/* Consistent max-width and centering for all form cards */
+.search-card,
+.upload-card,
+.auth-card,
+.result-card-wrapper,
+.documents-list-wrapper,
+.documents-timeline-wrapper,
+.auth-status-bar {
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.search-card,
+.upload-card {
+  max-width: 780px;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.auth-card {
+  max-width: 520px;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+/* Forms: predictable vertical rhythm */
+.auth-form,
+.upload-card form,
+.search-form {
+  width: 100%;
+}
+
+.form-group {
+  width: 100%;
+  min-width: 0;
+}
+
+.form-group input,
+.form-group select,
+.form-group textarea {
+  width: 100%;
+  max-width: 100%;
+  box-sizing: border-box;
+}
+
+/* Results search form: 2 columns on desktop, 1 on mobile */
+.search-form {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 18px 20px;
+  align-items: start;
+}
+
+.search-form .form-group:last-of-type {
+  grid-column: 1 / -1;
+}
+
+.search-submit-btn {
+  grid-column: 1 / -1;
+  width: 100%;
+  margin-top: 4px;
+}
+
+/* When only one visible field panel is shown (roll vs sis),
+   keep layout stable */
+.search-form .form-group[data-panel] {
+  grid-column: auto;
+}
+
+/* Upload card: stack fields cleanly */
+.upload-card form {
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+}
+
+.upload-card form .form-group {
+  margin-bottom: 20px;
+}
+
+.upload-card form .btn,
+.upload-card form .btn-primary {
+  width: 100%;
+  margin-top: 4px;
+}
+
+/* Auth card: single column, full-width controls */
+.auth-form {
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+}
+
+.auth-form .form-group {
+  margin-bottom: 0;
+}
+
+.auth-submit-btn,
+.auth-form .btn-primary,
+.auth-form .btn {
+  width: 100%;
+}
+
+.auth-role-toggle {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+  width: 100%;
+}
+
+.auth-role-option {
+  width: 100%;
+  min-height: 48px;
+  text-align: center;
+}
+
+/* Parent portal — Link a Child form */
+#linkChildForm {
+  display: flex !important;
+  flex-wrap: wrap;
+  gap: 14px;
+  align-items: flex-end;
+  width: 100%;
+}
+
+#linkChildForm .form-group {
+  flex: 1 1 220px;
+  min-width: 200px;
+  margin-bottom: 0;
+}
+
+#linkChildForm .btn,
+#linkChildForm button[type="submit"] {
+  flex: 0 0 auto;
+  white-space: nowrap;
+  min-height: 48px;
+  align-self: flex-end;
+}
+
+/* Dashboard cards: consistent spacing between boxes */
+.dashboard-main {
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+  min-width: 0;
+}
+
+.dashboard-card {
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.dashboard-card + .dashboard-card {
+  margin-top: 20px;
+}
+
+.dashboard-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 14px 20px;
+  margin-bottom: 22px;
+}
+
+.dashboard-header .btn,
+.dashboard-header .btn-sm {
+  flex-shrink: 0;
+}
+
+/* Stat grid: even boxes */
+.stat-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 16px;
+  margin-bottom: 24px;
+}
+
+.stat-card {
+  min-width: 0;
+  text-align: center;
+}
+
+/* Document list items: keep status badge aligned */
+.document-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  flex-wrap: wrap;
+}
+
+.document-item-main {
+  flex: 1 1 240px;
+  min-width: 0;
+}
+
+.doc-status-badge {
+  flex-shrink: 0;
+}
+
+/* Auth status bar: balanced layout */
+.auth-status-bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 12px 16px;
+}
+
+.auth-status-bar .btn-group {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+/* Result card footer */
+.result-card-footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 14px 20px;
+}
+
+/* Avoid double-pull when status bar is present */
+#documents-upload .upload-card,
+#appointment-section .search-card,
+#pyq-section .pyq-filter-card {
+  margin-top: 0;
+}
+
+/* Sections with form cards: even vertical spacing */
+.documents-upload-section .container,
+.results-search-section .container {
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+}
+
+.documents-list-wrapper,
+.documents-timeline-wrapper {
+  margin-top: 10px;
+}
+
+/* Notice / list items: consistent box shape */
+.notice-item {
+  width: 100%;
+  box-sizing: border-box;
+}
+
+/* ---------- Responsive form rearrangements ---------- */
+@media (max-width: 900px) {
+  .stat-grid {
+    grid-template-columns: 1fr 1fr;
+  }
+}
+
+@media (max-width: 640px) {
+  .search-form {
+    grid-template-columns: 1fr;
+  }
+
+  .search-form .form-group:last-of-type,
+  .search-submit-btn {
+    grid-column: 1;
+  }
+
+  .search-card,
+  .upload-card {
+    padding: 24px 20px;
+    margin-left: 0;
+    margin-right: 0;
+    border-radius: var(--radius-md);
+  }
+
+  .auth-card {
+    padding: 24px 20px;
+    margin-left: 12px;
+    margin-right: 12px;
+    max-width: none;
+  }
+
+  .auth-role-toggle {
+    grid-template-columns: 1fr;
+  }
+
+  #linkChildForm {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  #linkChildForm .form-group {
+    min-width: 0;
+    width: 100%;
+  }
+
+  #linkChildForm .btn,
+  #linkChildForm button[type="submit"] {
+    width: 100%;
+  }
+
+  .stat-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .dashboard-header {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .dashboard-header .btn,
+  .dashboard-header .btn-sm {
+    width: 100%;
+    text-align: center;
+  }
+
+  .auth-status-bar {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .auth-status-bar .btn-group {
+    width: 100%;
+  }
+
+  .auth-status-bar .btn-group .btn,
+  .auth-status-bar .btn-group .btn-sm {
+    flex: 1;
+    text-align: center;
+  }
+
+  .document-item {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .result-card-footer {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .result-card-footer .btn {
+    width: 100%;
+  }
+
+  .pyq-filter-card {
+    grid-template-columns: 1fr;
+  }
+}
+
 /* =========================================================
    I18N / HINDI LAYOUT FIXES
-   Append this block to the END of css/style.css
+   When language is Hindi, longer phrases need room.
+========================================================= */
 
-   Purpose:
-   - Hindi phrases are often longer than English.
-   - Prevent overflow, broken buttons, cramped nav, and
-     badge/label wrapping issues on utility pages.
-   - No visual redesign — only safe flexibility and spacing.
-   ========================================================= */
-
-/* ----- Language toggle button (injected by i18n.js) ----- */
 #langToggleBtn {
   width: 40px;
   height: 40px;
@@ -2939,13 +3291,10 @@ select:focus-visible {
   flex-shrink: 0;
 }
 
-/* When Hindi is active, allow slightly more breathing room
-   for longer labels without changing the overall design. */
 html[lang="hi"] {
   --sidebar-width: 340px;
 }
 
-/* ----- Buttons: allow Hindi text to wrap safely if needed ----- */
 html[lang="hi"] .btn {
   white-space: normal;
   text-align: center;
@@ -2960,13 +3309,11 @@ html[lang="hi"] .btn-sm {
   padding: 8px 14px;
 }
 
-/* Keep primary action buttons readable on small screens */
 html[lang="hi"] .btn-primary,
 html[lang="hi"] .btn-accent {
   min-height: 44px;
 }
 
-/* ----- Dashboard left nav ----- */
 html[lang="hi"] .dashboard-layout {
   grid-template-columns: 280px 1fr;
 }
@@ -2991,7 +3338,6 @@ html[lang="hi"] .dashboard-header p {
   line-height: 1.5;
 }
 
-/* ----- Status badges (Pending / Verified / Rejected etc.) ----- */
 html[lang="hi"] .status-badge,
 html[lang="hi"] .doc-status-badge,
 html[lang="hi"] .result-status-badge {
@@ -3001,19 +3347,17 @@ html[lang="hi"] .result-status-badge {
   padding: 5px 12px;
 }
 
-/* ----- Tables: keep headers readable in Hindi ----- */
 html[lang="hi"] .data-table th {
   white-space: normal;
   line-height: 1.3;
   letter-spacing: 0.2px;
-  text-transform: none; /* Hindi doesn't need uppercase styling */
+  text-transform: none;
 }
 
 html[lang="hi"] .data-table td {
   line-height: 1.4;
 }
 
-/* ----- Form labels & fields ----- */
 html[lang="hi"] .form-group label {
   line-height: 1.4;
 }
@@ -3024,7 +3368,6 @@ html[lang="hi"] .form-group textarea {
   line-height: 1.4;
 }
 
-/* ----- Empty states & instructional text ----- */
 html[lang="hi"] .list-empty-state,
 html[lang="hi"] .documents-empty-state {
   line-height: 1.55;
@@ -3036,7 +3379,6 @@ html[lang="hi"] .page-banner-sub {
   line-height: 1.55;
 }
 
-/* ----- Header actions (lang toggle + bell + back button) ----- */
 html[lang="hi"] .header-actions {
   gap: 10px;
   flex-wrap: wrap;
@@ -3047,7 +3389,6 @@ html[lang="hi"] .header-actions .btn-sm {
   max-width: 100%;
 }
 
-/* ----- Sidebar (public site) ----- */
 html[lang="hi"] .sidebar-link {
   line-height: 1.35;
   white-space: normal;
@@ -3058,14 +3399,12 @@ html[lang="hi"] .sidebar-section-label {
   text-transform: none;
 }
 
-/* ----- Profile photo placeholder text ----- */
 html[lang="hi"] .profile-photo-placeholder {
   font-size: 10px;
   line-height: 1.3;
   padding: 8px;
 }
 
-/* ----- Notifications dropdown ----- */
 html[lang="hi"] .notif-dropdown {
   width: 340px;
 }
@@ -3075,7 +3414,17 @@ html[lang="hi"] .notif-item-message {
   line-height: 1.45;
 }
 
-/* ----- Mobile / small screens ----- */
+html[lang="hi"] .auth-role-option {
+  line-height: 1.3;
+  padding: 12px 10px;
+}
+
+html[lang="hi"] .search-tab {
+  white-space: normal;
+  line-height: 1.3;
+  text-align: center;
+}
+
 @media (max-width: 900px) {
   html[lang="hi"] .dashboard-layout {
     grid-template-columns: 1fr;
