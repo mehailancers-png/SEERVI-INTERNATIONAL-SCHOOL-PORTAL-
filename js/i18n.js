@@ -1,35 +1,26 @@
 /* =========================================================
-   I18N.JS — Hindi / English language switcher (v5)
+   I18N.JS — Hindi / English language switcher (v6)
    Seervi International School — SIS ERP Portal
 
-   SCOPE (per school requirement):
-   - UTILITY pages fully supported in Hindi + English:
-     Parent Portal, Student Dashboard, Results, Documents,
-     Attendance, Homework, Notifications, Feedback/Contact,
-     Parent-child linking, login forms, status messages.
-   - COSMETIC / PRESENTATION pages remain primarily English.
-     Only shared navigation labels are translated.
+   SCOPE (strict):
+   - UTILITY pages → full Hindi/English for forms, labels, messages
+   - COSMETIC / PRESENTATION pages → English only for main content
+     (Index, Blog, News, Media, Resources, and similar)
+   - Shared chrome only on cosmetic pages: sidebar, header actions,
+     auth status bar, language toggle, logout/dashboard buttons
+
+   Index page is NEVER fully translated.
 
    Architecture:
-   - Flat English → Hindi phrase dictionary.
-   - Full DOM text walk + attribute translation.
-   - MutationObserver catches dynamic Firestore content.
-   - Skips <script>, <style>, <select>, <option> (data safety).
-   - SIS IDs, names, emails, filenames never match phrases.
-
-   v5: Full-sentence matches + safer translation to stop mixed EN/HI lines with all remaining utility strings
-   that were still showing in English after language switch.
+   - Phrase dictionary + MutationObserver for dynamic content
+   - Skips <script>, <style>, <select>, <option>
+   - Exact full-string match first, then longest phrase
    ========================================================= */
 
 (function () {
 
   var STORAGE_KEY = 'sis_lang';
 
-  /* -----------------------------------------------------
-     PHRASE DICTIONARY (English → Hindi)
-     Longer / more specific phrases first (sorted at runtime
-     by length so partial matches do not break longer ones).
-  ----------------------------------------------------- */
   var PHRASES = {
 
     /* ===== Exact page-banner sentences (prevent mixed EN/HI) ===== */
@@ -414,22 +405,22 @@
   var EN_KEYS_SORTED = Object.keys(PHRASES).sort(function (a, b) { return b.length - a.length; });
   var HI_KEYS_SORTED = Object.keys(REVERSE_PHRASES).sort(function (a, b) { return b.length - a.length; });
 
+
   function translateText(text, toLang) {
     var dict = toLang === 'hi' ? PHRASES : REVERSE_PHRASES;
     var keys = toLang === 'hi' ? EN_KEYS_SORTED : HI_KEYS_SORTED;
 
-    // 1) Exact full-string match (trimmed) — stops mixed sentences
+    // Exact full-string match first (prevents mixed sentences)
     var trimmed = text.trim();
     if (dict[trimmed]) {
       return text.replace(trimmed, dict[trimmed]);
     }
 
-    // 2) Longest-phrase-first substring replace
+    // Longest-phrase-first substring replace
     var result = text;
     for (var i = 0; i < keys.length; i++) {
       var k = keys[i];
       if (!k || result.indexOf(k) === -1) continue;
-      // Skip very short keys (≤3 chars) unless exact-ish to avoid breaking words
       if (k.length <= 3 && result !== k) continue;
       result = result.split(k).join(dict[k]);
     }
@@ -480,6 +471,58 @@
     });
   }
 
+  /* -----------------------------------------------------
+     PAGE SCOPE
+     Utility pages → translate full body
+     Cosmetic pages (incl. index) → only shared chrome
+  ----------------------------------------------------- */
+  var UTILITY_PAGES = {
+    'results.html': 1,
+    'documents.html': 1,
+    'student-login.html': 1,
+    'staff-login.html': 1,
+    'student-dashboard.html': 1,
+    'parent-portal.html': 1,
+    'staff-dashboard.html': 1,
+    'principal-dashboard.html': 1,
+    'appointment.html': 1,
+    'appointment-6.html': 1
+  };
+
+  function currentPageName() {
+    var path = (window.location.pathname || '').split('/').pop() || 'index.html';
+    if (!path || path === '') return 'index.html';
+    return path;
+  }
+
+  function isUtilityPage() {
+    return !!UTILITY_PAGES[currentPageName()];
+  }
+
+  // Selectors for chrome that may be translated even on cosmetic pages
+  var CHROME_SELECTORS = [
+    '.sidebar',
+    '.header-actions',
+    '.auth-status-bar',
+    '#langToggleBtn',
+    '.notif-bell-wrapper',
+    '.notif-dropdown'
+  ];
+
+  function translatePage(toLang) {
+    if (isUtilityPage()) {
+      translateElementText(document.body, toLang);
+      return;
+    }
+
+    // Cosmetic / index: only shared chrome — never hero/banner/marketing copy
+    CHROME_SELECTORS.forEach(function (sel) {
+      document.querySelectorAll(sel).forEach(function (el) {
+        translateElementText(el, toLang);
+      });
+    });
+  }
+
   var currentLang = 'en';
   var observer = null;
 
@@ -488,8 +531,10 @@
     document.documentElement.setAttribute('lang', currentLang);
 
     if (observer) observer.disconnect();
-    translateElementText(document.body, currentLang);
-    if (observer) observer.observe(document.body, { childList: true, subtree: true, characterData: true });
+    translatePage(currentLang);
+    if (observer) {
+      observer.observe(document.body, { childList: true, subtree: true, characterData: true });
+    }
 
     try { localStorage.setItem(STORAGE_KEY, currentLang); } catch (e) { /* ignore */ }
 
@@ -530,6 +575,24 @@
     });
   }
 
+  function isInsideChrome(node) {
+    var el = node.nodeType === 1 ? node : node.parentElement;
+    while (el) {
+      if (el.classList) {
+        if (el.classList.contains('sidebar') ||
+            el.classList.contains('header-actions') ||
+            el.classList.contains('auth-status-bar') ||
+            el.classList.contains('notif-bell-wrapper') ||
+            el.classList.contains('notif-dropdown') ||
+            el.id === 'langToggleBtn') {
+          return true;
+        }
+      }
+      el = el.parentElement;
+    }
+    return false;
+  }
+
   document.addEventListener('DOMContentLoaded', function () {
     injectToggle();
 
@@ -537,14 +600,21 @@
       observer.disconnect();
       mutations.forEach(function (m) {
         m.addedNodes.forEach(function (n) {
-          if (n.nodeType === 1) {
-            translateElementText(n, currentLang);
-          } else if (n.nodeType === 3 && n.parentElement) {
-            translateElementText(n.parentElement, currentLang);
+          if (isUtilityPage()) {
+            if (n.nodeType === 1) translateElementText(n, currentLang);
+            else if (n.nodeType === 3 && n.parentElement) translateElementText(n.parentElement, currentLang);
+          } else {
+            // Cosmetic: only translate mutations inside chrome
+            if (n.nodeType === 1 && isInsideChrome(n)) translateElementText(n, currentLang);
+            else if (n.nodeType === 3 && n.parentElement && isInsideChrome(n.parentElement)) {
+              translateElementText(n.parentElement, currentLang);
+            }
           }
         });
         if (m.type === 'characterData' && m.target && m.target.parentElement) {
-          translateElementText(m.target.parentElement, currentLang);
+          if (isUtilityPage() || isInsideChrome(m.target)) {
+            translateElementText(m.target.parentElement, currentLang);
+          }
         }
       });
       observer.observe(document.body, { childList: true, subtree: true, characterData: true });
