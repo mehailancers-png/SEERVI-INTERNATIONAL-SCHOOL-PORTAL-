@@ -20,7 +20,6 @@ document.addEventListener('DOMContentLoaded', function () {
     sidebar.setAttribute('aria-hidden', 'false');
     hamburgerBtn.setAttribute('aria-expanded', 'true');
     document.body.style.overflow = 'hidden';
-    if (edgeArrow) { edgeArrow.classList.add('sidebar-open'); edgeArrow.textContent = '›'; edgeArrow.setAttribute('aria-label', 'Close menu'); }
 
     // Move focus into the sidebar for keyboard/screen-reader users
     var firstLink = sidebar.querySelector('.sidebar-link');
@@ -34,27 +33,11 @@ document.addEventListener('DOMContentLoaded', function () {
     sidebar.setAttribute('aria-hidden', 'true');
     hamburgerBtn.setAttribute('aria-expanded', 'false');
     document.body.style.overflow = '';
-    if (edgeArrow) { edgeArrow.classList.remove('sidebar-open'); edgeArrow.textContent = '‹'; edgeArrow.setAttribute('aria-label', 'Open menu'); }
     hamburgerBtn.focus();
   }
 
   function isSidebarOpen() {
     return sidebar && sidebar.classList.contains('open');
-  }
-
-  // Small always-visible edge tab, in addition to the hamburger,
-  // for quickly opening/closing the sidebar with one tap.
-  var edgeArrow = null;
-  if (sidebar) {
-    edgeArrow = document.createElement('button');
-    edgeArrow.type = 'button';
-    edgeArrow.className = 'sidebar-edge-arrow';
-    edgeArrow.textContent = '‹';
-    edgeArrow.setAttribute('aria-label', 'Open menu');
-    document.body.appendChild(edgeArrow);
-    edgeArrow.addEventListener('click', function () {
-      isSidebarOpen() ? closeSidebar() : openSidebar();
-    });
   }
 
   if (hamburgerBtn) {
@@ -320,5 +303,40 @@ document.addEventListener('DOMContentLoaded', function () {
   window.SIS = window.SIS || {};
   window.SIS.openModal = openModal;
   window.SIS.closeModal = closeModal;
+
+  /* =====================================================
+     DASHBOARD TASKBAR COLLAPSE
+     Only runs on dashboard pages (student/parent/staff/
+     principal), which use .dashboard-nav — a completely
+     separate component from the public website's overlay
+     .sidebar. The main website navigation is untouched.
+  ===================================================== */
+  var dashboardLayout = document.querySelector('.dashboard-layout');
+  var dashboardNav = document.querySelector('.dashboard-nav');
+
+  if (dashboardLayout && dashboardNav) {
+    var STORAGE_KEY = 'sis_dashboard_nav_collapsed';
+
+    var collapseBtn = document.createElement('button');
+    collapseBtn.type = 'button';
+    collapseBtn.className = 'dashboard-nav-collapse-btn';
+    collapseBtn.setAttribute('aria-label', 'Collapse menu');
+    dashboardNav.insertBefore(collapseBtn, dashboardNav.firstChild);
+
+    function setCollapsed(state) {
+      dashboardLayout.classList.toggle('nav-collapsed', state);
+      collapseBtn.textContent = state ? '›' : '‹';
+      collapseBtn.setAttribute('aria-label', state ? 'Expand menu' : 'Collapse menu');
+      try { localStorage.setItem(STORAGE_KEY, state ? '1' : '0'); } catch (e) { /* ignore storage errors */ }
+    }
+
+    collapseBtn.addEventListener('click', function () {
+      setCollapsed(!dashboardLayout.classList.contains('nav-collapsed'));
+    });
+
+    var savedState = false;
+    try { savedState = localStorage.getItem(STORAGE_KEY) === '1'; } catch (e) { /* ignore */ }
+    setCollapsed(savedState);
+  }
 
 });
