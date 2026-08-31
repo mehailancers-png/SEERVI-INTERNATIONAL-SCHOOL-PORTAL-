@@ -1,5 +1,5 @@
 /* =========================================================
-   I18N.JS — Hindi / English language switcher (v4)
+   I18N.JS — Hindi / English language switcher (v5)
    Seervi International School — SIS ERP Portal
 
    SCOPE (per school requirement):
@@ -17,7 +17,7 @@
    - Skips <script>, <style>, <select>, <option> (data safety).
    - SIS IDs, names, emails, filenames never match phrases.
 
-   v4: Expanded dictionary with all remaining utility strings
+   v5: Full-sentence matches + safer translation to stop mixed EN/HI lines with all remaining utility strings
    that were still showing in English after language switch.
    ========================================================= */
 
@@ -31,6 +31,31 @@
      by length so partial matches do not break longer ones).
   ----------------------------------------------------- */
   var PHRASES = {
+
+    /* ===== Exact page-banner sentences (prevent mixed EN/HI) ===== */
+    "Check Your Results": "अपने परिणाम देखें",
+    "Search using your Roll Number or SIS ID to view your latest result.": "अपना रोल नंबर या SIS आईडी डालकर अपना नवीनतम परिणाम देखें।",
+    "Academic Records": "शैक्षणिक रिकॉर्ड",
+    "Previous Year Question Papers": "पिछले वर्षों के प्रश्नपत्र",
+    "Exam Preparation": "परीक्षा तैयारी",
+    "Filter by class and subject, search by keyword, and download papers instantly.": "कक्षा और विषय के अनुसार फ़िल्टर करें, कीवर्ड से खोजें, और प्रश्नपत्र तुरंत डाउनलोड करें।",
+    "Moments From Our School": "हमारे विद्यालय के क्षण",
+    "Media Centre": "मीडिया केंद्र",
+    "Event photos, videos, and broadcasts, categorized by event.": "कार्यक्रम की तस्वीरें, वीडियो और प्रसारण, कार्यक्रम के अनुसार वर्गीकृत।",
+    "Event": "कार्यक्रम",
+    "All Events": "सभी कार्यक्रम",
+    "Upload & Track Documents": "दस्तावेज़ अपलोड और ट्रैक करें",
+    "Document Center": "दस्तावेज़ केंद्र",
+    "Submit your documents securely and track their verification status in real time.": "अपने दस्तावेज़ सुरक्षित रूप से जमा करें और उनकी सत्यापन स्थिति वास्तविक समय में ट्रैक करें।",
+    "Select Class": "कक्षा चुनें",
+    "Select Document Type": "दस्तावेज़ प्रकार चुनें",
+    "All Classes": "सभी कक्षाएं",
+    "All Subjects": "सभी विषय",
+    "Search by keyword...": "कीवर्ड से खोजें...",
+    "No papers found.": "कोई प्रश्नपत्र नहीं मिला।",
+    "Download Paper": "प्रश्नपत्र डाउनलोड करें",
+    "Filter": "फ़िल्टर",
+    "Clear Filters": "फ़िल्टर साफ़ करें",
 
     /* ===== Shared navigation ===== */
     "Home": "होम",
@@ -392,12 +417,21 @@
   function translateText(text, toLang) {
     var dict = toLang === 'hi' ? PHRASES : REVERSE_PHRASES;
     var keys = toLang === 'hi' ? EN_KEYS_SORTED : HI_KEYS_SORTED;
+
+    // 1) Exact full-string match (trimmed) — stops mixed sentences
+    var trimmed = text.trim();
+    if (dict[trimmed]) {
+      return text.replace(trimmed, dict[trimmed]);
+    }
+
+    // 2) Longest-phrase-first substring replace
     var result = text;
     for (var i = 0; i < keys.length; i++) {
       var k = keys[i];
-      if (result.indexOf(k) !== -1) {
-        result = result.split(k).join(dict[k]);
-      }
+      if (!k || result.indexOf(k) === -1) continue;
+      // Skip very short keys (≤3 chars) unless exact-ish to avoid breaking words
+      if (k.length <= 3 && result !== k) continue;
+      result = result.split(k).join(dict[k]);
     }
     return result;
   }
