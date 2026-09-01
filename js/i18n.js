@@ -16,7 +16,7 @@
   var STORAGE_KEY = 'sis_lang';
 
   /* Whitelist — translation runs ONLY on these filenames */
-  var ALLOWED_PAGES = [
+    var ALLOWED_PAGES = [
     'results.html',
     'documents.html',
     'pyq.html',
@@ -27,10 +27,7 @@
     'appointment.html',
     'student-login.html',
     'student-dashboard.html',
-    'parent-portal.html',
-    'staff-login.html',
-    'staff-dashboard.html',
-    'principal-dashboard.html'
+    'parent-portal.html'
   ];
 
   function isTranslationAllowed() {
