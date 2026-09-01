@@ -1,43 +1,50 @@
 /* =========================================================
-   I18N.JS — Hindi / English language switcher
+   I18N.JS — Hindi / English language switcher (v3)
    Seervi International School — SIS ERP Portal
 
-   ROOT-CAUSE FIX (v2): the previous version only translated a
-   handful of hardcoded selectors (sidebar nav, logout button,
-   footer) exactly once at page load. Nearly everything else on
-   every page — headings, buttons, form labels, and almost all
-   dashboard/list content — is rendered LATER by JavaScript
-   after Firestore data arrives, so it never got touched.
+   Fixed broken partial translations seen in screenshots:
+   - "Contact Us" no longer becomes "संपर्क Us"
+   - "Book Appointment" no longer becomes "Book नियुक्ति"
+   - "Accept" / "Accepted" no longer produce "स्वीकार करेंed"
+   - Full phrases for banners, filters, status bars, etc.
 
-   This version fixes that at the root: it walks the entire
-   page's text and translates any phrase that matches the
-   dictionary (as a substring, so it also catches phrases
-   embedded in dynamically-built strings like "Uploaded 12 Jul
-   2026"), and a MutationObserver re-runs the same pass on any
-   content added to the page afterward — so new list items,
-   dashboard panels, modals, and Firestore-driven content all
-   get translated automatically, with zero changes needed in
-   any of the page-specific JS files.
-
-   Data safety: SIS IDs, file names, emails, and people's names
-   are never touched, because they simply never match any
-   dictionary phrase. <select>/<option> content is deliberately
-   skipped, because option text doubles as the value read by
-   the rest of the app (e.g. a feedback category) — translating
-   it would corrupt data sent to Firestore.
+   Longer phrases are matched first (sorted by length).
+   SIS IDs, names, emails, proper nouns stay untouched.
    ========================================================= */
 
 (function () {
 
   var STORAGE_KEY = 'sis_lang';
 
-  /* -----------------------------------------------------
-     PHRASE DICTIONARY (English -> Hindi)
-     Flat, single source of truth. Add more entries any time —
-     no other code needs to change for a new phrase to start
-     translating everywhere it appears.
-  ----------------------------------------------------- */
   var PHRASES = {
+    // ========== FULL PHRASES FIRST (critical fixes) ==========
+    "School News & Announcements": "विद्यालय समाचार और घोषणाएँ",
+    "School News &amp; Announcements": "विद्यालय समाचार और घोषणाएँ",
+    "Book Appointment": "नियुक्ति बुक करें",
+    "Contact Us": "संपर्क करें",
+    "Get in Touch": "संपर्क करें",
+    "GET IN TOUCH": "संपर्क करें",
+    "Principal's Message": "प्रधानाचार्य का संदेश",
+    "All Categories": "सभी श्रेणियाँ",
+    "All Events": "सभी कार्यक्रम",
+    "All Classes": "सभी कक्षाएं",
+    "All Subjects": "सभी विषय",
+    "Logged in as": "लॉग इन किया गया",
+    "My Dashboard": "मेरा डैशबोर्ड",
+    "Log Out": "लॉग आउट",
+    "Back to Website": "वेबसाइट पर वापस जाएं",
+    "Link a Child": "बच्चे को लिंक करें",
+    "Link Status": "लिंक स्थिति",
+    "Child's SIS Student ID": "Child's SIS Student ID",
+    "Send Link Request": "लिंक अनुरोध भेजें",
+    "Accept": "स्वीकार करें",
+    "Accepted": "स्वीकृत",
+    "Reject": "अस्वीकार करें",
+    "Rejected": "अस्वीकृत",
+    "Pending": "लंबित",
+    "Verified": "सत्यापित",
+    "Approved": "स्वीकृत",
+
     // Sidebar / top nav
     "Home": "होम",
     "Results": "परिणाम",
@@ -55,15 +62,12 @@
     "Quick Links": "त्वरित लिंक",
     "Portals": "पोर्टल",
     "Contact": "संपर्क",
-    "Back to Website": "वेबसाइट पर वापस जाएं",
-    "Home page": "मुख्य पृष्ठ",
     "Student Login": "छात्र लॉगिन",
     "Staff Login": "स्टाफ लॉगिन",
 
     // Auth / login
     "Log In": "लॉग इन",
     "Sign Up": "साइन अप",
-    "Log Out": "लॉग आउट",
     "Full Name": "पूरा नाम",
     "Email": "ईमेल",
     "Password": "पासवर्ड",
@@ -77,13 +81,11 @@
     "I am a Parent": "मैं एक अभिभावक हूं",
     "Create Account": "खाता बनाएं",
     "Continue with Google": "Google से जारी रखें",
-    "My Dashboard": "मेरा डैशबोर्ड",
-    "Logged in as": "लॉग इन किया गया",
     "Staff Email": "स्टाफ ईमेल",
     "Staff Access Code": "स्टाफ एक्सेस कोड",
     "Staff Log In": "स्टाफ लॉग इन",
 
-    // Dashboard nav labels
+    // Dashboard nav
     "Attendance": "उपस्थिति",
     "Homework": "गृहकार्य",
     "Profile": "प्रोफ़ाइल",
@@ -100,7 +102,7 @@
     "Feedback & Contact": "प्रतिक्रिया और संपर्क",
     "Feedback & Tickets": "प्रतिक्रिया और टिकट",
 
-    // Headings
+    // Headings & banners
     "My Results": "मेरे परिणाम",
     "My Attendance": "मेरी उपस्थिति",
     "My Documents": "मेरे दस्तावेज़",
@@ -119,14 +121,24 @@
     "Child's Attendance": "बच्चे की उपस्थिति",
     "Child's Homework": "बच्चे का गृहकार्य",
     "Child's Results": "बच्चे के परिणाम",
-    "Link a Child": "बच्चे को लिंक करें",
-    "Link Status": "लिंक स्थिति",
     "Check Your Results": "अपने परिणाम जांचें",
     "Upload & Track Documents": "दस्तावेज़ अपलोड और ट्रैक करें",
     "Previous Year Question Papers": "पिछले वर्षों के प्रश्नपत्र",
     "Academic Records": "शैक्षणिक रिकॉर्ड",
     "Document Center": "दस्तावेज़ केंद्र",
     "Exam Preparation": "परीक्षा तैयारी",
+    "Stories From Our School": "हमारे विद्यालय की कहानियाँ",
+    "STORIES FROM OUR SCHOOL": "हमारे विद्यालय की कहानियाँ",
+    "Moments From Our School": "हमारे विद्यालय के पल",
+    "MOMENTS FROM OUR SCHOOL": "हमारे विद्यालय के पल",
+    "Stay Informed": "जानकार रहें",
+    "STAY INFORMED": "जानकार रहें",
+    "Meet With Us": "हमसे मिलें",
+    "MEET WITH US": "हमसे मिलें",
+    "Syllabus, Forms & Study Materials": "पाठ्यक्रम, फॉर्म और अध्ययन सामग्री",
+    "Shaping Character. Building Futures.": "चरित्र निर्माण। भविष्य निर्माण।",
+    "Excellence in Education Since Establishment": "स्थापना से उत्कृष्ट शिक्षा",
+    "ESTABLISHMENT": "स्थापना",
 
     // Buttons / actions
     "Search Result": "परिणाम खोजें",
@@ -145,7 +157,6 @@
     "Upload Media": "मीडिया अपलोड करें",
     "Publish Article": "लेख प्रकाशित करें",
     "Verify": "सत्यापित करें",
-    "Reject": "अस्वीकार करें",
     "Approve": "स्वीकृत करें",
     "Delete": "हटाएं",
     "Edit": "संपादित करें",
@@ -154,8 +165,6 @@
     "View File": "फ़ाइल देखें",
     "View Documents": "दस्तावेज़ देखें",
     "Request Appointment": "नियुक्ति का अनुरोध करें",
-    "Send Link Request": "लिंक अनुरोध भेजें",
-    "Accept": "स्वीकार करें",
     "+ New Ticket": "+ नया टिकट",
     "Send": "भेजें",
     "Back": "वापस",
@@ -180,15 +189,12 @@
     "Select Purpose": "उद्देश्य चुनें",
     "Choose a student...": "एक छात्र चुनें...",
     "Choose a parent...": "एक अभिभावक चुनें...",
-    "All Classes": "सभी कक्षाएं",
-    "All Subjects": "सभी विषय",
     "Search by paper name...": "पेपर के नाम से खोजें...",
+    "Event": "कार्यक्रम",
+    "Address": "पता",
+    "Phone": "फ़ोन",
 
-    // Status words
-    "Pending": "लंबित",
-    "Verified": "सत्यापित",
-    "Rejected": "अस्वीकृत",
-    "Approved": "स्वीकृत",
+    // Status
     "Open": "खुला",
     "In Progress": "प्रगति पर",
     "Resolved": "हल हो गया",
@@ -206,9 +212,11 @@
     "Student Name": "छात्र का नाम",
     "Roll No:": "रोल नंबर:",
 
-    // Common messages / empty states
+    // Empty / loading / notes
     "Loading...": "लोड हो रहा है...",
     "Loading question papers...": "प्रश्नपत्र लोड हो रहे हैं...",
+    "Loading articles...": "लेख लोड हो रहे हैं...",
+    "Loading news...": "समाचार लोड हो रहे हैं...",
     "No notifications yet.": "अभी कोई सूचना नहीं है।",
     "No documents uploaded yet.": "अभी तक कोई दस्तावेज़ अपलोड नहीं हुआ है।",
     "No homework has been assigned yet.": "अभी तक कोई गृहकार्य नहीं सौंपा गया है।",
@@ -233,8 +241,14 @@
     "Search using your Roll Number or SIS ID to view your latest result.": "अपना नवीनतम परिणाम देखने के लिए रोल नंबर या SIS ID से खोजें।",
     "Submit your documents securely and track their verification status in real time.": "अपने दस्तावेज़ सुरक्षित रूप से जमा करें और उनके सत्यापन की स्थिति रीयल-टाइम में ट्रैक करें।",
     "Filter by class and subject, search by keyword, and download papers instantly.": "कक्षा और विषय के अनुसार फ़िल्टर करें, कीवर्ड से खोजें और तुरंत पेपर डाउनलोड करें।",
+    "Filter by class and category, search by title, and download instantly.": "कक्षा और श्रेणी के अनुसार फ़िल्टर करें, शीर्षक से खोजें और तुरंत डाउनलोड करें।",
+    "Schedule a meeting with school staff at a time that works for you.": "विद्यालय स्टाफ के साथ अपनी सुविधा के अनुसार बैठक निर्धारित करें।",
+    "Event photos, videos, and broadcasts, categorized by event.": "कार्यक्रम की तस्वीरें, वीडियो और प्रसारण, कार्यक्रम के अनुसार वर्गीकृत।",
+    "News, circulars, press releases, and e-newsletters from the school.": "विद्यालय से समाचार, परिपत्र, प्रेस विज्ञप्ति और ई-न्यूज़लेटर।",
+    "Annual Function, Sports Events, Science Fair, Achievements, and the Principal's Message.": "वार्षिक समारोह, खेल आयोजन, विज्ञान मेला, उपलब्धियाँ और प्रधानाचार्य का संदेश।",
+    "Link your account to your child's so you can see their real results and documents.": "अपने खाते को बच्चे के खाते से लिंक करें ताकि आप उनके वास्तविक परिणाम और दस्तावेज़ देख सकें।",
 
-    // Timeline / status explanations
+    // Timeline
     "Document Submitted": "दस्तावेज़ जमा किया गया",
     "Your document is received by the school office.": "आपका दस्तावेज़ विद्यालय कार्यालय में प्राप्त हो गया है।",
     "Under Review": "समीक्षा अधीन",
@@ -244,7 +258,7 @@
     "Verified / Rejected": "सत्यापित / अस्वीकृत",
     "The teacher's decision is updated here and on your dashboard.": "शिक्षक का निर्णय यहाँ और आपके डैशबोर्ड पर अपडेट किया जाता है।",
 
-    // Notices / assurances
+    // Notices
     "Checking your login...": "आपका लॉगिन जांचा जा रहा है...",
     "Reference ID": "संदर्भ आईडी",
     "Please enter a valid roll number.": "कृपया एक मान्य रोल नंबर दर्ज करें।",
@@ -252,13 +266,18 @@
     "Please select a class.": "कृपया एक कक्षा चुनें।",
     "Please select a document type.": "कृपया एक दस्तावेज़ प्रकार चुनें।",
 
-    // Footer & accessibility
+    // Footer & a11y
     "Skip to main content": "मुख्य सामग्री पर जाएँ",
     "Close menu": "मेनू बंद करें",
     "Open menu": "मेनू खोलें",
     "Back to top": "ऊपर जाएँ",
     "All Rights Reserved.": "सर्वाधिकार सुरक्षित।",
-    "An official ERP Portal committed to transparency and academic excellence.": "पारदर्शिता और शैक्षणिक उत्कृष्टता के लिए प्रतिबद्ध एक आधिकारिक ERP पोर्टल।"
+    "An official ERP Portal committed to transparency and academic excellence.": "पारदर्शिता और शैक्षणिक उत्कृष्टता के लिए प्रतिबद्ध एक आधिकारिक ERP पोर्टल।",
+
+    // Extra common short words
+    "Parent": "अभिभावक",
+    "Student": "छात्र",
+    "Staff": "स्टाफ"
   };
 
   var REVERSE_PHRASES = {};
@@ -305,7 +324,6 @@
       if (translated !== n.nodeValue) n.nodeValue = translated;
     });
 
-    // Attributes that hold visible text too (placeholders, aria-labels, titles)
     ['placeholder', 'aria-label', 'title'].forEach(function (attr) {
       var els = root.querySelectorAll('[' + attr + ']');
       els.forEach(function (el) {
@@ -316,7 +334,6 @@
         if (translated !== val) el.setAttribute(attr, translated);
       });
     });
-    // Root element itself might carry one of these attributes
     ['placeholder', 'aria-label', 'title'].forEach(function (attr) {
       if (root.hasAttribute && root.hasAttribute(attr)) {
         var val = root.getAttribute(attr);
@@ -378,10 +395,6 @@
   document.addEventListener('DOMContentLoaded', function () {
     injectToggle();
 
-    // Set up the observer BEFORE the first translation pass so
-    // any content that streams in later (Firestore listeners,
-    // dashboard panel switches, modals) is caught automatically —
-    // this is the actual fix for "only the sidebar translates".
     observer = new MutationObserver(function (mutations) {
       observer.disconnect();
       mutations.forEach(function (m) {
