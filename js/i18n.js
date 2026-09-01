@@ -39,12 +39,15 @@
   }
 
   var PHRASES = {
+
+    "Access your results, documents, PYQs, and appointments.": "अपने परिणाम, दस्तावेज़, PYQs और नियुक्तियाँ देखें।",
+    "Access your results, documents, PYQs, and appointments": "अपने परिणाम, दस्तावेज़, PYQs और नियुक्तियाँ देखें।",
+
     // Login page full phrases (prevent broken "छात्र & अभिभावक Login")
     "Student & Parent Login": "छात्र और अभिभावक लॉगिन",
     "Student and Parent Login": "छात्र और अभिभावक लॉगिन",
     "QUICK SERVICE": "त्वरित सेवा",
     "Quick Service": "त्वरित सेवा",
-    "Access your results, documents, PYQs, and appointments.": "अपने परिणाम, दस्तावेज़, PYQs और नियुक्तियाँ देखें।",
     "Enter your password": "अपना पासवर्ड दर्ज करें",
     "Enter password": "पासवर्ड दर्ज करें",
     "you@example.com": "you@example.com",
@@ -391,6 +394,15 @@
       toggleBtn.style.display = '';
       toggleBtn.textContent = currentLang === 'hi' ? 'EN' : 'हिं';
     }
+
+    // Extra pass after a tick — catches any static banner text that
+    // might have been missed on the first walk (or re-injected).
+    setTimeout(function () {
+      translateElementText(document.body, currentLang);
+    }, 50);
+    setTimeout(function () {
+      translateElementText(document.body, currentLang);
+    }, 300);
   }
 
   function getSavedLanguage() {
