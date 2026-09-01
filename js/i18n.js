@@ -1,26 +1,36 @@
 /* =========================================================
-   I18N.JS — Hindi / English language switcher (v3)
+   I18N.JS — Hindi / English language switcher (v4)
    Seervi International School — SIS ERP Portal
 
-   Fixed broken partial translations seen in screenshots:
-   - "Contact Us" no longer becomes "संपर्क Us"
-   - "Book Appointment" no longer becomes "Book नियुक्ति"
-   - "Accept" / "Accepted" no longer produce "स्वीकार करेंed"
-   - Full phrases for banners, filters, status bars, etc.
-
-   Longer phrases are matched first (sorted by length).
-   SIS IDs, names, emails, proper nouns stay untouched.
+   SCOPE:
+   - Translates utility / menu pages + portals only
+   - Does NOT touch the cosmetic homepage (index.html)
+   - Keeps SIS ID, names, emails, proper nouns in English
    ========================================================= */
 
 (function () {
 
   var STORAGE_KEY = 'sis_lang';
 
+  /* Homepage (index.html) — no translation at all */
+  function isCosmeticHomePage() {
+    var path = (window.location.pathname || '').toLowerCase();
+    return (
+      path === '/' ||
+      path === '/index.html' ||
+      path.endsWith('/index.html') ||
+      path.endsWith('/') ||
+      /\/seer?vi.*\/?$/i.test(path) ||
+      document.body.classList.contains('home-page')
+    );
+  }
+
   var PHRASES = {
-    // ========== FULL PHRASES FIRST (critical fixes) ==========
+    // Full phrases first (prevents broken partials)
     "School News & Announcements": "विद्यालय समाचार और घोषणाएँ",
     "School News &amp; Announcements": "विद्यालय समाचार और घोषणाएँ",
     "Book Appointment": "नियुक्ति बुक करें",
+    "Book an Appointment": "नियुक्ति बुक करें",
     "Contact Us": "संपर्क करें",
     "Get in Touch": "संपर्क करें",
     "GET IN TOUCH": "संपर्क करें",
@@ -45,7 +55,7 @@
     "Verified": "सत्यापित",
     "Approved": "स्वीकृत",
 
-    // Sidebar / top nav
+    // Sidebar / menu
     "Home": "होम",
     "Results": "परिणाम",
     "Documents": "दस्तावेज़",
@@ -65,7 +75,7 @@
     "Student Login": "छात्र लॉगिन",
     "Staff Login": "स्टाफ लॉगिन",
 
-    // Auth / login
+    // Auth
     "Log In": "लॉग इन",
     "Sign Up": "साइन अप",
     "Full Name": "पूरा नाम",
@@ -85,7 +95,7 @@
     "Staff Access Code": "स्टाफ एक्सेस कोड",
     "Staff Log In": "स्टाफ लॉग इन",
 
-    // Dashboard nav
+    // Dashboard
     "Attendance": "उपस्थिति",
     "Homework": "गृहकार्य",
     "Profile": "प्रोफ़ाइल",
@@ -101,8 +111,9 @@
     "Verify Documents": "दस्तावेज़ सत्यापित करें",
     "Feedback & Contact": "प्रतिक्रिया और संपर्क",
     "Feedback & Tickets": "प्रतिक्रिया और टिकट",
+    "Notifications": "सूचनाएँ",
 
-    // Headings & banners
+    // Utility headings
     "My Results": "मेरे परिणाम",
     "My Attendance": "मेरी उपस्थिति",
     "My Documents": "मेरे दस्तावेज़",
@@ -112,7 +123,6 @@
     "Upload a New Document": "नया दस्तावेज़ अपलोड करें",
     "Your Documents": "आपके दस्तावेज़",
     "Verification Timeline": "सत्यापन समयरेखा",
-    "Book an Appointment": "नियुक्ति बुक करें",
     "Assign Homework": "गृहकार्य सौंपें",
     "All Homework": "सभी गृहकार्य",
     "All Students": "सभी छात्र",
@@ -136,11 +146,8 @@
     "Meet With Us": "हमसे मिलें",
     "MEET WITH US": "हमसे मिलें",
     "Syllabus, Forms & Study Materials": "पाठ्यक्रम, फॉर्म और अध्ययन सामग्री",
-    "Shaping Character. Building Futures.": "चरित्र निर्माण। भविष्य निर्माण।",
-    "Excellence in Education Since Establishment": "स्थापना से उत्कृष्ट शिक्षा",
-    "ESTABLISHMENT": "स्थापना",
 
-    // Buttons / actions
+    // Buttons
     "Search Result": "परिणाम खोजें",
     "Search": "खोजें",
     "Submit": "जमा करें",
@@ -212,7 +219,7 @@
     "Student Name": "छात्र का नाम",
     "Roll No:": "रोल नंबर:",
 
-    // Empty / loading / notes
+    // Empty / loading
     "Loading...": "लोड हो रहा है...",
     "Loading question papers...": "प्रश्नपत्र लोड हो रहे हैं...",
     "Loading articles...": "लेख लोड हो रहे हैं...",
@@ -266,7 +273,7 @@
     "Please select a class.": "कृपया एक कक्षा चुनें।",
     "Please select a document type.": "कृपया एक दस्तावेज़ प्रकार चुनें।",
 
-    // Footer & a11y
+    // A11y / footer (utility pages)
     "Skip to main content": "मुख्य सामग्री पर जाएँ",
     "Close menu": "मेनू बंद करें",
     "Open menu": "मेनू खोलें",
@@ -274,7 +281,6 @@
     "All Rights Reserved.": "सर्वाधिकार सुरक्षित।",
     "An official ERP Portal committed to transparency and academic excellence.": "पारदर्शिता और शैक्षणिक उत्कृष्टता के लिए प्रतिबद्ध एक आधिकारिक ERP पोर्टल।",
 
-    // Extra common short words
     "Parent": "अभिभावक",
     "Student": "छात्र",
     "Staff": "स्टाफ"
@@ -347,6 +353,15 @@
   var observer = null;
 
   function applyLanguage(lang) {
+    // Cosmetic homepage: never translate
+    if (isCosmeticHomePage()) {
+      currentLang = 'en';
+      document.documentElement.setAttribute('lang', 'en');
+      var toggleBtn = document.getElementById('langToggleBtn');
+      if (toggleBtn) toggleBtn.style.display = 'none';
+      return;
+    }
+
     currentLang = (lang === 'hi') ? 'hi' : 'en';
     document.documentElement.setAttribute('lang', currentLang);
 
@@ -357,7 +372,10 @@
     try { localStorage.setItem(STORAGE_KEY, currentLang); } catch (e) { /* ignore */ }
 
     var toggleBtn = document.getElementById('langToggleBtn');
-    if (toggleBtn) toggleBtn.textContent = currentLang === 'hi' ? 'EN' : 'हिं';
+    if (toggleBtn) {
+      toggleBtn.style.display = '';
+      toggleBtn.textContent = currentLang === 'hi' ? 'EN' : 'हिं';
+    }
   }
 
   function getSavedLanguage() {
@@ -365,6 +383,8 @@
   }
 
   function injectToggle() {
+    if (isCosmeticHomePage()) return; // no language toggle on homepage
+
     var host = document.querySelector('.header-actions') || document.querySelector('.header-container');
     if (!host) return;
 
@@ -394,6 +414,11 @@
 
   document.addEventListener('DOMContentLoaded', function () {
     injectToggle();
+
+    if (isCosmeticHomePage()) {
+      document.documentElement.setAttribute('lang', 'en');
+      return;
+    }
 
     observer = new MutationObserver(function (mutations) {
       observer.disconnect();
