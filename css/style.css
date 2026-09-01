@@ -3463,3 +3463,574 @@ html[lang="hi"] .search-tab {
     width: 100%;
   }
 }
+
+
+/* =========================================================
+   v3 — BOX / FIELD / NOTIFICATION / FEEDBACK REARRANGEMENT
+   Cleaner, more consistent layout for all utility cards,
+   form fields, notification dropdown, and Feedback & Tickets
+   (Complaint) modal. Safe additive styles — does not break
+   existing pages.
+========================================================= */
+
+/* ---------- Unified card shell ---------- */
+.search-card,
+.upload-card,
+.auth-card,
+.pyq-filter-card,
+.dashboard-card,
+.result-card,
+.auth-status-bar {
+  background-color: var(--color-card);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-md);
+  box-sizing: border-box;
+}
+
+.search-card,
+.upload-card {
+  max-width: 780px;
+  margin-left: auto;
+  margin-right: auto;
+  padding: 36px 40px;
+}
+
+.auth-card {
+  max-width: 520px;
+  margin-left: auto;
+  margin-right: auto;
+  padding: 40px 36px;
+}
+
+/* ---------- Form fields — consistent rhythm ---------- */
+.form-group {
+  display: flex;
+  flex-direction: column;
+  gap: 7px;
+  width: 100%;
+  min-width: 0;
+}
+
+.form-group label {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--color-text);
+  letter-spacing: 0.1px;
+}
+
+.form-group input,
+.form-group select,
+.form-group textarea {
+  width: 100%;
+  max-width: 100%;
+  box-sizing: border-box;
+  padding: 13px 16px;
+  border: 2px solid var(--color-border);
+  border-radius: var(--radius-sm);
+  font-family: var(--font-main);
+  font-size: 14px;
+  color: var(--color-text);
+  background-color: #fff;
+  transition: border-color var(--transition-fast), box-shadow var(--transition-fast);
+  appearance: none;
+  -webkit-appearance: none;
+}
+
+.form-group input:focus,
+.form-group select:focus,
+.form-group textarea:focus {
+  border-color: var(--color-primary);
+  box-shadow: 0 0 0 3px rgba(11, 61, 145, 0.12);
+  outline: none;
+}
+
+.form-group textarea {
+  min-height: 100px;
+  resize: vertical;
+  line-height: 1.5;
+}
+
+/* Search form (Results / Appointment style) */
+.search-form {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 18px 20px;
+  align-items: start;
+  width: 100%;
+}
+
+.search-form .form-group:last-of-type,
+.search-submit-btn {
+  grid-column: 1 / -1;
+}
+
+.search-submit-btn {
+  width: 100%;
+  margin-top: 4px;
+}
+
+/* Upload card form — vertical stack */
+.upload-card form {
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+  width: 100%;
+}
+
+.upload-card form .form-group {
+  margin-bottom: 18px;
+}
+
+.upload-card form .btn,
+.upload-card form .btn-primary {
+  width: 100%;
+  margin-top: 6px;
+}
+
+/* Auth form */
+.auth-form {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  width: 100%;
+}
+
+.auth-form .btn,
+.auth-form .btn-primary,
+.auth-submit-btn {
+  width: 100%;
+  margin-top: 4px;
+}
+
+/* ---------- Auth status bar (cleaner arrangement) ---------- */
+.auth-status-bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 12px 16px;
+  padding: 14px 20px;
+  max-width: 780px;
+  margin: 24px auto 0;
+  font-size: 14px;
+  border-radius: var(--radius-md);
+  box-shadow: var(--shadow-sm);
+}
+
+.auth-status-bar .btn-group {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  align-items: center;
+}
+
+/* ---------- Notification panel (rearranged) ---------- */
+.header-actions {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-shrink: 0;
+}
+
+.notif-bell-wrapper {
+  position: relative;
+}
+
+.notif-bell-btn {
+  position: relative;
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  font-size: 17px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background-color var(--transition-fast), transform var(--transition-fast);
+}
+
+.notif-bell-btn:hover {
+  background-color: rgba(11, 61, 145, 0.08);
+  transform: scale(1.05);
+}
+
+.notif-dot {
+  position: absolute;
+  top: 5px;
+  right: 5px;
+  width: 9px;
+  height: 9px;
+  border-radius: 50%;
+  background-color: var(--color-red);
+  border: 2px solid var(--color-card);
+  pointer-events: none;
+}
+
+.notif-dropdown {
+  position: absolute;
+  top: calc(100% + 12px);
+  right: 0;
+  width: 340px;
+  max-width: min(90vw, 360px);
+  max-height: 440px;
+  overflow-y: auto;
+  background-color: var(--color-card);
+  border-radius: var(--radius-md);
+  box-shadow: var(--shadow-lg);
+  padding: 14px 12px;
+  z-index: 1200;
+  border: 1px solid var(--color-border);
+}
+
+.notif-dropdown-title {
+  font-weight: 700;
+  font-size: 14px;
+  color: var(--color-primary);
+  padding: 4px 8px 12px;
+  margin-bottom: 4px;
+  border-bottom: 1px solid var(--color-border);
+}
+
+.notif-item {
+  padding: 12px 10px;
+  border-radius: var(--radius-sm);
+  margin-bottom: 4px;
+  cursor: pointer;
+  transition: background-color var(--transition-fast);
+  border-left: 3px solid transparent;
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+}
+
+.notif-item:hover {
+  background-color: var(--color-bg);
+}
+
+.notif-item.unread {
+  background-color: rgba(212, 175, 55, 0.1);
+  border-left-color: var(--color-accent);
+}
+
+.notif-item-title {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--color-text);
+  line-height: 1.35;
+}
+
+.notif-item-message {
+  font-size: 12px;
+  color: var(--color-text-muted);
+  line-height: 1.45;
+}
+
+.notif-item-meta {
+  font-size: 11px;
+  color: var(--color-text-muted);
+  opacity: 0.85;
+  margin-top: 2px;
+}
+
+/* ---------- Feedback & Tickets / Complaint modal ---------- */
+/* Dedicated layout so the modal no longer depends on heavy inline styles */
+
+.modal.feedback-modal .modal-box,
+.modal-box.feedback-box {
+  max-width: 560px;
+  width: 100%;
+  text-align: left;
+  max-height: 85vh;
+  display: flex;
+  flex-direction: column;
+  padding: 28px 28px 24px;
+  overflow: hidden;
+}
+
+.feedback-modal-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 16px;
+  gap: 12px;
+  flex-shrink: 0;
+}
+
+.feedback-modal-header h3 {
+  margin: 0;
+  font-size: 18px;
+  color: var(--color-primary);
+}
+
+.feedback-new-ticket-btn {
+  width: 100%;
+  margin-bottom: 14px;
+  flex-shrink: 0;
+}
+
+.feedback-new-ticket-form {
+  margin-bottom: 16px;
+  padding: 16px;
+  background: var(--color-bg);
+  border-radius: var(--radius-md);
+  border: 1px solid var(--color-border);
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  flex-shrink: 0;
+}
+
+.feedback-new-ticket-form .form-group {
+  margin-bottom: 0;
+}
+
+.feedback-ticket-list {
+  overflow-y: auto;
+  max-height: 48vh;
+  flex: 1;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding-right: 4px;
+}
+
+.feedback-ticket-item {
+  display: flex;
+  gap: 12px;
+  align-items: flex-start;
+  padding: 14px 12px;
+  background: var(--color-bg);
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--color-border);
+  cursor: pointer;
+  transition: background-color var(--transition-fast), border-color var(--transition-fast);
+}
+
+.feedback-ticket-item:hover {
+  background: #EAF1FC;
+  border-color: #B7CBEB;
+}
+
+.feedback-ticket-item .ticket-icon {
+  font-size: 20px;
+  flex-shrink: 0;
+  line-height: 1;
+}
+
+.feedback-ticket-item .ticket-body {
+  flex: 1;
+  min-width: 0;
+}
+
+.feedback-ticket-item .ticket-top {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 8px;
+  margin-bottom: 4px;
+}
+
+.feedback-ticket-item .ticket-title {
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--color-text);
+  line-height: 1.35;
+}
+
+.feedback-ticket-item .ticket-preview {
+  font-size: 12px;
+  color: var(--color-text-muted);
+  margin-top: 2px;
+  line-height: 1.4;
+}
+
+/* Thread view inside feedback modal */
+.feedback-thread-view {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  min-height: 0;
+}
+
+.feedback-thread-toolbar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 12px;
+  gap: 10px;
+  flex-shrink: 0;
+}
+
+.feedback-thread-header {
+  margin-bottom: 12px;
+  padding-bottom: 10px;
+  border-bottom: 1px solid var(--color-border);
+  flex-shrink: 0;
+}
+
+.feedback-thread-messages {
+  flex: 1;
+  overflow-y: auto;
+  padding-right: 4px;
+  margin-bottom: 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  min-height: 120px;
+}
+
+.feedback-message {
+  padding: 10px 14px;
+  border-radius: var(--radius-sm);
+  max-width: 88%;
+  font-size: 13px;
+  line-height: 1.45;
+}
+
+.feedback-message.own {
+  align-self: flex-end;
+  background: rgba(11, 61, 145, 0.1);
+  color: var(--color-text);
+}
+
+.feedback-message.other {
+  align-self: flex-start;
+  background: var(--color-bg);
+  border: 1px solid var(--color-border);
+}
+
+.feedback-message-meta {
+  font-size: 11px;
+  color: var(--color-text-muted);
+  margin-top: 4px;
+  opacity: 0.85;
+}
+
+.feedback-reply-bar {
+  display: flex;
+  gap: 10px;
+  align-items: flex-end;
+  flex-shrink: 0;
+  padding-top: 4px;
+}
+
+.feedback-reply-bar textarea {
+  flex: 1;
+  min-height: 52px;
+  max-height: 120px;
+  padding: 10px 14px;
+  border: 2px solid var(--color-border);
+  border-radius: var(--radius-sm);
+  font-family: var(--font-main);
+  font-size: 14px;
+  resize: vertical;
+  line-height: 1.4;
+}
+
+.feedback-reply-bar textarea:focus {
+  border-color: var(--color-primary);
+  outline: none;
+  box-shadow: 0 0 0 3px rgba(11, 61, 145, 0.12);
+}
+
+.feedback-reply-bar .btn {
+  flex-shrink: 0;
+  min-height: 44px;
+}
+
+/* Empty states inside lists / feedback */
+.list-empty-state,
+.documents-empty-state,
+.pyq-empty-state {
+  text-align: center;
+  padding: 28px 20px;
+  font-size: 14px;
+  color: var(--color-text-muted);
+  background: var(--color-bg);
+  border: 1px dashed var(--color-border);
+  border-radius: var(--radius-md);
+  line-height: 1.5;
+}
+
+/* ---------- Responsive rearrangements ---------- */
+@media (max-width: 720px) {
+  .search-card,
+  .upload-card {
+    padding: 24px 20px;
+    margin-top: -60px;
+  }
+
+  .search-form {
+    grid-template-columns: 1fr;
+  }
+
+  .search-form .form-group:last-of-type,
+  .search-submit-btn {
+    grid-column: 1;
+  }
+
+  .auth-status-bar {
+    flex-direction: column;
+    align-items: flex-start;
+    padding: 14px 16px;
+  }
+
+  .auth-status-bar .btn-group {
+    width: 100%;
+  }
+
+  .auth-status-bar .btn-group .btn,
+  .auth-status-bar .btn-group .btn-sm {
+    flex: 1;
+    justify-content: center;
+  }
+
+  .notif-dropdown {
+    width: min(92vw, 320px);
+    right: -8px;
+  }
+
+  .modal-box.feedback-box,
+  .modal.feedback-modal .modal-box {
+    padding: 20px 16px;
+    max-height: 90vh;
+  }
+
+  .feedback-reply-bar {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .feedback-reply-bar .btn {
+    width: 100%;
+  }
+}
+
+@media (max-width: 480px) {
+  .search-card,
+  .upload-card,
+  .auth-card {
+    border-radius: var(--radius-md);
+  }
+
+  .form-group input,
+  .form-group select,
+  .form-group textarea {
+    padding: 12px 14px;
+    font-size: 16px; /* prevents iOS zoom */
+  }
+}
+
+/* Hindi language adjustments for the new blocks */
+html[lang="hi"] .notif-dropdown {
+  width: 360px;
+}
+
+html[lang="hi"] .feedback-ticket-item .ticket-title,
+html[lang="hi"] .feedback-message {
+  line-height: 1.5;
+}
+
+html[lang="hi"] .form-group label {
+  line-height: 1.35;
+}
