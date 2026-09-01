@@ -39,6 +39,21 @@
   }
 
   var PHRASES = {
+    // Login page full phrases (prevent broken "छात्र & अभिभावक Login")
+    "Student & Parent Login": "छात्र और अभिभावक लॉगिन",
+    "Student and Parent Login": "छात्र और अभिभावक लॉगिन",
+    "QUICK SERVICE": "त्वरित सेवा",
+    "Quick Service": "त्वरित सेवा",
+    "Access your results, documents, PYQs, and appointments.": "अपने परिणाम, दस्तावेज़, PYQs और नियुक्तियाँ देखें।",
+    "Enter your password": "अपना पासवर्ड दर्ज करें",
+    "Enter password": "पासवर्ड दर्ज करें",
+    "you@example.com": "you@example.com",
+    "Create your account": "अपना खाता बनाएं",
+    "Already have an account?": "पहले से खाता है?",
+    "Don't have an account?": "खाता नहीं है?",
+    "Forgot password?": "पासवर्ड भूल गए?",
+    "Sign in to continue": "जारी रखने के लिए साइन इन करें",
+
     "School News & Announcements": "विद्यालय समाचार और घोषणाएँ",
     "School News &amp; Announcements": "विद्यालय समाचार और घोषणाएँ",
     "Book Appointment": "नियुक्ति बुक करें",
