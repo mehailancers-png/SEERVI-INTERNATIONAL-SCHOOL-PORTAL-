@@ -4387,3 +4387,59 @@ html[lang="hi"] .form-group label {
     justify-content: center;
   }
 }
+
+
+/* =========================================================
+   FIX — Log Out button (Student + Parent dashboards)
+   Clear, tappable, never clipped by collapse rail
+========================================================= */
+
+.dashboard-nav-link.logout {
+  color: var(--color-red) !important;
+  margin-top: 16px !important;
+  border-top: 1px solid var(--color-border) !important;
+  padding: 14px 14px !important;
+  border-radius: var(--radius-sm) !important;
+  font-weight: 600 !important;
+  width: 100% !important;
+  display: flex !important;
+  align-items: center !important;
+  gap: 12px !important;
+  cursor: pointer !important;
+  background: transparent !important;
+  text-align: left !important;
+  min-height: 48px !important; /* mobile tap target */
+  box-sizing: border-box !important;
+}
+
+.dashboard-nav-link.logout:hover {
+  background-color: rgba(220, 38, 38, 0.08) !important;
+  color: var(--color-red) !important;
+}
+
+.dashboard-nav-link.logout:active {
+  background-color: rgba(220, 38, 38, 0.14) !important;
+}
+
+/* When nav is expanded, logout must never be pushed off-screen */
+.dashboard-nav:not(.nav-collapsed) .dashboard-nav-link.logout,
+.dashboard-layout:not(.nav-collapsed) .dashboard-nav-link.logout {
+  display: flex !important;
+  visibility: visible !important;
+  opacity: 1 !important;
+  position: relative !important;
+  left: auto !important;
+  height: auto !important;
+  width: 100% !important;
+  pointer-events: auto !important;
+}
+
+/* Mobile: keep logout easy to hit at bottom of the nav list */
+@media (max-width: 900px) {
+  .dashboard-nav-link.logout {
+    margin-top: 12px !important;
+    min-height: 52px !important;
+    font-size: 15px !important;
+    justify-content: flex-start !important;
+  }
+}
