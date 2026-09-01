@@ -4197,3 +4197,193 @@ html[lang="hi"] .form-group label {
   position: relative;
   z-index: 101;
 }
+
+
+/* =========================================================
+   FIX — Dashboard collapse arrow (content still visible bug)
+   When collapsed, ALL nav children except the arrow must be
+   fully removed from layout. Previous rule was too weak on
+   mobile because flex/grid overrides leaked visibility.
+========================================================= */
+
+.dashboard-nav-collapse-btn {
+  position: absolute !important;
+  top: 14px;
+  right: -14px;
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  background-color: var(--color-primary) !important;
+  color: #fff !important;
+  display: flex !important;
+  align-items: center;
+  justify-content: center;
+  font-size: 16px;
+  font-weight: 700;
+  line-height: 1;
+  box-shadow: var(--shadow-md);
+  z-index: 50 !important;
+  cursor: pointer;
+  border: 2px solid #fff;
+  flex-shrink: 0;
+}
+
+.dashboard-nav-collapse-btn:hover {
+  background-color: var(--color-primary-light) !important;
+}
+
+/* Collapsed: only the arrow remains — everything else gone */
+.dashboard-layout.nav-collapsed {
+  grid-template-columns: 44px 1fr !important;
+}
+
+.dashboard-layout.nav-collapsed .dashboard-nav {
+  padding: 12px 6px !important;
+  min-height: auto !important;
+  overflow: hidden !important;
+  width: 44px !important;
+  max-width: 44px !important;
+  border-right: 1px solid var(--color-border);
+}
+
+.dashboard-layout.nav-collapsed .dashboard-nav > *:not(.dashboard-nav-collapse-btn) {
+  display: none !important;
+  visibility: hidden !important;
+  height: 0 !important;
+  width: 0 !important;
+  margin: 0 !important;
+  padding: 0 !important;
+  overflow: hidden !important;
+  opacity: 0 !important;
+  pointer-events: none !important;
+  position: absolute !important;
+  left: -9999px !important;
+}
+
+.dashboard-layout.nav-collapsed .dashboard-nav-collapse-btn {
+  position: static !important;
+  margin: 0 auto;
+  right: auto;
+  top: auto;
+}
+
+/* Mobile (≤900px): collapsed nav becomes a thin top strip */
+@media (max-width: 900px) {
+  .dashboard-layout {
+    grid-template-columns: 1fr !important;
+  }
+
+  .dashboard-layout.nav-collapsed {
+    grid-template-columns: 1fr !important;
+  }
+
+  .dashboard-layout.nav-collapsed .dashboard-nav {
+    width: 100% !important;
+    max-width: 100% !important;
+    min-height: 0 !important;
+    height: auto !important;
+    padding: 8px 12px !important;
+    display: flex !important;
+    flex-direction: row !important;
+    align-items: center !important;
+    justify-content: flex-end !important;
+    border-right: none !important;
+    border-bottom: 1px solid var(--color-border);
+    overflow: hidden !important;
+  }
+
+  .dashboard-layout.nav-collapsed .dashboard-nav > *:not(.dashboard-nav-collapse-btn) {
+    display: none !important;
+    visibility: hidden !important;
+    height: 0 !important;
+    width: 0 !important;
+    opacity: 0 !important;
+    pointer-events: none !important;
+    position: absolute !important;
+    left: -9999px !important;
+  }
+
+  .dashboard-layout.nav-collapsed .dashboard-nav-collapse-btn {
+    position: static !important;
+    margin: 0;
+  }
+
+  /* Expanded mobile nav stays full width column */
+  .dashboard-nav {
+    position: relative;
+  }
+
+  .dashboard-nav-collapse-btn {
+    right: 12px;
+    top: 12px;
+  }
+}
+
+
+/* =========================================================
+   FIX — Appointment page mobile form
+========================================================= */
+#appointment-section .search-card {
+  max-width: 780px;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+#appointment-section .search-form {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 18px 20px;
+  align-items: start;
+}
+
+#appointment-section .search-form .form-group[style*="span 2"],
+#appointment-section .search-form .form-group:has(textarea),
+#appointment-section .search-submit-btn {
+  grid-column: 1 / -1;
+}
+
+#appointment-section .search-submit-btn {
+  width: 100%;
+  margin-top: 4px;
+}
+
+@media (max-width: 640px) {
+  #appointment-section .search-card {
+    padding: 22px 16px;
+    margin-top: 0;
+  }
+
+  #appointment-section .search-form {
+    grid-template-columns: 1fr !important;
+    gap: 14px;
+  }
+
+  #appointment-section .search-form .form-group,
+  #appointment-section .search-form .form-group[style*="span 2"],
+  #appointment-section .search-submit-btn {
+    grid-column: 1 !important;
+    width: 100%;
+  }
+
+  #appointment-section .form-group input,
+  #appointment-section .form-group select,
+  #appointment-section .form-group textarea {
+    width: 100%;
+    font-size: 16px; /* no iOS zoom */
+  }
+
+  #appointment-section .auth-status-bar {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 10px;
+  }
+
+  #appointment-section .auth-status-bar .btn-group {
+    width: 100%;
+  }
+
+  #appointment-section .auth-status-bar .btn-group .btn {
+    flex: 1;
+    justify-content: center;
+  }
+}
