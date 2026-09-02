@@ -4597,3 +4597,47 @@ html[lang="hi"] .form-group label {
 .map-placeholder:has(img)::before {
   display: none;
 }
+
+
+/* =========================================================
+   HEADER LOGO — always visible on every page (separate from hero)
+========================================================= */
+.header-brand .logo-placeholder,
+.sidebar-logo .logo-placeholder,
+.footer-brand .logo-placeholder {
+  display: flex !important;
+  visibility: visible !important;
+  opacity: 1 !important;
+  flex-shrink: 0 !important;
+  width: 52px !important;
+  height: 52px !important;
+  min-width: 52px !important;
+  min-height: 52px !important;
+  overflow: hidden;
+  border-radius: var(--radius-sm);
+  background: linear-gradient(145deg, #0B3D91, #1a52b8);
+  border: 2px solid var(--color-accent);
+  box-shadow: 0 2px 8px rgba(11, 61, 145, 0.25);
+}
+
+.logo-placeholder.small {
+  width: 40px !important;
+  height: 40px !important;
+  min-width: 40px !important;
+  min-height: 40px !important;
+}
+
+.logo-placeholder .school-logo-img,
+.logo-placeholder img {
+  width: 100% !important;
+  height: 100% !important;
+  object-fit: contain !important;
+  display: block !important;
+  border-radius: inherit;
+}
+
+/* Dashboard headers — same logo treatment */
+.dashboard-header-bar .logo-placeholder {
+  display: flex !important;
+  visibility: visible !important;
+}
