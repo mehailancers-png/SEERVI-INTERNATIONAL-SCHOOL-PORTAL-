@@ -4443,3 +4443,157 @@ html[lang="hi"] .form-group label {
     justify-content: flex-start !important;
   }
 }
+
+
+/* =========================================================
+   SCHOOL LOGO PLACEHOLDER (every header)
+   Looks like a real logo slot — drop an <img> inside later
+========================================================= */
+.logo-placeholder {
+  width: 52px;
+  height: 52px;
+  border-radius: var(--radius-sm);
+  background: linear-gradient(145deg, #0B3D91 0%, #1a52b8 55%, #0B3D91 100%);
+  color: #fff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 800;
+  font-size: 13px;
+  letter-spacing: 0.5px;
+  flex-shrink: 0;
+  border: 2px solid var(--color-accent);
+  box-shadow: 0 2px 8px rgba(11, 61, 145, 0.25);
+  position: relative;
+  overflow: hidden;
+  user-select: none;
+}
+
+.logo-placeholder.small {
+  width: 40px;
+  height: 40px;
+  font-size: 11px;
+}
+
+/* When real logo image is placed inside */
+.logo-placeholder img,
+.header-brand img.school-logo,
+.sidebar-logo img.school-logo {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  display: block;
+  border-radius: inherit;
+}
+
+/* Subtle “logo” hint on empty slot (optional) */
+.logo-placeholder::after {
+  content: none;
+}
+
+/* =========================================================
+   INDEX PAGE — clearer image placeholders
+========================================================= */
+.hero-banner-placeholder {
+  position: absolute;
+  inset: 0;
+  background:
+    linear-gradient(135deg, rgba(11, 61, 145, 0.92) 0%, rgba(8, 42, 102, 0.88) 100%),
+    repeating-linear-gradient(
+      -45deg,
+      transparent,
+      transparent 12px,
+      rgba(255, 255, 255, 0.03) 12px,
+      rgba(255, 255, 255, 0.03) 24px
+    );
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: rgba(255, 255, 255, 0.45);
+  font-size: 13px;
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+  text-align: center;
+  padding: 20px;
+}
+
+.about-image-placeholder,
+.gallery-placeholder,
+.principal-photo-placeholder,
+.facility-image-placeholder,
+.map-placeholder {
+  background-color: #E8F0FC;
+  border: 2px dashed #A8C0E8;
+  border-radius: var(--radius-md);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  color: var(--color-text-muted);
+  font-size: 13px;
+  font-weight: 500;
+  text-align: center;
+  padding: 20px;
+  position: relative;
+  overflow: hidden;
+  min-height: 120px;
+}
+
+.about-image-placeholder::before,
+.gallery-placeholder::before,
+.principal-photo-placeholder::before,
+.facility-image-placeholder::before,
+.map-placeholder::before {
+  content: "🖼";
+  font-size: 28px;
+  opacity: 0.55;
+  line-height: 1;
+}
+
+.about-image-placeholder {
+  aspect-ratio: 4 / 3;
+  min-height: 200px;
+}
+
+.gallery-placeholder {
+  aspect-ratio: 1 / 1;
+}
+
+.principal-photo-placeholder {
+  aspect-ratio: 3 / 4;
+  min-height: 220px;
+}
+
+.facility-image-placeholder {
+  aspect-ratio: 16 / 10;
+  margin-bottom: 14px;
+}
+
+.map-placeholder {
+  min-height: 280px;
+  border-radius: var(--radius-md);
+}
+
+/* Real images later: just put <img> inside these boxes */
+.about-image-placeholder img,
+.gallery-placeholder img,
+.principal-photo-placeholder img,
+.facility-image-placeholder img,
+.map-placeholder img,
+.hero-banner-placeholder img {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  border-radius: inherit;
+}
+
+.about-image-placeholder:has(img)::before,
+.gallery-placeholder:has(img)::before,
+.principal-photo-placeholder:has(img)::before,
+.facility-image-placeholder:has(img)::before,
+.map-placeholder:has(img)::before {
+  display: none;
+}
