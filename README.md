@@ -1,81 +1,185 @@
-# SIS ERP Portal v1.0
+# SIS ERP Portal
 
-Official ERP Portal for **Seervi International School**, Jaitaran, Beawar, Rajasthan.
+**Official School ERP Portal — Seervi International School**  
+Jaitaran, Beawar, Rajasthan
 
-Built with plain HTML5, CSS3, and vanilla JavaScript — no frameworks — backed by **Firebase** (Authentication + Firestore) and **Cloudinary** (file storage).
+A production-ready web portal for students, parents, and staff: results, documents, attendance, homework, appointments, notifications, and school content — built without heavy frameworks.
+
+**Live:** [mehailancers-png.github.io/SEERVI-INTERNATIONAL-SCHOOL-PORTAL-](https://mehailancers-png.github.io/SEERVI-INTERNATIONAL-SCHOOL-PORTAL-/)
 
 ---
 
-## Folder Structure
+## Highlights
+
+| Area | What it delivers |
+|------|------------------|
+| **Multi-role access** | Student, Parent, Staff, Principal — role-based dashboards |
+| **Academic utilities** | Results search & view, attendance, homework, PYQs |
+| **Documents** | Secure upload, status tracking (pending / verified / rejected) |
+| **Parent linking** | Parent requests link to child via SIS Student ID; student approves |
+| **Appointments** | Parents book meetings with school staff |
+| **Notifications & feedback** | In-app alerts and support tickets |
+| **Bilingual UI** | Hindi + English on **utility** pages (forms, dashboards, status) |
+| **School showcase** | Home, news, blog, media, resources — presentation-first |
+| **Stack** | HTML5 · CSS3 · Vanilla JS · Firebase Auth + Firestore · Cloudinary |
+
+No React/Vue build step. Deployable on **GitHub Pages**.
+
+---
+
+## Who uses what
+
+| Role | How access is granted | Main capabilities |
+|------|----------------------|-------------------|
+| **Student** | Self sign-up (email/password or Google) | Own results, attendance, homework, documents, parent link requests, profile |
+| **Parent** | Self sign-up | Link child, view child’s results/docs/attendance/homework, book appointment |
+| **Staff** | Not self-serve staff signup — account promoted in Firestore + Staff Access Code | Students, verify documents, upload results/PYQs/resources, homework, news, notifications |
+| **Principal** | Staff-level access with principal dashboard | School-wide overview and admin flows |
+
+Server-side access is enforced with **Firestore security rules**; the Staff Access Code is an extra front-door check on the staff login page.
+
+---
+
+## Tech stack
 
 ```
-SIS-ERP-Portal/
-├── index.html
-├── results.html
-├── documents.html
-├── pyq.html
-├── appointment.html
-├── student-login.html
-├── student-dashboard.html
-├── parent-portal.html
-├── staff-login.html
-├── staff-dashboard.html
-├── firestore.rules          (paste into Firebase Console, not deployed via this repo)
-├── css/
-│   └── style.css
+Frontend     HTML5, CSS3, Vanilla JavaScript
+Auth         Firebase Authentication (Email/Password + Google)
+Database     Cloud Firestore
+Files        Cloudinary (unsigned preset — avoids Firebase Storage Blaze requirement)
+Hosting      GitHub Pages
+i18n         Custom phrase dictionary (js/i18n.js) — utility pages only
+```
+
+---
+
+## Repository layout
+
+```
+SEERVI-INTERNATIONAL-SCHOOL-PORTAL-/
+├── index.html                 # School home & showcase
+├── results.html               # Public + logged-in results
+├── documents.html             # Document upload & tracking
+├── pyq.html                   # Previous year question papers
+├── resources.html             # Syllabus, forms, study material
+├── news.html · blog.html · media.html
+├── appointment.html           # Parent appointment booking
+├── student-login.html · staff-login.html
+├── student-dashboard.html · parent-portal.html
+├── staff-dashboard.html · principal-dashboard.html
+├── css/style.css
 ├── js/
-│   ├── script.js             (shared sidebar/header/scroll logic)
-│   ├── firebase-config.js    (Firebase initialization)
-│   ├── auth.js                (shared auth + role engine)
-│   ├── cloudinary-upload.js  (shared file upload helper)
-│   ├── results.js
-│   ├── documents.js
-│   ├── pyq.js
-│   ├── appointment.js
-│   ├── student-login.js
-│   ├── staff-login.js
-│   ├── student-dashboard.js
-│   ├── parent-portal.js
-│   └── staff-dashboard.js
+│   ├── firebase-config.js · auth.js · script.js · i18n.js
+│   ├── cloudinary-upload.js
+│   ├── results.js · documents.js · appointment.js · …
+│   └── *-dashboard.js · *-login.js
+├── assets/
+│   ├── logo.png
+│   └── Images/                # hero, gallery, facilities, etc.
+├── firestore.rules            # Paste into Firebase Console (not auto-deployed)
 └── README.md
 ```
 
-## Roles
+---
 
-| Role | How created | Access |
-|---|---|---|
-| **Student** | Self sign-up (email/password or Google) | Own results, documents, PYQs, profile |
-| **Parent** | Self sign-up (email/password or Google) | Child's documents, appointments, notices |
-| **Staff** | Never self-registered — sign up as student/parent first, then an admin manually sets `role: staff` in Firestore Console | Full access: all students, verify/reject documents, upload PYQs, manage appointments |
+## Core features (detail)
 
-Staff login also requires a **Staff Access Code** (see `js/staff-login.js`) as a front-door deterrent, on top of the real server-side role check enforced by `firestore.rules`.
+### Students
+- Dashboard: results, attendance, homework, documents, profile photo  
+- Approve / reject parent link requests  
+- Upload documents and track verification status  
 
-## Data Model (Firestore)
+### Parents
+- Link to child with **SIS Student ID** (pending until student accepts)  
+- Live view of child’s results, attendance, homework, documents after link  
+- Book appointments with preferred date/time and purpose  
 
-- **users/{uid}** — `name, email, role, studentId, class, childStudentId, createdAt`
-- **documents/{id}** — `studentUid, studentId, studentName, docType, fileName, fileURL, status (pending/verified/rejected), uploadedAt, reviewedBy, reviewedAt`
-- **pyqs/{id}** — `title, class, subject, fileName, fileURL, uploadedByUid, uploadedByName, uploadedAt`
-- **appointments/{id}** — `parentUid, parentName, childName, purpose, preferredDate, preferredTime, message, status (pending/approved/rejected), createdAt`
+### Staff / Principal
+- Verify or reject documents with optional rejection reason  
+- Upload / manage academic content (results, PYQs, resources, homework)  
+- Publish news / media metadata flows from dashboard panels  
+- Send notifications; handle feedback tickets  
 
-## File Storage
+### Public
+- Search results by Roll Number or SIS ID + class  
+- Browse PYQs, resources, news, blog, media  
+- School presentation on the home page  
 
-Handled by **Cloudinary** (not Firebase Storage, to avoid the paid Blaze plan). Files upload directly from the browser; only the returned URL is saved in Firestore.
+### Language (i18n)
+- Toggle **EN / हिं** in the header  
+- **Utility pages** fully supported in natural Hindi phrases  
+- **Index & cosmetic pages** stay English for presentation (by design)  
+- IDs, names, emails, and file names are never force-translated  
 
-## Setup Checklist
+---
 
-1. Firebase Console → Authentication → Sign-in method → enable **Email/Password** and **Google**
-2. Firebase Console → Authentication → Settings → Authorized domains → add your GitHub Pages domain
-3. Firebase Console → Firestore Database → Rules → paste `firestore.rules` → Publish
-4. Cloudinary → create an **unsigned** upload preset, plug cloud name + preset into `js/cloudinary-upload.js`
-5. First time each Firestore query with a filter + sort runs, check the browser console — Firebase may show a link to auto-create a required composite index. Click it once and the query works permanently after.
+## Firestore collections (overview)
 
-## Known Limitations / Not Yet Built
+| Collection | Purpose |
+|------------|---------|
+| `users` | Profile: name, email, role, studentId, class, photoURL, … |
+| `documents` | Uploads + status + review metadata |
+| `results` | Subject-wise marks / overall status (as published by staff) |
+| `attendance` | Session / monthly attendance records |
+| `homework` | Assignments and due dates |
+| `linkRequests` | Parent ↔ student linking workflow |
+| `appointments` | Parent meeting requests |
+| `pyqs` · resources · news · blog · media | Content modules |
+| `notifications` · feedback/tickets | Alerts and support |
 
-- Notices/announcements system (placeholder only)
-- Direct parent↔student account linking (parent currently matches by typed Student ID, not a real database relationship)
-- Results are demo/frontend-only on the public search page — not yet tied to real Firestore-backed grades
-- Attendance and Homework panels are UI shells awaiting a real data source
+Exact field shapes live in the corresponding `js/*.js` modules.
+
+---
+
+## Setup checklist
+
+1. **Firebase**  
+   - Create project → enable **Authentication** (Email/Password + Google)  
+   - Create **Firestore** database  
+   - Add GitHub Pages domain under Authorized domains  
+   - Paste `firestore.rules` → Publish  
+
+2. **Config**  
+   - Put Firebase web config in `js/firebase-config.js`  
+
+3. **Cloudinary**  
+   - Unsigned upload preset  
+   - Cloud name + preset in `js/cloudinary-upload.js`  
+
+4. **Staff bootstrap**  
+   - Create a normal account, then set `role: "staff"` (or principal) on the user doc in Firestore  
+   - Align Staff Access Code with `js/staff-login.js`  
+
+5. **Indexes**  
+   - First filtered/sorted query may require a composite index — use the console link Firebase prints once  
+
+6. **Assets**  
+   - `assets/logo.png`  
+   - `assets/Images/` — e.g. `hero-banner.png`, gallery, facilities (paths are case-sensitive; folder is `Images`)  
+
+7. **Deploy**  
+   - Push to `main`; GitHub Pages serves the site  
+
+---
+
+## Design notes
+
+- School palette: primary blue `#0B3D91`, accent gold `#D4AF37`  
+- Responsive layout for mobile and desktop  
+- Circular logo treatment in header / sidebar / footer  
+- Utility-first Hindi; no mixed marketing-copy translations on showcase pages  
+
+---
 
 ## Credits
 
-Built for Seervi International School, Jaitaran, Beawar, Rajasthan.
+**Seervi International School** — Jaitaran, Beawar, Rajasthan  
+
+Portal engineering & delivery for the school ERP initiative.
+
+---
+
+## License
+
+All rights reserved © Seervi International School.  
+Use of this portal and branding is limited to the school’s authorized deployment unless otherwise agreed.
