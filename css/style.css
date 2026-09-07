@@ -4240,7 +4240,7 @@ html[lang="hi"] .form-group label {
 .dashboard-layout.nav-collapsed .dashboard-nav {
   padding: 12px 6px !important;
   min-height: auto !important;
-  overflow: hidden !important;
+  overflow: visible !important;
   width: 44px !important;
   max-width: 44px !important;
   border-right: 1px solid var(--color-border);
@@ -4261,15 +4261,15 @@ html[lang="hi"] .form-group label {
 }
 
 .dashboard-layout.nav-collapsed .dashboard-nav-collapse-btn {
-  /* keep arrow on the edge — do not recenter */
   position: absolute !important;
-  top: 18px !important;
+  top: 14px !important;
   right: -14px !important;
   margin: 0 !important;
   display: flex !important;
   visibility: visible !important;
   opacity: 1 !important;
   z-index: 50 !important;
+  pointer-events: auto !important;
 }
 
 /* Mobile (≤900px): collapsed nav becomes a thin top strip */
@@ -4286,15 +4286,13 @@ html[lang="hi"] .form-group label {
     width: 100% !important;
     max-width: 100% !important;
     min-height: 0 !important;
-    height: auto !important;
+    height: 48px !important;
     padding: 8px 12px !important;
-    display: flex !important;
-    flex-direction: row !important;
-    align-items: center !important;
-    justify-content: flex-end !important;
+    display: block !important;
     border-right: none !important;
     border-bottom: 1px solid var(--color-border);
-    overflow: hidden !important;
+    overflow: visible !important;
+    position: relative !important;
   }
 
   .dashboard-layout.nav-collapsed .dashboard-nav > *:not(.dashboard-nav-collapse-btn) {
@@ -4309,14 +4307,16 @@ html[lang="hi"] .form-group label {
   }
 
   .dashboard-layout.nav-collapsed .dashboard-nav-collapse-btn {
-    position: absolute !important;
-    top: 12px !important;
-    right: 12px !important;
-    margin: 0 !important;
-    display: flex !important;
-    visibility: visible !important;
-    z-index: 50 !important;
-  }
+  position: absolute !important;
+  top: 14px !important;
+  right: -14px !important;
+  margin: 0 !important;
+  display: flex !important;
+  visibility: visible !important;
+  opacity: 1 !important;
+  z-index: 50 !important;
+  pointer-events: auto !important;
+}
 
   /* Expanded mobile nav stays full width column */
   .dashboard-nav {
@@ -4680,7 +4680,7 @@ html[lang="hi"] .form-group label {
   display: block !important;
 }
 
-/* ===== ONLY hide Log Out when nav is collapsed (arrow position untouched) ===== */
+/* Hide Log Out only when collapsed — do not move the arrow */
 .dashboard-layout.nav-collapsed .dashboard-nav #logoutBtn,
 .dashboard-layout.nav-collapsed .dashboard-nav .dashboard-nav-link.logout {
   display: none !important;
@@ -4688,7 +4688,6 @@ html[lang="hi"] .form-group label {
   opacity: 0 !important;
   pointer-events: none !important;
   height: 0 !important;
-  max-height: 0 !important;
   margin: 0 !important;
   padding: 0 !important;
   border: none !important;
