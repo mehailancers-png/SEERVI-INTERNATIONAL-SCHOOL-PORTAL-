@@ -4669,3 +4669,78 @@ html[lang="hi"] .form-group label {
   border-radius: 50% !important;
   display: block !important;
 }
+
+
+/* ===== COLLAPSED NAV: FORCE-HIDE LOGOUT & ALL LINKS =====
+   Arrow (collapse btn) only — logout must never remain visible. */
+.dashboard-layout.nav-collapsed .dashboard-nav .dashboard-nav-link,
+.dashboard-layout.nav-collapsed .dashboard-nav .dashboard-nav-link.logout,
+.dashboard-layout.nav-collapsed .dashboard-nav #logoutBtn,
+.dashboard-layout.nav-collapsed .dashboard-nav .dashboard-nav-profile,
+.dashboard-layout.nav-collapsed .dashboard-nav .sidebar-divider,
+.dashboard-layout.nav-collapsed .dashboard-nav .sidebar-section-label,
+.dashboard-layout.nav-collapsed .dashboard-nav a.dashboard-nav-link {
+  display: none !important;
+  visibility: hidden !important;
+  opacity: 0 !important;
+  height: 0 !important;
+  max-height: 0 !important;
+  width: 0 !important;
+  max-width: 0 !important;
+  margin: 0 !important;
+  padding: 0 !important;
+  border: none !important;
+  overflow: hidden !important;
+  pointer-events: none !important;
+  position: absolute !important;
+  left: -9999px !important;
+  font-size: 0 !important;
+  line-height: 0 !important;
+  color: transparent !important;
+}
+
+.dashboard-layout.nav-collapsed .dashboard-nav {
+  display: flex !important;
+  flex-direction: column !important;
+  align-items: center !important;
+  justify-content: flex-start !important;
+  width: 44px !important;
+  max-width: 44px !important;
+  min-width: 44px !important;
+  padding: 10px 4px !important;
+  overflow: hidden !important;
+}
+
+.dashboard-layout.nav-collapsed .dashboard-nav-collapse-btn {
+  display: flex !important;
+  visibility: visible !important;
+  opacity: 1 !important;
+  position: static !important;
+  left: auto !important;
+  width: 32px !important;
+  height: 32px !important;
+  min-width: 32px !important;
+  margin: 0 auto !important;
+  padding: 0 !important;
+  font-size: 18px !important;
+  line-height: 1 !important;
+  color: var(--color-primary) !important;
+  pointer-events: auto !important;
+}
+
+@media (max-width: 900px) {
+  .dashboard-layout.nav-collapsed .dashboard-nav {
+    width: 100% !important;
+    max-width: 100% !important;
+    min-width: 0 !important;
+    flex-direction: row !important;
+    justify-content: flex-end !important;
+    padding: 8px 12px !important;
+  }
+
+  .dashboard-layout.nav-collapsed .dashboard-nav .dashboard-nav-link,
+  .dashboard-layout.nav-collapsed .dashboard-nav .dashboard-nav-link.logout,
+  .dashboard-layout.nav-collapsed .dashboard-nav #logoutBtn {
+    display: none !important;
+  }
+}
