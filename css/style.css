@@ -4340,3 +4340,32 @@ html[lang="hi"] .form-group label {
     opacity: 1 !important;
   }
 }
+
+
+/* ===== ROUND LOGO — circular on every page ===== */
+.logo-placeholder,
+.logo-placeholder.small,
+.header-brand .logo-placeholder,
+.sidebar-logo .logo-placeholder,
+.footer-brand .logo-placeholder,
+.dashboard-header-bar .logo-placeholder {
+  border-radius: 50% !important;
+  overflow: hidden !important;
+  border: 2px solid var(--color-accent) !important;
+  background: #fff !important;
+  padding: 0 !important;
+  box-shadow: 0 2px 8px rgba(11, 61, 145, 0.2) !important;
+}
+
+.logo-placeholder img,
+.logo-placeholder .school-logo-img,
+.header-brand img.school-logo,
+.sidebar-logo img.school-logo,
+.footer-brand img.school-logo,
+.school-logo-img {
+  width: 100% !important;
+  height: 100% !important;
+  object-fit: cover !important;
+  border-radius: 50% !important;
+  display: block !important;
+}
