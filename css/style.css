@@ -4200,84 +4200,111 @@ html[lang="hi"] .form-group label {
 
 
 /* =========================================================
-   FIX — Dashboard collapse arrow (content still visible bug)
-   When collapsed, ALL nav children except the arrow must be
-   fully removed from layout. Previous rule was too weak on
-   mobile because flex/grid overrides leaked visibility.
+   DASHBOARD NAV COLLAPSE — clean desktop + mobile
+   Arrow stays on the nav edge (desktop). On mobile it stays
+   inside the screen. Collapsed = only arrow visible; Log Out hidden.
 ========================================================= */
 
+.dashboard-nav {
+  position: relative;
+}
+
+/* Arrow — desktop: hang on right edge of nav */
 .dashboard-nav-collapse-btn {
   position: absolute !important;
-  top: 14px;
-  right: -14px;
-  width: 30px;
-  height: 30px;
-  border-radius: 50%;
+  top: 16px !important;
+  right: -14px !important;
+  width: 30px !important;
+  height: 30px !important;
+  border-radius: 50% !important;
   background-color: var(--color-primary) !important;
   color: #fff !important;
   display: flex !important;
-  align-items: center;
-  justify-content: center;
-  font-size: 16px;
-  font-weight: 700;
-  line-height: 1;
-  box-shadow: var(--shadow-md);
-  z-index: 50 !important;
-  cursor: pointer;
-  border: 2px solid #fff;
-  flex-shrink: 0;
+  align-items: center !important;
+  justify-content: center !important;
+  font-size: 16px !important;
+  font-weight: 700 !important;
+  line-height: 1 !important;
+  border: 2px solid #fff !important;
+  box-shadow: var(--shadow-md) !important;
+  z-index: 60 !important;
+  cursor: pointer !important;
+  margin: 0 !important;
+  padding: 0 !important;
+  opacity: 1 !important;
+  visibility: visible !important;
+  pointer-events: auto !important;
 }
 
 .dashboard-nav-collapse-btn:hover {
   background-color: var(--color-primary-light) !important;
 }
 
-/* Collapsed: only the arrow remains — everything else gone */
+/* ---- Collapsed (desktop) ---- */
 .dashboard-layout.nav-collapsed {
-  grid-template-columns: 44px 1fr !important;
+  grid-template-columns: 48px 1fr !important;
 }
 
 .dashboard-layout.nav-collapsed .dashboard-nav {
-  padding: 12px 6px !important;
-  min-height: auto !important;
+  width: 48px !important;
+  max-width: 48px !important;
+  min-width: 48px !important;
+  padding: 14px 6px !important;
   overflow: visible !important;
-  width: 44px !important;
-  max-width: 44px !important;
-  border-right: 1px solid var(--color-border);
+  min-height: calc(100vh - var(--header-height)) !important;
 }
 
+/* Hide every direct child except the collapse arrow */
 .dashboard-layout.nav-collapsed .dashboard-nav > *:not(.dashboard-nav-collapse-btn) {
   display: none !important;
   visibility: hidden !important;
+  opacity: 0 !important;
+  pointer-events: none !important;
   height: 0 !important;
   width: 0 !important;
   margin: 0 !important;
   padding: 0 !important;
   overflow: hidden !important;
-  opacity: 0 !important;
-  pointer-events: none !important;
-  position: absolute !important;
-  left: -9999px !important;
+  border: none !important;
 }
 
+/* Explicit Log Out hide */
+.dashboard-layout.nav-collapsed .dashboard-nav #logoutBtn,
+.dashboard-layout.nav-collapsed .dashboard-nav .dashboard-nav-link.logout {
+  display: none !important;
+  visibility: hidden !important;
+  pointer-events: none !important;
+}
+
+/* Arrow stays on the edge when collapsed (desktop) */
 .dashboard-layout.nav-collapsed .dashboard-nav-collapse-btn {
   position: absolute !important;
-  top: 14px !important;
+  top: 16px !important;
   right: -14px !important;
-  margin: 0 !important;
-  display: flex !important;
-  visibility: visible !important;
-  opacity: 1 !important;
-  z-index: 50 !important;
-  pointer-events: auto !important;
 }
 
-/* Mobile (≤900px): collapsed nav becomes a thin top strip */
+/* ---- Mobile (≤900px) ---- */
 @media (max-width: 900px) {
   .dashboard-layout {
     grid-template-columns: 1fr !important;
   }
 
+  .dashboard-nav {
+    position: relative !important;
+    width: 100% !important;
+    max-width: 100% !important;
+    border-right: none !important;
+    border-bottom: 1px solid var(--color-border);
+    overflow: visible !important;
+  }
+
+  /* Arrow inside screen — top-right of nav, not off-canvas */
+  .dashboard-nav-collapse-btn {
+    top: 12px !important;
+    right: 12px !important;
+  }
+
+  /* Collapsed mobile: thin bar, only arrow */
   .dashboard-layout.nav-collapsed {
     grid-template-columns: 1fr !important;
   }
@@ -4285,411 +4312,31 @@ html[lang="hi"] .form-group label {
   .dashboard-layout.nav-collapsed .dashboard-nav {
     width: 100% !important;
     max-width: 100% !important;
+    min-width: 0 !important;
     min-height: 0 !important;
-    height: 48px !important;
-    padding: 8px 12px !important;
-    display: block !important;
-    border-right: none !important;
-    border-bottom: 1px solid var(--color-border);
+    height: 52px !important;
+    padding: 0 12px !important;
     overflow: visible !important;
-    position: relative !important;
+    border-bottom: 1px solid var(--color-border);
   }
 
   .dashboard-layout.nav-collapsed .dashboard-nav > *:not(.dashboard-nav-collapse-btn) {
     display: none !important;
     visibility: hidden !important;
-    height: 0 !important;
-    width: 0 !important;
-    opacity: 0 !important;
     pointer-events: none !important;
-    position: absolute !important;
-    left: -9999px !important;
+  }
+
+  .dashboard-layout.nav-collapsed .dashboard-nav #logoutBtn,
+  .dashboard-layout.nav-collapsed .dashboard-nav .dashboard-nav-link.logout {
+    display: none !important;
   }
 
   .dashboard-layout.nav-collapsed .dashboard-nav-collapse-btn {
-  position: absolute !important;
-  top: 14px !important;
-  right: -14px !important;
-  margin: 0 !important;
-  display: flex !important;
-  visibility: visible !important;
-  opacity: 1 !important;
-  z-index: 50 !important;
-  pointer-events: auto !important;
-}
-
-  /* Expanded mobile nav stays full width column */
-  .dashboard-nav {
-    position: relative;
+    position: absolute !important;
+    top: 11px !important;
+    right: 12px !important;
+    display: flex !important;
+    visibility: visible !important;
+    opacity: 1 !important;
   }
-
-  .dashboard-nav-collapse-btn {
-    right: 12px;
-    top: 12px;
-  }
-}
-
-
-/* =========================================================
-   FIX — Appointment page mobile form
-========================================================= */
-#appointment-section .search-card {
-  max-width: 780px;
-  margin-left: auto;
-  margin-right: auto;
-}
-
-#appointment-section .search-form {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 18px 20px;
-  align-items: start;
-}
-
-#appointment-section .search-form .form-group[style*="span 2"],
-#appointment-section .search-form .form-group:has(textarea),
-#appointment-section .search-submit-btn {
-  grid-column: 1 / -1;
-}
-
-#appointment-section .search-submit-btn {
-  width: 100%;
-  margin-top: 4px;
-}
-
-@media (max-width: 640px) {
-  #appointment-section .search-card {
-    padding: 22px 16px;
-    margin-top: 0;
-  }
-
-  #appointment-section .search-form {
-    grid-template-columns: 1fr !important;
-    gap: 14px;
-  }
-
-  #appointment-section .search-form .form-group,
-  #appointment-section .search-form .form-group[style*="span 2"],
-  #appointment-section .search-submit-btn {
-    grid-column: 1 !important;
-    width: 100%;
-  }
-
-  #appointment-section .form-group input,
-  #appointment-section .form-group select,
-  #appointment-section .form-group textarea {
-    width: 100%;
-    font-size: 16px; /* no iOS zoom */
-  }
-
-  #appointment-section .auth-status-bar {
-    flex-direction: column;
-    align-items: flex-start;
-    gap: 10px;
-  }
-
-  #appointment-section .auth-status-bar .btn-group {
-    width: 100%;
-  }
-
-  #appointment-section .auth-status-bar .btn-group .btn {
-    flex: 1;
-    justify-content: center;
-  }
-}
-
-
-/* =========================================================
-   FIX — Log Out button (Student + Parent dashboards)
-   Clear, tappable, never clipped by collapse rail
-========================================================= */
-
-.dashboard-nav-link.logout {
-  color: var(--color-red) !important;
-  margin-top: 16px !important;
-  border-top: 1px solid var(--color-border) !important;
-  padding: 14px 14px !important;
-  border-radius: var(--radius-sm) !important;
-  font-weight: 600 !important;
-  width: 100% !important;
-  display: flex !important;
-  align-items: center !important;
-  gap: 12px !important;
-  cursor: pointer !important;
-  background: transparent !important;
-  text-align: left !important;
-  min-height: 48px !important; /* mobile tap target */
-  box-sizing: border-box !important;
-}
-
-.dashboard-nav-link.logout:hover {
-  background-color: rgba(220, 38, 38, 0.08) !important;
-  color: var(--color-red) !important;
-}
-
-.dashboard-nav-link.logout:active {
-  background-color: rgba(220, 38, 38, 0.14) !important;
-}
-
-/* When nav is expanded, logout must never be pushed off-screen */
-.dashboard-nav:not(.nav-collapsed) .dashboard-nav-link.logout,
-.dashboard-layout:not(.nav-collapsed) .dashboard-nav-link.logout {
-  display: flex !important;
-  visibility: visible !important;
-  opacity: 1 !important;
-  position: relative !important;
-  left: auto !important;
-  height: auto !important;
-  width: 100% !important;
-  pointer-events: auto !important;
-}
-
-/* Mobile: keep logout easy to hit at bottom of the nav list */
-@media (max-width: 900px) {
-  .dashboard-nav-link.logout {
-    margin-top: 12px !important;
-    min-height: 52px !important;
-    font-size: 15px !important;
-    justify-content: flex-start !important;
-  }
-}
-
-
-/* =========================================================
-   SCHOOL LOGO PLACEHOLDER (every header)
-   Looks like a real logo slot — drop an <img> inside later
-========================================================= */
-.logo-placeholder {
-  width: 52px;
-  height: 52px;
-  border-radius: var(--radius-sm);
-  background: linear-gradient(145deg, #0B3D91 0%, #1a52b8 55%, #0B3D91 100%);
-  color: #fff;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-weight: 800;
-  font-size: 13px;
-  letter-spacing: 0.5px;
-  flex-shrink: 0;
-  border: 2px solid var(--color-accent);
-  box-shadow: 0 2px 8px rgba(11, 61, 145, 0.25);
-  position: relative;
-  overflow: hidden;
-  user-select: none;
-}
-
-.logo-placeholder.small {
-  width: 40px;
-  height: 40px;
-  font-size: 11px;
-}
-
-/* When real logo image is placed inside */
-.logo-placeholder img,
-.header-brand img.school-logo,
-.sidebar-logo img.school-logo {
-  width: 100%;
-  height: 100%;
-  object-fit: contain;
-  display: block;
-  border-radius: inherit;
-}
-
-/* Subtle “logo” hint on empty slot (optional) */
-.logo-placeholder::after {
-  content: none;
-}
-
-/* =========================================================
-   INDEX PAGE — clearer image placeholders
-========================================================= */
-.hero-banner-placeholder {
-  position: absolute;
-  inset: 0;
-  background:
-    linear-gradient(135deg, rgba(11, 61, 145, 0.92) 0%, rgba(8, 42, 102, 0.88) 100%),
-    repeating-linear-gradient(
-      -45deg,
-      transparent,
-      transparent 12px,
-      rgba(255, 255, 255, 0.03) 12px,
-      rgba(255, 255, 255, 0.03) 24px
-    );
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  color: rgba(255, 255, 255, 0.45);
-  font-size: 13px;
-  letter-spacing: 1.5px;
-  text-transform: uppercase;
-  text-align: center;
-  padding: 20px;
-}
-
-.about-image-placeholder,
-.gallery-placeholder,
-.principal-photo-placeholder,
-.facility-image-placeholder,
-.map-placeholder {
-  background-color: #E8F0FC;
-  border: 2px dashed #A8C0E8;
-  border-radius: var(--radius-md);
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  gap: 8px;
-  color: var(--color-text-muted);
-  font-size: 13px;
-  font-weight: 500;
-  text-align: center;
-  padding: 20px;
-  position: relative;
-  overflow: hidden;
-  min-height: 120px;
-}
-
-.about-image-placeholder::before,
-.gallery-placeholder::before,
-.principal-photo-placeholder::before,
-.facility-image-placeholder::before,
-.map-placeholder::before {
-  content: "🖼";
-  font-size: 28px;
-  opacity: 0.55;
-  line-height: 1;
-}
-
-.about-image-placeholder {
-  aspect-ratio: 4 / 3;
-  min-height: 200px;
-}
-
-.gallery-placeholder {
-  aspect-ratio: 1 / 1;
-}
-
-.principal-photo-placeholder {
-  aspect-ratio: 3 / 4;
-  min-height: 220px;
-}
-
-.facility-image-placeholder {
-  aspect-ratio: 16 / 10;
-  margin-bottom: 14px;
-}
-
-.map-placeholder {
-  min-height: 280px;
-  border-radius: var(--radius-md);
-}
-
-/* Real images later: just put <img> inside these boxes */
-.about-image-placeholder img,
-.gallery-placeholder img,
-.principal-photo-placeholder img,
-.facility-image-placeholder img,
-.map-placeholder img,
-.hero-banner-placeholder img {
-  position: absolute;
-  inset: 0;
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-  border-radius: inherit;
-}
-
-.about-image-placeholder:has(img)::before,
-.gallery-placeholder:has(img)::before,
-.principal-photo-placeholder:has(img)::before,
-.facility-image-placeholder:has(img)::before,
-.map-placeholder:has(img)::before {
-  display: none;
-}
-
-
-/* =========================================================
-   HEADER LOGO — always visible on every page (separate from hero)
-========================================================= */
-.header-brand .logo-placeholder,
-.sidebar-logo .logo-placeholder,
-.footer-brand .logo-placeholder {
-  display: flex !important;
-  visibility: visible !important;
-  opacity: 1 !important;
-  flex-shrink: 0 !important;
-  width: 52px !important;
-  height: 52px !important;
-  min-width: 52px !important;
-  min-height: 52px !important;
-  overflow: hidden;
-  border-radius: var(--radius-sm);
-  background: linear-gradient(145deg, #0B3D91, #1a52b8);
-  border: 2px solid var(--color-accent);
-  box-shadow: 0 2px 8px rgba(11, 61, 145, 0.25);
-}
-
-.logo-placeholder.small {
-  width: 40px !important;
-  height: 40px !important;
-  min-width: 40px !important;
-  min-height: 40px !important;
-}
-
-.logo-placeholder .school-logo-img,
-.logo-placeholder img {
-  width: 100% !important;
-  height: 100% !important;
-  object-fit: contain !important;
-  display: block !important;
-  border-radius: inherit;
-}
-
-/* Dashboard headers — same logo treatment */
-.dashboard-header-bar .logo-placeholder {
-  display: flex !important;
-  visibility: visible !important;
-}
-
-
-/* ===== ROUND LOGO FIX — circular logo on every page ===== */
-.logo-placeholder,
-.logo-placeholder.small,
-.header-brand .logo-placeholder,
-.sidebar-logo .logo-placeholder,
-.footer-brand .logo-placeholder,
-.dashboard-header-bar .logo-placeholder {
-  border-radius: 50% !important;
-  overflow: hidden !important;
-  border: 2px solid var(--color-accent) !important;
-  background: #fff !important;
-  padding: 0 !important;
-  box-shadow: 0 2px 8px rgba(11, 61, 145, 0.2) !important;
-}
-
-.logo-placeholder img,
-.logo-placeholder .school-logo-img,
-.header-brand img.school-logo,
-.sidebar-logo img.school-logo,
-.school-logo-img {
-  width: 100% !important;
-  height: 100% !important;
-  object-fit: cover !important;
-  border-radius: 50% !important;
-  display: block !important;
-}
-
-/* Hide Log Out only when collapsed — do not move the arrow */
-.dashboard-layout.nav-collapsed .dashboard-nav #logoutBtn,
-.dashboard-layout.nav-collapsed .dashboard-nav .dashboard-nav-link.logout {
-  display: none !important;
-  visibility: hidden !important;
-  opacity: 0 !important;
-  pointer-events: none !important;
-  height: 0 !important;
-  margin: 0 !important;
-  padding: 0 !important;
-  border: none !important;
-  overflow: hidden !important;
 }
